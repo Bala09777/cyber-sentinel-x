@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CYBER SENTINEL X — SOC Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/soc.css') }}">
+
+    <style>
+        /* ===== CYBER SENTINEL X DASHBOARD ===== */
+
+        .csx-app {
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* SIDEBAR */
+
+        .csx-sidebar {
+            width: 255px;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            padding: 20px 14px;
+            background: rgba(5, 10, 19, .94);
+            border-right: 1px solid rgba(255,255,255,.08);
+            z-index: 50;
+        }
+
+        .csx-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 8px 20px;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+            margin-bottom: 18px;
+        }
+
+        .csx-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: #22d3ee;
+            font-size: 22px;
+            font-weight: 900;
+            border: 1px solid rgba(34,211,238,.35);
+            background: rgba(34,211,238,.08);
+            box-shadow: 0 0 25px rgba(34,211,238,.12);
+        }
+
+        .csx-brand-name {
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: .04em;
+        }
+
+        .csx-brand-sub {
+            color: #6f8099;
+            font-size: 9px;
+            margin-top: 3px;
+            letter-spacing: .08em;
+        }
+
+        .csx-nav-title {
+            color: #22d3ee;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            margin: 20px 10px 8px;
+        }
+
+        .csx-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .csx-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            border-radius: 10px;
+            color: #aab7ca;
+            font-size: 13px;
+            border: 1px solid transparent;
+            transition: .2s ease;
+        }
+
+        .csx-nav-item:hover,
+        .csx-nav-item.active {
+            color: #fff;
+            background: rgba(34,211,238,.09);
+            border-color: rgba(34,211,238,.18);
+        }
+
+        .csx-nav-icon {
+            width: 20px;
+            text-align: center;
+            color: #74869e;
+        }
+
+        .csx-nav-item.active .csx-nav-icon {
+            color: #22d3ee;
+        }
+
+        /* MAIN */
+
+        .csx-main {
+            width: calc(100% - 255px);
+            margin-left: 255px;
+            padding: 24px;
+        }
+
+        .csx-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .csx-title {
+            font-size: 26px;
+            font-weight: 850;
+            margin: 0;
+        }
+
+        .csx-subtitle {
+            color: #77879d;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .csx-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 13px;
+            border-radius: 999px;
+            background: rgba(34,197,94,.07);
+            border: 1px solid rgba(34,197,94,.18);
+            color: #86efac;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* METRICS */
+
+        .csx-metrics {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 13px;
+            margin-bottom: 16px;
+        }
+
+        .csx-metric {
+            position: relative;
+            min-height: 145px;
+            overflow: hidden;
+            padding: 18px;
+            border-radius: 15px;
+            background: linear-gradient(145deg,#101b2c,#09111e);
+            border: 1px solid rgba(255,255,255,.08);
+        }
+
+        .csx-metric::after {
+            content: "";
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            right: -35px;
+            top: -35px;
+            border-radius: 50%;
+            background: var(--metric-glow);
+            filter: blur(25px);
+            opacity: .28;
+        }
+
+        .metric-blue { --metric-glow:#22d3ee; }
+        .metric-red { --metric-glow:#ef4444; }
+        .metric-green { --metric-glow:#22c55e; }
+        .metric-purple { --metric-glow:#a855f7; }
+        .metric-orange { --metric-glow:#f59e0b; }
+
+        .csx-metric-icon {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .csx-metric-label {
+            color: #8190a5;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            font-weight: 800;
+        }
+
+        .csx-metric-value {
+            font-size: 31px;
+            font-weight: 900;
+            margin-top: 5px;
+        }
+
+        .csx-metric-info {
+            color: #677991;
+            font-size: 10px;
+            margin-top: 5px;
+        }
+
+        .csx-spark {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 10px;
+            height: 24px;
+            opacity: .7;
+        }
+
+        .csx-spark svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* GRID */
+
+        .csx-grid-main {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .csx-grid-bottom {
+            display: grid;
+            grid-template-columns: 1.15fr .85fr 1.15fr;
+            gap: 15px;
+        }
+
+        .csx-panel {
+            background: linear-gradient(145deg,#101a2a,#09111d);
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 14px 35px rgba(0,0,0,.2);
+        }
+
+        .csx-panel-head {
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+
+        .csx-panel-title {
+            font-size: 14px;
+            font-weight: 850;
+        }
+
+        .csx-panel-tag {
+            color: #22d3ee;
+            font-size: 9px;
+            font-weight: 900;
+            letter-spacing: .08em;
+        }
+
+        .csx-panel-body {
+            padding: 18px;
+        }
+
+        /* NETWORK */
+
+        .csx-network {
+            height: 305px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #07101b;
+            border: 1px solid rgba(34,211,238,.08);
+        }
+
+        .csx-network-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(34,211,238,.045) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(34,211,238,.045) 1px,transparent 1px);
+            background-size: 42px 42px;
+            animation: csxGrid 8s linear infinite;
+        }
+
+        @keyframes csxGrid {
+            from { transform: translateY(0); }
+            to { transform: translateY(42px); }
+        }
+
+        .csx-network svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .csx-line {
+            fill: none;
+            stroke: #22d3ee;
+            stroke-width: 3;
+            filter:
+                drop-shadow(0 0 5px rgba(34,211,238,.9))
+                drop-shadow(0 0 15px rgba(34,211,238,.35));
+            stroke-dasharray: 12 7;
+            animation: csxFlow 2s linear infinite;
+        }
+
+        .csx-area {
+            fill: url(#csxFill);
+            opacity: .35;
+        }
+
+        @keyframes csxFlow {
+            to { stroke-dashoffset: -38; }
+        }
+
+        .csx-live {
+            position: absolute;
+            right: 14px;
+            top: 14px;
+            display: flex;
+            gap: 7px;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(34,197,94,.08);
+            border: 1px solid rgba(34,197,94,.2);
+            color: #86efac;
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+        .csx-network-stats {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            margin-top: 12px;
+            border-top: 1px solid rgba(255,255,255,.06);
+            padding-top: 12px;
+        }
+
+        .csx-net-stat {
+            text-align: center;
+            border-right: 1px solid rgba(255,255,255,.06);
+        }
+
+        .csx-net-stat:last-child {
+            border: 0;
+        }
+
+        .csx-net-label {
+            color: #71829a;
+            font-size: 9px;
+        }
+
+        .csx-net-value {
+            margin-top: 4px;
+            font-weight: 850;
+            font-size: 13px;
+        }
+
+        /* RISK */
+
+        .csx-risk-wrap {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .csx-gauge {
+            width: 185px;
+            height: 185px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background:
+                conic-gradient(
+                    #22c55e 0deg 85deg,
+                    #facc15 85deg 190deg,
+                    #fb923c 190deg 275deg,
+                    #ef4444 275deg 333deg,
+                    #172235 333deg 360deg
+                );
+            box-shadow: 0 0 35px rgba(250,204,21,.1);
+        }
+
+        .csx-gauge-inner {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            background: #09121f;
+            border: 1px solid rgba(255,255,255,.06);
+        }
+
+        .csx-risk-number {
+            font-size: 43px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .csx-risk-label {
+            color: #7c8da4;
+            font-size: 9px;
+            margin-top: 5px;
+        }
+
+        .csx-risk-level {
+            color: #facc15;
+            font-size: 12px;
+            font-weight: 900;
+            margin-top: 5px;
+        }
+
+        .csx-breakdown {
+            flex: 1;
+        }
+
+        .csx-break-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        .csx-break-row:last-child {
+            border-bottom: 0;
+        }
+
+        .csx-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background:#ef4444; box-shadow:0 0 9px #ef4444; }
+        .dot-orange { background:#fb923c; }
+        .dot-yellow { background:#facc15; }
+        .dot-green { background:#22c55e; }
+
+        .csx-break-name {
+            flex: 1;
+            color: #a9b6c8;
+            font-size: 11px;
+        }
+
+        .csx-break-count {
+            font-weight: 900;
+        }
+
+        /* ALERTS */
+
+        .csx-alert {
+            display: flex;
+            gap: 11px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        .csx-alert:last-child {
+            border: 0;
+        }
+
+        .csx-alert-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            background: rgba(239,68,68,.1);
+        }
+
+        .alert-high {
+            background: rgba(251,146,60,.1);
+        }
+
+        .alert-warning {
+            background: rgba(250,204,21,.1);
+        }
+
+        .alert-info {
+            background: rgba(34,211,238,.1);
+        }
+
+        .csx-alert-title {
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .csx-alert-source {
+            color: #718199;
+            font-size: 9px;
+            margin-top: 3px;
+        }
+
+        .csx-alert-time {
+            margin-left: auto;
+            font-size: 9px;
+            color: #ef4444;
+            white-space: nowrap;
+        }
+
+        /* ML */
+
+        .csx-ml {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .csx-ml-brain {
+            grid-column: 1 / -1;
+            height: 150px;
+            border-radius: 12px;
+            position: relative;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(circle,rgba(34,211,238,.12),transparent 55%),
+                #07101b;
+            border: 1px solid rgba(34,211,238,.08);
+        }
+
+        .csx-brain {
+            font-size: 58px;
+            color: #22d3ee;
+            filter: drop-shadow(0 0 18px rgba(34,211,238,.8));
+            animation: csxBrain 2.5s ease-in-out infinite;
+        }
+
+        @keyframes csxBrain {
+            50% {
+                transform: scale(1.08);
+                filter: drop-shadow(0 0 28px rgba(34,211,238,.9));
+            }
+        }
+
+        .csx-ml-card {
+            padding: 11px;
+            border-radius: 10px;
+            background: rgba(255,255,255,.025);
+            border: 1px solid rgba(255,255,255,.06);
+        }
+
+        .csx-ml-label {
+            color: #718199;
+            font-size: 8px;
+            letter-spacing: .08em;
+        }
+
+        .csx-ml-value {
+            margin-top: 5px;
+            font-weight: 900;
+            font-size: 15px;
+        }
+
+        .online {
+            color: #22c55e;
+        }
+
+        /* ASSETS */
+
+        .csx-asset {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,.06);
+        }
+
+        .csx-asset:last-child {
+            border: 0;
+        }
+
+        .csx-asset-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+        }
+
+        .csx-asset-ip {
+            color: #c8d3e2;
+            font-weight: 750;
+        }
+
+        .csx-asset-risk {
+            font-weight: 900;
+        }
+
+        .csx-progress {
+            height: 6px;
+            margin-top: 8px;
+            background: #172234;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .csx-progress span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg,#22d3ee,#60a5fa);
+        }
+
+        .csx-footer {
+            margin-top: 18px;
+            padding: 13px 4px;
+            display: flex;
+            justify-content: space-between;
+            color: #617189;
+            font-size: 9px;
+            border-top: 1px solid rgba(255,255,255,.06);
+        }
+
+        @media(max-width:1200px) {
+            .csx-metrics {
+                grid-template-columns: repeat(3,1fr);
+            }
+
+            .csx-grid-bottom {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media(max-width:900px) {
+            .csx-sidebar {
+                width: 72px;
+            }
+
+            .csx-brand-name,
+            .csx-brand-sub,
+            .csx-nav-title,
+            .csx-nav-item span:not(.csx-nav-icon) {
+                display: none;
+            }
+
+            .csx-main {
+                width: calc(100% - 72px);
+                margin-left: 72px;
+            }
+
+            .csx-grid-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width:650px) {
+            .csx-main {
+                padding: 12px;
+            }
+
+            .csx-metrics,
+            .csx-grid-bottom {
+                grid-template-columns: 1fr;
+            }
+
+            .csx-risk-wrap {
+                flex-direction: column;
+            }
+
+            .csx-network-stats {
+                grid-template-columns: repeat(2,1fr);
+                gap: 12px;
+            }
+
+            .csx-topbar {
+                align-items: flex-start;
+                gap: 10px;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="csx-app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="csx-sidebar">
+
+        <div class="csx-brand">
+            <div class="csx-logo">⬡</div>
+
+            <div>
+                <div class="csx-brand-name">CYBER SENTINEL X</div>
+                <div class="csx-brand-sub">
+                    SECURITY OPERATIONS PLATFORM
+                </div>
+            </div>
+        </div>
+
+        <div class="csx-nav-title">MONITOR</div>
+
+        <div class="csx-nav">
+            <div class="csx-nav-item active">
+                <span class="csx-nav-icon">▦</span>
+                <span>Dashboard</span>
+            </div>
+
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">◉</span>
+                <span>Live Network</span>
+            </div>
+
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">⚠</span>
+                <span>Alerts</span>
+            </div>
+
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">◆</span>
+                <span>Incidents</span>
+            </div>
+        </div>
+
+        <div class="csx-nav-title">INVESTIGATE</div>
+
+        <div class="csx-nav">
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">⌕</span>
+                <span>Investigation</span>
+            </div>
+
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">◈</span>
+                <span>PCAP Analysis</span>
+            </div>
+
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">◎</span>
+                <span>Threat Intelligence</span>
+            </div>
+        </div>
+
+        <div class="csx-nav-title">MANAGE</div>
+
+        <div class="csx-nav">
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">▤</span>
+                <span>Assets</span>
+            </div>
+
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">⚙</span>
+                <span>Detection Rules</span>
+            </div>
+
+            <div class="csx-nav-item">
+                <span class="csx-nav-icon">◌</span>
+                <span>Reports</span>
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="csx-main">
+
+        <div class="csx-topbar">
+
+            <div>
+                <h1 class="csx-title">SOC Dashboard</h1>
+
+                <div class="csx-subtitle">
+                    Security Operations & Threat Monitoring Console
+                </div>
+            </div>
+
+            <div class="csx-status">
+                <span class="live-dot"></span>
+                SYSTEM OPERATIONAL
+            </div>
+
+        </div>
+
+
+        <!-- METRICS -->
+
+        <section class="csx-metrics">
+
+            <div class="csx-metric metric-blue">
+
+                <div class="csx-metric-icon">🛡</div>
+
+                <div class="csx-metric-label">
+                    Active Alerts
+                </div>
+
+                <div class="csx-metric-value" id="activeAlerts">
+                    12
+                </div>
+
+                <div class="csx-metric-info">
+                    Currently open
+                </div>
+
+                <div class="csx-spark">
+                    <svg viewBox="0 0 300 40" preserveAspectRatio="none">
+                        <polyline
+                            points="0,28 20,20 40,27 60,12 80,24 100,18 120,30 140,13 160,23 180,15 200,25 220,10 240,24 260,16 280,27 300,13"
+                            fill="none"
+                            stroke="#22d3ee"
+                            stroke-width="3"/>
+                    </svg>
+                </div>
+
+            </div>
+
+
+            <div class="csx-metric metric-red">
+
+                <div class="csx-metric-icon">🚨</div>
+
+                <div class="csx-metric-label">
+                    Open Incidents
+                </div>
+
+                <div class="csx-metric-value" id="openIncidents">
+                    4
+                </div>
+
+                <div class="csx-metric-info">
+                    Requires investigation
+                </div>
+
+                <div class="csx-spark">
+                    <svg viewBox="0 0 300 40" preserveAspectRatio="none">
+                        <polyline
+                            points="0,30 25,14 45,28 65,10 85,24 105,18 125,30 145,8 165,26 185,15 205,29 225,12 245,25 265,17 300,27"
+                            fill="none"
+                            stroke="#ef4444"
+                            stroke-width="3"/>
+                    </svg>
+                </div>
+
+            </div>
+
+
+            <div class="csx-metric metric-green">
+
+                <div class="csx-metric-icon">💻</div>
+
+                <div class="csx-metric-label">
+                    Monitored Assets
+                </div>
+
+                <div class="csx-metric-value" id="activeAssets">
+                    28
+                </div>
+
+                <div class="csx-metric-info">
+                    Active endpoints
+                </div>
+
+                <div class="csx-spark">
+                    <svg viewBox="0 0 300 40" preserveAspectRatio="none">
+                        <polyline
+                            points="0,29 25,25 45,27 65,10 85,25 105,21 125,28 145,17 165,25 185,14 205,26 225,20 245,27 270,16 300,22"
+                            fill="none"
+                            stroke="#22c55e"
+                            stroke-width="3"/>
+                    </svg>
+                </div>
+
+            </div>
+
+
+            <div class="csx-metric metric-purple">
+
+                <div class="csx-metric-icon">📈</div>
+
+                <div class="csx-metric-label">
+                    Events / Min
+                </div>
+
+                <div class="csx-metric-value" id="eventCount">
+                    146
+                </div>
+
+                <div class="csx-metric-info">
+                    Real-time telemetry
+                </div>
+
+                <div class="csx-spark">
+                    <svg viewBox="0 0 300 40" preserveAspectRatio="none">
+                        <polyline
+                            points="0,27 20,22 40,28 60,14 80,24 100,9 120,25 140,17 160,29 180,12 200,23 220,15 240,27 260,18 280,25 300,10"
+                            fill="none"
+                            stroke="#a855f7"
+                            stroke-width="3"/>
+                    </svg>
+                </div>
+
+            </div>
+
+
+            <div class="csx-metric metric-orange">
+
+                <div class="csx-metric-icon">🎯</div>
+
+                <div class="csx-metric-label">
+                    Threat Score
+                </div>
+
+                <div class="csx-metric-value" id="threatScore">
+                    37
+                </div>
+
+                <div class="csx-metric-info">
+                    Current environment risk
+                </div>
+
+                <div class="csx-spark">
+                    <svg viewBox="0 0 300 40" preserveAspectRatio="none">
+                        <polyline
+                            points="0,30 20,27 40,25 60,29 80,18 100,26 120,21 140,28 160,12 180,24 200,20 220,29 240,17 260,24 280,18 300,23"
+                            fill="none"
+                            stroke="#f59e0b"
+                            stroke-width="3"/>
+                    </svg>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- NETWORK + RISK -->
+
+        <section class="csx-grid-main">
+
+            <!-- NETWORK -->
+
+            <div class="csx-panel">
+
+                <div class="csx-panel-head">
+
+                    <div class="csx-panel-title">
+                        Network Activity
+                    </div>
+
+                    <div class="csx-panel-tag">
+                        LIVE TELEMETRY
+                    </div>
+
+                </div>
+
+                <div class="csx-panel-body">
+
+                    <div class="csx-network">
+
+                        <div class="csx-network-grid"></div>
+
+                        <div class="csx-live">
+                            <span class="live-dot"></span>
+                            LIVE
+                        </div>
+
+                        <svg viewBox="0 0 1000 300"
+                             preserveAspectRatio="none">
+
+                            <defs>
+
+                                <linearGradient
+                                    id="csxFill"
+                                    x1="0"
+                                    y1="0"
+                                    x2="0"
+                                    y2="1">
+
+                                    <stop offset="0%"
+                                          stop-color="#22d3ee"
+                                          stop-opacity=".35"/>
+
+                                    <stop offset="100%"
+                                          stop-color="#22d3ee"
+                                          stop-opacity="0"/>
+
+                                </linearGradient>
+
+                            </defs>
+
+                            <path
+                                class="csx-area"
+                                d="M0,250
+                                   C40,220 70,235 110,205
+                                   S180,180 220,215
+                                   S290,145 330,180
+                                   S400,210 445,145
+                                   S520,105 555,150
+                                   S620,185 670,115
+                                   S740,150 780,90
+                                   S850,125 900,70
+                                   S950,100 1000,55
+                                   L1000,300 L0,300 Z"/>
+
+                            <path
+                                class="csx-line"
+                                d="M0,250
+                                   C40,220 70,235 110,205
+                                   S180,180 220,215
+                                   S290,145 330,180
+                                   S400,210 445,145
+                                   S520,105 555,150
+                                   S620,185 670,115
+                                   S740,150 780,90
+                                   S850,125 900,70
+                                   S950,100 1000,55"/>
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="csx-network-stats">
+
+                        <div class="csx-net-stat">
+                            <div class="csx-net-label">Inbound</div>
+                            <div class="csx-net-value">68.4 Mbps</div>
+                        </div>
+
+                        <div class="csx-net-stat">
+                            <div class="csx-net-label">Outbound</div>
+                            <div class="csx-net-value">42.7 Mbps</div>
+                        </div>
+
+                        <div class="csx-net-stat">
+                            <div class="csx-net-label">Total Traffic</div>
+                            <div class="csx-net-value">111.1 Mbps</div>
+                        </div>
+
+                        <div class="csx-net-stat">
+                            <div class="csx-net-label">Connections</div>
+                            <div class="csx-net-value">1,284</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RISK -->
+
+            <div class="csx-panel">
+
+                <div class="csx-panel-head">
+
+                    <div class="csx-panel-title">
+                        Environment Risk
+                    </div>
+
+                    <div class="csx-panel-tag">
+                        REAL TIME
+                    </div>
+
+                </div>
+
+                <div class="csx-panel-body">
+
+                    <div class="csx-risk-wrap">
+
+                        <div>
+
+                            <div class="csx-gauge">
+
+                                <div class="csx-gauge-inner">
+
+                                    <div>
+
+                                        <div class="csx-risk-number"
+                                             id="riskValue">
+                                            37
+                                        </div>
+
+                                        <div class="csx-risk-label">
+                                            RISK / 100
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="csx-risk-level"
+                                 style="text-align:center">
+                                MEDIUM RISK
+                            </div>
+
+                        </div>
+
+
+                        <div class="csx-breakdown">
+
+                            <div class="csx-break-row">
+                                <span class="csx-dot dot-red"></span>
+                                <span class="csx-break-name">Critical</span>
+                                <span class="csx-break-count">1</span>
+                            </div>
+
+                            <div class="csx-break-row">
+                                <span class="csx-dot dot-orange"></span>
+                                <span class="csx-break-name">High</span>
+                                <span class="csx-break-count">3</span>
+                            </div>
+
+                            <div class="csx-break-row">
+                                <span class="csx-dot dot-yellow"></span>
+                                <span class="csx-break-name">Suspicious</span>
+                                <span class="csx-break-count">8</span>
+                            </div>
+
+                            <div class="csx-break-row">
+                                <span class="csx-dot dot-green"></span>
+                                <span class="csx-break-name">Normal</span>
+                                <span class="csx-break-count">134</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- BOTTOM -->
+
+        <section class="csx-grid-bottom">
+
+
+            <!-- ALERTS -->
+
+            <div class="csx-panel">
+
+                <div class="csx-panel-head">
+
+                    <div class="csx-panel-title">
+                        Recent Security Alerts
+                    </div>
+
+                    <div class="csx-panel-tag">
+                        LAST EVENTS
+                    </div>
+
+                </div>
+
+                <div class="csx-panel-body">
+
+                    <div class="csx-alert">
+
+                        <div class="csx-alert-icon">
+                            🚨
+                        </div>
+
+                        <div>
+                            <div class="csx-alert-title">
+                                Critical Network Activity
+                            </div>
+
+                            <div class="csx-alert-source">
+                                Source: 192.168.1.50
+                            </div>
+                        </div>
+
+                        <div class="csx-alert-time">
+                            2 min ago
+                        </div>
+
+                    </div>
+
+
+                    <div class="csx-alert">
+
+                        <div class="csx-alert-icon alert-high">
+                            🛡
+                        </div>
+
+                        <div>
+                            <div class="csx-alert-title">
+                                High Risk Behaviour
+                            </div>
+
+                            <div class="csx-alert-source">
+                                Source: 192.168.1.24
+                            </div>
+                        </div>
+
+                        <div class="csx-alert-time"
+                             style="color:#fb923c">
+                            5 min ago
+                        </div>
+
+                    </div>
+
+
+                    <div class="csx-alert">
+
+                        <div class="csx-alert-icon alert-warning">
+                            ⚠
+                        </div>
+
+                        <div>
+                            <div class="csx-alert-title">
+                                Unusual Port Activity
+                            </div>
+
+                            <div class="csx-alert-source">
+                                Source: 192.168.1.18
+                            </div>
+                        </div>
+
+                        <div class="csx-alert-time"
+                             style="color:#facc15">
+                            8 min ago
+                        </div>
+
+                    </div>
+
+
+                    <div class="csx-alert">
+
+                        <div class="csx-alert-icon alert-info">
+                            ℹ
+                        </div>
+
+                        <div>
+                            <div class="csx-alert-title">
+                                Behaviour Deviation
+                            </div>
+
+                            <div class="csx-alert-source">
+                                Source: 192.168.1.32
+                            </div>
+                        </div>
+
+                        <div class="csx-alert-time"
+                             style="color:#22d3ee">
+                            12 min ago
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ML -->
+
+            <div class="csx-panel">
+
+                <div class="csx-panel-head">
+
+                    <div class="csx-panel-title">
+                        ML Anomaly Engine
+                    </div>
+
+                    <div class="csx-panel-tag">
+                        AI SECURITY ENGINE
+                    </div>
+
+                </div>
+
+                <div class="csx-panel-body">
+
+                    <div class="csx-ml">
+
+                        <div class="csx-ml-brain">
+                            <div class="csx-brain">◉</div>
+                        </div>
+
+                        <div class="csx-ml-card">
+                            <div class="csx-ml-label">ENGINE</div>
+                            <div class="csx-ml-value online">
+                                ● ONLINE
+                            </div>
+                        </div>
+
+                        <div class="csx-ml-card">
+                            <div class="csx-ml-label">THRESHOLD</div>
+                            <div class="csx-ml-value">0.70</div>
+                        </div>
+
+                        <div class="csx-ml-card">
+                            <div class="csx-ml-label">ANOMALIES</div>
+                            <div class="csx-ml-value">7</div>
+                        </div>
+
+                        <div class="csx-ml-card">
+                            <div class="csx-ml-label">MODEL</div>
+                            <div class="csx-ml-value">BASELINE</div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ASSETS -->
+
+            <div class="csx-panel">
+
+                <div class="csx-panel-head">
+
+                    <div class="csx-panel-title">
+                        Top Attacked Assets
+                    </div>
+
+                    <div class="csx-panel-tag">
+                        LIVE
+                    </div>
+
+                </div>
+
+                <div class="csx-panel-body">
+
+
+                    <div class="csx-asset">
+
+                        <div class="csx-asset-head">
+                            <span class="csx-asset-ip">
+                                192.168.1.50
+                            </span>
+
+                            <span class="csx-asset-risk"
+                                  style="color:#ef4444">
+                                90
+                            </span>
+                        </div>
+
+                        <div class="csx-progress">
+                            <span style="width:90%"></span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="csx-asset">
+
+                        <div class="csx-asset-head">
+                            <span class="csx-asset-ip">
+                                192.168.1.24
+                            </span>
+
+                            <span class="csx-asset-risk"
+                                  style="color:#fb923c">
+                                72
+                            </span>
+                        </div>
+
+                        <div class="csx-progress">
+                            <span style="width:72%"></span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="csx-asset">
+
+                        <div class="csx-asset-head">
+                            <span class="csx-asset-ip">
+                                192.168.1.18
+                            </span>
+
+                            <span class="csx-asset-risk"
+                                  style="color:#facc15">
+                                55
+                            </span>
+                        </div>
+
+                        <div class="csx-progress">
+                            <span style="width:55%"></span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="csx-asset">
+
+                        <div class="csx-asset-head">
+                            <span class="csx-asset-ip">
+                                192.168.1.32
+                            </span>
+
+                            <span class="csx-asset-risk"
+                                  style="color:#22c55e">
+                                40
+                            </span>
+                        </div>
+
+                        <div class="csx-progress">
+                            <span style="width:40%"></span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="csx-asset">
+
+                        <div class="csx-asset-head">
+                            <span class="csx-asset-ip">
+                                192.168.1.45
+                            </span>
+
+                            <span class="csx-asset-risk"
+                                  style="color:#22d3ee">
+                                22
+                            </span>
+                        </div>
+
+                        <div class="csx-progress">
+                            <span style="width:22%"></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer class="csx-footer">
+
+            <span>
+                CYBER SENTINEL X &nbsp; v2.3.0
+            </span>
+
+            <span>
+                🔒 All systems secure &nbsp; | &nbsp;
+                ◉ Data encrypted
+            </span>
+
+            <span>
+                Uptime: 15d 6h 24m
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<script>
+
+async function updateSOC() {
+
+    try {
+
+        const response =
+            await fetch("/api/soc/summary");
+
+        if (!response.ok) return;
+
+        const data =
+            await response.json();
+
+        if (data.active_alerts !== undefined) {
+            document.getElementById("activeAlerts").textContent =
+                data.active_alerts;
+        }
+
+        if (data.open_incidents !== undefined) {
+            document.getElementById("openIncidents").textContent =
+                data.open_incidents;
+        }
+
+        if (data.active_assets !== undefined) {
+            document.getElementById("activeAssets").textContent =
+                data.active_assets;
+        }
+
+        if (data.events !== undefined) {
+            document.getElementById("eventCount").textContent =
+                data.events;
+        }
+
+    } catch (error) {
+
+        console.log("SOC API waiting...");
+
+    }
+
+}
+
+updateSOC();
+
+setInterval(updateSOC, 5000);
+
+
+/* NETWORK GRAPH MOTION */
+
+const line =
+    document.querySelector(".csx-line");
+
+if (line) {
+
+    let offset = 0;
+
+    setInterval(() => {
+
+        offset -= 2;
+
+        line.style.strokeDashoffset = offset;
+
+    }, 50);
+
+}
+
+</script>
+
+</body>
+</html>

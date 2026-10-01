@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cyber Sentinel X | SOC Console</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #080b12;
+            color: #e8edf5;
+            min-height: 100vh;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            background: #0d111a;
+            border-right: 1px solid #202736;
+            padding: 22px 15px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .brand {
+            padding: 10px 12px 25px;
+            border-bottom: 1px solid #202736;
+            margin-bottom: 20px;
+        }
+
+        .brand h1 {
+            font-size: 21px;
+            letter-spacing: 1px;
+        }
+
+        .brand span {
+            color: #4da3ff;
+        }
+
+        .brand small {
+            display: block;
+            color: #6f7b91;
+            margin-top: 6px;
+            font-size: 11px;
+        }
+
+        .nav-title {
+            color: #58657b;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            padding: 10px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            margin: 4px 0;
+            border-radius: 7px;
+            color: #9ca8ba;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #151d2b;
+            color: #ffffff;
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title h2 {
+            font-size: 25px;
+        }
+
+        .page-title p {
+            color: #6f7b91;
+            margin-top: 6px;
+            font-size: 13px;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            background: #101722;
+            border: 1px solid #202b3d;
+            padding: 9px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #37d67a;
+            box-shadow: 0 0 10px #37d67a;
+        }
+
+        /* METRICS */
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            background: #0e141f;
+            border: 1px solid #202a3a;
+            border-radius: 10px;
+            padding: 18px;
+        }
+
+        .metric-label {
+            color: #7d899d;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+
+        .metric-value {
+            font-size: 29px;
+            font-weight: bold;
+            margin-top: 9px;
+        }
+
+        .metric-change {
+            color: #6f7b91;
+            font-size: 11px;
+            margin-top: 7px;
+        }
+
+        /* PANELS */
+
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .panel {
+            background: #0e141f;
+            border: 1px solid #202a3a;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            border-bottom: 1px solid #202a3a;
+        }
+
+        .panel-header h3 {
+            font-size: 14px;
+        }
+
+        .panel-header span {
+            color: #647187;
+            font-size: 11px;
+        }
+
+        .panel-body {
+            padding: 18px;
+        }
+
+        /* THREAT */
+
+        .threat-container {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .threat-score {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            border: 12px solid #263244;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .threat-score strong {
+            font-size: 38px;
+        }
+
+        .threat-score span {
+            color: #77849a;
+            font-size: 10px;
+        }
+
+        .threat-info {
+            flex: 1;
+        }
+
+        .threat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #1b2432;
+            font-size: 12px;
+        }
+
+        .threat-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #78859a;
+        }
+
+        /* ACTIVITY */
+
+        .activity-chart {
+            height: 190px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding-top: 20px;
+        }
+
+        .bar {
+            flex: 1;
+            background: #263c58;
+            border-radius: 4px 4px 0 0;
+            min-height: 10px;
+            transition: 0.3s;
+        }
+
+        .bar:hover {
+            background: #4da3ff;
+        }
+
+        /* ALERTS */
+
+        .alert {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid #1b2432;
+        }
+
+        .alert:last-child {
+            border-bottom: none;
+        }
+
+        .alert-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .severity {
+            width: 8px;
+            height: 34px;
+            border-radius: 4px;
+        }
+
+        .critical {
+            background: #e05252;
+        }
+
+        .high {
+            background: #e08a45;
+        }
+
+        .medium {
+            background: #d5b94d;
+        }
+
+        .low {
+            background: #4da3ff;
+        }
+
+        .alert-name {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .alert-meta {
+            color: #69768b;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        .alert-time {
+            color: #647187;
+            font-size: 10px;
+        }
+
+        /* INCIDENTS */
+
+        .incident {
+            display: grid;
+            grid-template-columns: 100px 1fr 90px;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 0;
+            border-bottom: 1px solid #1b2432;
+        }
+
+        .incident:last-child {
+            border-bottom: none;
+        }
+
+        .incident-id {
+            color: #4da3ff;
+            font-size: 11px;
+        }
+
+        .incident-title {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .incident-meta {
+            color: #68758a;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        .badge {
+            text-align: center;
+            padding: 5px 7px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        .badge-open {
+            background: #392a20;
+            color: #e5a66e;
+        }
+
+        .badge-investigating {
+            background: #202d3e;
+            color: #78b7f0;
+        }
+
+        /* ASSETS */
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .asset {
+            background: #111925;
+            border: 1px solid #202b3d;
+            padding: 13px;
+            border-radius: 7px;
+        }
+
+        .asset-name {
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .asset-ip {
+            color: #66748a;
+            font-size: 10px;
+            margin-top: 5px;
+        }
+
+        .asset-status {
+            margin-top: 10px;
+            font-size: 9px;
+            color: #43d985;
+        }
+
+        /* ML */
+
+        .ml-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .ml-card {
+            background: #111925;
+            border: 1px solid #202b3d;
+            border-radius: 7px;
+            padding: 14px;
+        }
+
+        .ml-card-title {
+            color: #6f7c90;
+            font-size: 10px;
+        }
+
+        .ml-card-value {
+            margin-top: 7px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+            color: #4f5b6e;
+            font-size: 10px;
+            padding: 25px 0 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1200px) {
+            .metrics {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .asset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 850px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .brand h1,
+            .brand small,
+            .nav-title,
+            .nav-item span {
+                display: none;
+            }
+
+            .main {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/soc.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <h1>CYBER <span>SENTINEL X</span></h1>
+            <small>SECURITY OPERATIONS PLATFORM</small>
+        </div>
+
+        <div class="nav-title">MONITOR</div>
+
+        <div class="nav-item active">
+            <div class="nav-icon">▣</div>
+            <span>Dashboard</span>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-icon">◉</div>
+            <span>Live Network</span>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-icon">⚠</div>
+            <span>Alerts</span>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-icon">◆</div>
+            <span>Incidents</span>
+        </div>
+
+        <div class="nav-title">INVESTIGATE</div>
+
+        <div class="nav-item">
+            <div class="nav-icon">⌕</div>
+            <span>Investigation</span>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-icon">◈</div>
+            <span>PCAP Analysis</span>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-icon">◎</div>
+            <span>Threat Intelligence</span>
+        </div>
+
+        <div class="nav-title">MANAGE</div>
+
+        <div class="nav-item">
+            <div class="nav-icon">▤</div>
+            <span>Assets</span>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-icon">⚙</div>
+            <span>Detection Rules</span>
+        </div>
+
+        <div class="nav-item">
+            <div class="nav-icon">◌</div>
+            <span>Reports</span>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <div class="topbar">
+
+            <div class="page-title">
+                <h2>SOC Dashboard</h2>
+                <p>Security Operations & Threat Monitoring Console</p>
+            </div>
+
+            <div class="system-status">
+                <div class="status-dot"></div>
+                SYSTEM OPERATIONAL
+            </div>
+
+        </div>
+
+
+        <!-- METRICS -->
+
+        <section class="metrics">
+
+            <div class="metric">
+                <div class="metric-label">Active Alerts</div>
+                <div class="metric-value" id="activeAlerts">12</div>
+                <div class="metric-change">Currently open</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">Open Incidents</div>
+                <div class="metric-value" id="openIncidents">4</div>
+                <div class="metric-change">Requires investigation</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">Monitored Assets</div>
+                <div class="metric-value" id="assets">28</div>
+                <div class="metric-change">Active endpoints</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">Events / Min</div>
+                <div class="metric-value" id="events">146</div>
+                <div class="metric-change">Real-time telemetry</div>
+            </div>
+
+            <div class="metric">
+                <div class="metric-label">Threat Score</div>
+                <div class="metric-value" id="threatScore">37</div>
+                <div class="metric-change">Current environment risk</div>
+            </div>
+
+        </section>
+
+
+        <!-- THREAT + ACTIVITY -->
+
+        <section class="grid">
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h3>Network Activity</h3>
+                    <span>LIVE TELEMETRY</span>
+                </div>
+
+                <div class="panel-body">
+
+                    <div class="activity-chart">
+
+                        <div class="bar" style="height:35%"></div>
+                        <div class="bar" style="height:52%"></div>
+                        <div class="bar" style="height:42%"></div>
+                        <div class="bar" style="height:70%"></div>
+                        <div class="bar" style="height:58%"></div>
+                        <div class="bar" style="height:82%"></div>
+                        <div class="bar" style="height:64%"></div>
+                        <div class="bar" style="height:90%"></div>
+                        <div class="bar" style="height:72%"></div>
+                        <div class="bar" style="height:48%"></div>
+                        <div class="bar" style="height:76%"></div>
+                        <div class="bar" style="height:62%"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h3>Environment Risk</h3>
+                    <span>REAL TIME</span>
+                </div>
+
+                <div class="panel-body">
+
+                    <div class="threat-container">
+
+                        <div class="threat-score">
+                            <strong id="riskValue">37</strong>
+                            <span>RISK / 100</span>
+                        </div>
+
+                        <div class="threat-info">
+
+                            <div class="threat-row">
+                                <span class="label">Critical</span>
+                                <strong>1</strong>
+                            </div>
+
+                            <div class="threat-row">
+                                <span class="label">High</span>
+                                <strong>3</strong>
+                            </div>
+
+                            <div class="threat-row">
+                                <span class="label">Suspicious</span>
+                                <strong>8</strong>
+                            </div>
+
+                            <div class="threat-row">
+                                <span class="label">Normal</span>
+                                <strong>134</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ALERTS + ML -->
+
+        <section class="grid">
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h3>Recent Security Alerts</h3>
+                    <span>LAST EVENTS</span>
+                </div>
+
+                <div class="panel-body">
+
+                    <div class="alert">
+
+                        <div class="alert-left">
+                            <div class="severity critical"></div>
+
+                            <div>
+                                <div class="alert-name">
+                                    Critical Network Activity
+                                </div>
+
+                                <div class="alert-meta">
+                                    Source: 192.168.1.50
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert-time">
+                            2 min ago
+                        </div>
+
+                    </div>
+
+
+                    <div class="alert">
+
+                        <div class="alert-left">
+                            <div class="severity high"></div>
+
+                            <div>
+                                <div class="alert-name">
+                                    High Risk Behaviour
+                                </div>
+
+                                <div class="alert-meta">
+                                    Source: 192.168.1.24
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert-time">
+                            5 min ago
+                        </div>
+
+                    </div>
+
+
+                    <div class="alert">
+
+                        <div class="alert-left">
+                            <div class="severity medium"></div>
+
+                            <div>
+                                <div class="alert-name">
+                                    Unusual Port Activity
+                                </div>
+
+                                <div class="alert-meta">
+                                    Source: 192.168.1.18
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert-time">
+                            8 min ago
+                        </div>
+
+                    </div>
+
+
+                    <div class="alert">
+
+                        <div class="alert-left">
+                            <div class="severity low"></div>
+
+                            <div>
+                                <div class="alert-name">
+                                    Behaviour Deviation
+                                </div>
+
+                                <div class="alert-meta">
+                                    Source: 192.168.1.32
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert-time">
+                            12 min ago
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="panel-header">
+                    <h3>ML Anomaly Engine</h3>
+                    <span>AI SECURITY</span>
+                </div>
+
+                <div class="panel-body">
+
+                    <div class="ml-box">
+
+                        <div class="ml-card">
+                            <div class="ml-card-title">
+                                ENGINE
+                            </div>
+
+                            <div class="ml-card-value">
+                                ONLINE
+                            </div>
+                        </div>
+
+                        <div class="ml-card">
+                            <div class="ml-card-title">
+                                THRESHOLD
+                            </div>
+
+                            <div class="ml-card-value">
+                                0.70
+                            </div>
+                        </div>
+
+                        <div class="ml-card">
+                            <div class="ml-card-title">
+                                ANOMALIES
+                            </div>
+
+                            <div class="ml-card-value">
+                                7
+                            </div>
+                        </div>
+
+                        <div class="ml-card">
+                            <div class="ml-card-title">
+                                MODEL
+                            </div>
+
+                            <div class="ml-card-value">
+                                BASELINE
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INCIDENTS -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+                <h3>Active Incidents</h3>
+                <span>INCIDENT RESPONSE</span>
+            </div>
+
+            <div class="panel-body">
+
+                <div class="incident">
+
+                    <div class="incident-id">
+                        INC-00142
+                    </div>
+
+                    <div>
+                        <div class="incident-title">
+                            Suspicious Network Behaviour
+                        </div>
+
+                        <div class="incident-meta">
+                            192.168.1.50 · 4 correlated events
+                        </div>
+                    </div>
+
+                    <div class="badge badge-open">
+                        OPEN
+                    </div>
+
+                </div>
+
+
+                <div class="incident">
+
+                    <div class="incident-id">
+                        INC-00141
+                    </div>
+
+                    <div>
+                        <div class="incident-title">
+                            Abnormal Port Activity
+                        </div>
+
+                        <div class="incident-meta">
+                            192.168.1.24 · 7 correlated events
+                        </div>
+                    </div>
+
+                    <div class="badge badge-investigating">
+                        INVESTIGATING
+                    </div>
+
+                </div>
+
+
+                <div class="incident">
+
+                    <div class="incident-id">
+                        INC-00140
+                    </div>
+
+                    <div>
+                        <div class="incident-title">
+                            High Risk Endpoint Activity
+                        </div>
+
+                        <div class="incident-meta">
+                            192.168.1.32 · 3 correlated events
+                        </div>
+                    </div>
+
+                    <div class="badge badge-open">
+                        OPEN
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <br>
+
+
+        <!-- ASSETS -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+                <h3>Monitored Assets</h3>
+                <span>ASSET INVENTORY</span>
+            </div>
+
+            <div class="panel-body">
+
+                <div class="asset-grid">
+
+                    <div class="asset">
+                        <div class="asset-name">WORKSTATION-01</div>
+                        <div class="asset-ip">192.168.1.50</div>
+                        <div class="asset-status">● ACTIVE</div>
+                    </div>
+
+                    <div class="asset">
+                        <div class="asset-name">SERVER-01</div>
+                        <div class="asset-ip">192.168.1.10</div>
+                        <div class="asset-status">● ACTIVE</div>
+                    </div>
+
+                    <div class="asset">
+                        <div class="asset-name">WORKSTATION-02</div>
+                        <div class="asset-ip">192.168.1.24</div>
+                        <div class="asset-status">● ACTIVE</div>
+                    </div>
+
+                    <div class="asset">
+                        <div class="asset-name">NETWORK-GW</div>
+                        <div class="asset-ip">192.168.1.1</div>
+                        <div class="asset-status">● ACTIVE</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <div class="footer">
+            CYBER SENTINEL X · SECURITY OPERATIONS & THREAT INTELLIGENCE PLATFORM · v1.0.0
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /*
+        Dashboard real-time integration layer.
+
+        Backend WebSocket/API can later update these values.
+    */
+
+    function updateMetric(id, value) {
+
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.textContent = value;
+        }
+    }
+
+
+    function updateDashboard(data) {
+
+        if (!data) {
+            return;
+        }
+
+        if (data.active_alerts !== undefined) {
+            updateMetric(
+                "activeAlerts",
+                data.active_alerts
+            );
+        }
+
+        if (data.open_incidents !== undefined) {
+            updateMetric(
+                "openIncidents",
+                data.open_incidents
+            );
+        }
+
+        if (data.assets !== undefined) {
+            updateMetric(
+                "assets",
+                data.assets
+            );
+        }
+
+        if (data.events_per_minute !== undefined) {
+            updateMetric(
+                "events",
+                data.events_per_minute
+            );
+        }
+
+        if (data.threat_score !== undefined) {
+
+            updateMetric(
+                "threatScore",
+                data.threat_score
+            );
+
+            updateMetric(
+                "riskValue",
+                data.threat_score
+            );
+        }
+    }
+
+
+    /*
+        Future WebSocket connection:
+
+        const socket = new WebSocket(
+            "ws://" + window.location.host + "/ws"
+        );
+
+        socket.onmessage = function(event) {
+
+            const data = JSON.parse(
+                event.data
+            );
+
+            updateDashboard(data);
+        };
+    */
+
+
+    console.log(
+        "CYBER SENTINEL X SOC DASHBOARD READY"
+    );
+
+</script>
+
+</body>
+</html>

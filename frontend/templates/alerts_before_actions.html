@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Sentinel X — Alerts</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #07111f;
+            color: #e8f1fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .topbar {
+            padding: 22px 30px;
+            border-bottom: 1px solid #1b344d;
+            background: #091827;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            margin-top: 6px;
+            color: #8ca4ba;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 25px 30px;
+        }
+
+        .summary {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: #0c1d30;
+            border: 1px solid #1d3852;
+            border-radius: 12px;
+            padding: 18px 22px;
+            min-width: 150px;
+        }
+
+        .card-label {
+            color: #8ca4ba;
+            font-size: 12px;
+        }
+
+        .card-value {
+            margin-top: 8px;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .alert {
+            background: #0c1d30;
+            border: 1px solid #1d3852;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+        }
+
+        .alert-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .critical {
+            background: #5b1720;
+            color: #ff7180;
+        }
+
+        .high {
+            background: #5a3512;
+            color: #ffb45c;
+        }
+
+        .suspicious {
+            background: #514615;
+            color: #ffe16b;
+        }
+
+        .details {
+            margin-top: 12px;
+            color: #9eb2c5;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .risk {
+            font-weight: bold;
+            color: #ff7180;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 60px;
+            color: #7f95aa;
+        }
+
+        .loading {
+            color: #8ca4ba;
+            padding: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="title">⚠ Security Alerts</div>
+    <div class="subtitle">
+        Cyber Sentinel X — Real-Time Security Alert Center
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="summary">
+        <div class="card">
+            <div class="card-label">TOTAL ALERTS</div>
+            <div class="card-value" id="totalAlerts">0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">CRITICAL</div>
+            <div class="card-value" id="criticalAlerts">0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">HIGH</div>
+            <div class="card-value" id="highAlerts">0</div>
+        </div>
+    </div>
+
+    <div id="alertsContainer">
+        <div class="loading">Loading security alerts...</div>
+    </div>
+
+</div>
+
+<script>
+
+async function loadAlerts() {
+
+    const container =
+        document.getElementById("alertsContainer");
+
+    try {
+
+        const response =
+            await fetch("/api/soc/alerts", {
+                credentials: "same-origin"
+            });
+
+        const result =
+            await response.json();
+
+        const alerts =
+            result.alerts || [];
+
+        document.getElementById("totalAlerts")
+            .textContent = alerts.length;
+
+        document.getElementById("criticalAlerts")
+            .textContent =
+                alerts.filter(
+                    a => a.severity === "CRITICAL"
+                ).length;
+
+        document.getElementById("highAlerts")
+            .textContent =
+                alerts.filter(
+                    a => a.severity === "HIGH"
+                ).length;
+
+        if (!alerts.length) {
+
+            container.innerHTML =
+                '<div class="empty">No security alerts found.</div>';
+
+            return;
+        }
+
+        container.innerHTML =
+            alerts.map(alert => {
+
+                const severity =
+                    String(alert.severity || "UNKNOWN")
+                        .toLowerCase();
+
+                return `
+                    <div class="alert">
+
+                        <div class="alert-head">
+
+                            <div class="alert-title">
+                                ${alert.title || "Security Alert"}
+                            </div>
+
+                            <div class="badge ${severity}">
+                                ${alert.severity || "UNKNOWN"}
+                            </div>
+
+                        </div>
+
+                        <div class="details">
+
+                            <div>
+                                <strong>Alert ID:</strong>
+                                ${alert.alert_id || "-"}
+                            </div>
+
+                            <div>
+                                <strong>Source:</strong>
+                                ${alert.source_ip || "-"}
+                                →
+                                ${alert.destination_ip || "-"}
+                            </div>
+
+                            <div>
+                                <strong>Risk Score:</strong>
+                                <span class="risk">
+                                    ${alert.risk_score || 0}/100
+                                </span>
+                            </div>
+
+                            <div>
+                                <strong>Status:</strong>
+                                ${alert.status || "-"}
+                            </div>
+
+                            <div>
+                                <strong>Time:</strong>
+                                ${alert.timestamp || "-"}
+                            </div>
+
+                            <div>
+                                <strong>Message:</strong>
+                                ${alert.message || "-"}
+                            </div>
+
+                            <div style="margin-top:16px; display:flex; gap:10px;">
+                                <button
+                                    onclick="acknowledgeAlert(${alert.id})"
+                                    style="padding:8px 14px; border:1px solid #315a78; border-radius:8px; background:#102a40; color:#8fd3ff; cursor:pointer;">
+                                    ✓ Acknowledge
+                                </button>
+
+                                <button
+                                    onclick="closeAlert(${alert.id})"
+                                    style="padding:8px 14px; border:1px solid #63313a; border-radius:8px; background:#35151b; color:#ff8b98; cursor:pointer;">
+                                    ✕ Close
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+
+            }).join("");
+
+    } catch (error) {
+
+        console.error(
+            "Alert loading failed:",
+            error
+        );
+
+        container.innerHTML =
+            '<div class="empty">Unable to load security alerts.</div>';
+    }
+}
+
+async function acknowledgeAlert(alertId) {
+    try {
+        const response = await fetch(
+            `/api/soc/alerts/${alertId}/acknowledge`,
+            {
+                method: "POST",
+                credentials: "same-origin"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.error || "Unable to acknowledge alert");
+            return;
+        }
+
+        await loadAlerts();
+
+    } catch (error) {
+        console.error("Acknowledge failed:", error);
+        alert("Unable to acknowledge alert");
+    }
+}
+
+async function closeAlert(alertId) {
+    if (!confirm("Close this security alert?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `/api/soc/alerts/${alertId}/close`,
+            {
+                method: "POST",
+                credentials: "same-origin"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.error || "Unable to close alert");
+            return;
+        }
+
+        await loadAlerts();
+
+    } catch (error) {
+        console.error("Close failed:", error);
+        alert("Unable to close alert");
+    }
+}
+
+loadAlerts();
+
+setInterval(
+    loadAlerts,
+    5000
+);
+
+</script>
+
+</body>
+</html>

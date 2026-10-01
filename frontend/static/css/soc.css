@@ -1,0 +1,4029 @@
+:root {
+    --bg: #070b14;
+    --panel: #0d1422;
+    --panel-2: #111b2d;
+    --border: rgba(255,255,255,0.08);
+    --text: #e8eef8;
+    --muted: #8290a6;
+    --cyan: #22d3ee;
+    --green: #22c55e;
+    --yellow: #facc15;
+    --orange: #fb923c;
+    --red: #ef4444;
+    --blue: #60a5fa;
+    --shadow: 0 12px 35px rgba(0,0,0,0.35);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(
+            circle at 15% 10%,
+            rgba(34,211,238,0.08),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(96,165,250,0.06),
+            transparent 25%
+        ),
+        var(--bg);
+
+    color: var(--text);
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    letter-spacing: 0.01em;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #080d17;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #263449;
+    border-radius: 20px;
+}
+
+/* Panels */
+
+.card,
+.panel,
+.dashboard-card,
+.metric-card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17,27,45,0.96),
+            rgba(10,16,28,0.96)
+        );
+
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card:hover,
+.panel:hover,
+.dashboard-card:hover,
+.metric-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(34,211,238,0.22);
+}
+
+/* Metric numbers */
+
+.metric-value,
+.metric-number,
+.value {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.metric-label,
+.metric-title,
+.label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+/* Status */
+
+.status-online {
+    color: var(--green);
+}
+
+.status-warning {
+    color: var(--yellow);
+}
+
+.status-danger {
+    color: var(--red);
+}
+
+.status-info {
+    color: var(--cyan);
+}
+
+/* Live indicator */
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 12px rgba(34,197,94,0.8);
+    animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.45;
+        transform: scale(0.75);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Risk */
+
+.risk-critical {
+    color: var(--red);
+}
+
+.risk-high {
+    color: var(--orange);
+}
+
+.risk-suspicious {
+    color: var(--yellow);
+}
+
+.risk-normal {
+    color: var(--green);
+}
+
+/* Progress */
+
+.progress {
+    width: 100%;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #182236;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        var(--cyan),
+        var(--blue)
+    );
+
+    transition: width 0.5s ease;
+}
+
+/* Tables */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+th,
+td {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+tbody tr {
+    transition: background 0.15s ease;
+}
+
+tbody tr:hover {
+    background: rgba(255,255,255,0.025);
+}
+
+/* Badges */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.06em;
+}
+
+.badge-critical {
+    color: #fecaca;
+    background: rgba(239,68,68,0.13);
+    border: 1px solid rgba(239,68,68,0.25);
+}
+
+.badge-high {
+    color: #fed7aa;
+    background: rgba(251,146,60,0.13);
+    border: 1px solid rgba(251,146,60,0.25);
+}
+
+.badge-suspicious {
+    color: #fef08a;
+    background: rgba(250,204,21,0.10);
+    border: 1px solid rgba(250,204,21,0.22);
+}
+
+.badge-normal {
+    color: #bbf7d0;
+    background: rgba(34,197,94,0.10);
+    border: 1px solid rgba(34,197,94,0.20);
+}
+
+/* Buttons */
+
+button {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    padding: 9px 14px;
+
+    background: var(--panel-2);
+    color: var(--text);
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+button:hover {
+    background: #17243a;
+    border-color: rgba(34,211,238,0.3);
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* Navigation */
+
+.sidebar,
+nav {
+    border-right: 1px solid var(--border);
+    background: rgba(7,11,20,0.88);
+    backdrop-filter: blur(16px);
+}
+
+.nav-item,
+.sidebar-item {
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.nav-item:hover,
+.sidebar-item:hover {
+    background: rgba(34,211,238,0.07);
+}
+
+.nav-item.active,
+.sidebar-item.active {
+    background: rgba(34,211,238,0.10);
+    border: 1px solid rgba(34,211,238,0.18);
+}
+
+/* Header */
+
+header,
+.topbar,
+.dashboard-header {
+    background: rgba(7,11,20,0.72);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+    .metric-value,
+    .metric-number,
+    .value {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+    }
+
+    .main-content {
+        margin-left: 70px;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* =========================================
+   CYBER SENTINEL X - NETWORK VISUAL
+   ========================================= */
+
+.network-visual {
+    position: relative;
+    height: 260px;
+    overflow: hidden;
+    border-radius: 14px;
+    background:
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(34,211,238,0.08),
+            transparent 55%
+        ),
+        #080f1c;
+    border: 1px solid rgba(34,211,238,0.10);
+}
+
+.network-grid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,0.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.035) 1px,
+            transparent 1px
+        );
+    background-size: 45px 45px;
+    animation: gridMove 8s linear infinite;
+}
+
+@keyframes gridMove {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(45px);
+    }
+}
+
+.network-graph {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.traffic-area {
+    fill: url(#trafficFill);
+    opacity: 0.55;
+}
+
+.traffic-line {
+    fill: none;
+    stroke: var(--cyan);
+    stroke-width: 3;
+    vector-effect: non-scaling-stroke;
+    filter:
+        drop-shadow(0 0 5px rgba(34,211,238,0.8))
+        drop-shadow(0 0 12px rgba(34,211,238,0.35));
+
+    stroke-dasharray: 12 7;
+    animation: trafficFlow 2s linear infinite;
+}
+
+@keyframes trafficFlow {
+    to {
+        stroke-dashoffset: -38;
+    }
+}
+
+.network-live {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.20);
+
+    color: #86efac;
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+
+    backdrop-filter: blur(8px);
+}
+
+.network-visual::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    left: -30%;
+
+    width: 30%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(34,211,238,0.08),
+            transparent
+        );
+
+    transform: skewX(-20deg);
+
+    animation: scanner 4s ease-in-out infinite;
+}
+
+@keyframes scanner {
+    0% {
+        left: -30%;
+    }
+
+    50% {
+        left: 100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — PREMIUM SOC VISUAL SYSTEM
+   ========================================================= */
+
+body {
+    background:
+        radial-gradient(circle at 12% 8%, rgba(34,211,238,.10), transparent 24%),
+        radial-gradient(circle at 88% 12%, rgba(96,165,250,.08), transparent 22%),
+        radial-gradient(circle at 50% 100%, rgba(34,211,238,.045), transparent 32%),
+        #050912;
+    background-attachment: fixed;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: .20;
+    background-image:
+        linear-gradient(rgba(34,211,238,.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,.055) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent 85%);
+}
+
+.csx-sidebar {
+    background:
+        linear-gradient(180deg, rgba(5,10,19,.97), rgba(3,8,15,.94));
+    backdrop-filter: blur(18px);
+    box-shadow: 18px 0 50px rgba(0,0,0,.22);
+}
+
+.csx-nav-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.csx-nav-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 20%;
+    width: 2px;
+    height: 60%;
+    background: #22d3ee;
+    box-shadow: 0 0 14px rgba(34,211,238,.9);
+    transform: scaleY(0);
+    transition: transform .25s ease;
+}
+
+.csx-nav-item:hover::before,
+.csx-nav-item.active::before {
+    transform: scaleY(1);
+}
+
+.csx-panel,
+.csx-metric,
+.csx-ml-card {
+    backdrop-filter: blur(16px);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(15,25,42,.88),
+            rgba(6,13,24,.94)
+        );
+}
+
+.csx-panel:hover,
+.csx-metric:hover,
+.csx-ml-card:hover {
+    box-shadow:
+        0 14px 45px rgba(0,0,0,.35),
+        0 0 24px rgba(34,211,238,.055);
+}
+
+
+/* ===== PREMIUM SOC TOPBAR ===== */
+
+.csx-topbar {
+    position: relative;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+    border: 1px solid rgba(34,211,238,.12);
+    border-radius: 16px;
+    background:
+        linear-gradient(110deg, rgba(15,25,42,.92), rgba(7,15,27,.78));
+    box-shadow:
+        0 14px 40px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.035);
+    overflow: hidden;
+}
+
+.csx-topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.65),
+        transparent
+    );
+    opacity: .7;
+}
+
+.csx-title {
+    text-shadow: 0 0 24px rgba(34,211,238,.18);
+}
+
+.csx-status {
+    border: 1px solid rgba(34,197,94,.22);
+    background: rgba(34,197,94,.055);
+    box-shadow: 0 0 20px rgba(34,197,94,.06);
+    transition: .25s ease;
+}
+
+.csx-status:hover {
+    box-shadow: 0 0 28px rgba(34,197,94,.12);
+}
+
+
+/* ===== PREMIUM SECURITY METRICS ===== */
+
+.csx-metrics {
+    position: relative;
+}
+
+.csx-metric {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(255,255,255,.07);
+    background:
+        linear-gradient(145deg, rgba(17,29,48,.94), rgba(6,13,24,.96));
+}
+
+.csx-metric::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.65),
+        transparent
+    );
+    opacity: .45;
+}
+
+.csx-metric:hover {
+    transform: translateY(-4px);
+    border-color: rgba(34,211,238,.25);
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.35),
+        0 0 25px rgba(34,211,238,.08);
+}
+
+.csx-metric-icon {
+    filter: drop-shadow(0 0 8px rgba(34,211,238,.25));
+    transition: transform .25s ease, filter .25s ease;
+}
+
+.csx-metric:hover .csx-metric-icon {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 14px rgba(34,211,238,.5));
+}
+
+.csx-metric-value {
+    text-shadow: 0 0 18px rgba(255,255,255,.08);
+}
+
+.csx-spark {
+    opacity: .75;
+    transition: opacity .25s ease;
+}
+
+.csx-metric:hover .csx-spark {
+    opacity: 1;
+}
+
+
+/* ===== PREMIUM READABILITY + CONTROLLED ANIMATION ===== */
+
+.csx-title,
+.csx-subtitle,
+.csx-panel-title,
+.csx-panel-tag,
+.csx-metric-label,
+.csx-metric-value,
+.csx-metric-info,
+.csx-ml-label,
+.csx-ml-value,
+.csx-status,
+.csx-nav-item,
+.csx-nav-title,
+.csx-brand-name,
+.csx-brand-sub {
+    position: relative;
+    z-index: 5;
+    opacity: 1 !important;
+    visibility: visible !important;
+    filter: none !important;
+    animation: none !important;
+}
+
+.csx-title {
+    color: #f4fbff !important;
+    text-shadow:
+        0 0 18px rgba(34,211,238,.16);
+}
+
+.csx-subtitle,
+.csx-metric-info,
+.csx-brand-sub {
+    color: #94a6bd !important;
+}
+
+.csx-metric-label,
+.csx-ml-label,
+.csx-panel-tag {
+    color: #9eb1c8 !important;
+}
+
+.csx-metric-value,
+.csx-ml-value {
+    color: #f3f8ff !important;
+    text-shadow: 0 0 14px rgba(255,255,255,.08);
+}
+
+/* Keep animation on visual surfaces, never on text */
+
+.csx-panel,
+.csx-metric,
+.csx-topbar {
+    isolation: isolate;
+}
+
+.csx-panel::after,
+.csx-metric::after,
+.csx-topbar::after {
+    pointer-events: none;
+}
+
+
+/* ===== THREAT SCORE — PREMIUM RISK MONITOR ===== */
+
+.metric-orange {
+    --metric-glow: #f59e0b;
+    position: relative;
+}
+
+.metric-orange::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(245,158,11,.85),
+        transparent
+    );
+    box-shadow: 0 0 18px rgba(245,158,11,.25);
+}
+
+.metric-orange .csx-metric-icon {
+    color: #fbbf24;
+    text-shadow: 0 0 18px rgba(245,158,11,.55);
+}
+
+.metric-orange #threatScore {
+    color: #f8fafc !important;
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: -.05em;
+    text-shadow:
+        0 0 12px rgba(245,158,11,.35),
+        0 0 30px rgba(245,158,11,.12);
+    transition:
+        color .35s ease,
+        text-shadow .35s ease,
+        transform .25s ease;
+}
+
+.metric-orange:hover #threatScore {
+    transform: scale(1.04);
+    text-shadow:
+        0 0 16px rgba(245,158,11,.55),
+        0 0 38px rgba(245,158,11,.18);
+}
+
+
+/* ===== AI / ML ANOMALY ENGINE ===== */
+
+.csx-ml-brain {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(34,211,238,.16) !important;
+    background:
+        radial-gradient(circle at center,
+            rgba(34,211,238,.14),
+            transparent 42%),
+        linear-gradient(145deg,
+            rgba(8,20,34,.96),
+            rgba(3,10,19,.98)) !important;
+    box-shadow:
+        inset 0 0 35px rgba(34,211,238,.045),
+        0 0 25px rgba(34,211,238,.05);
+}
+
+.csx-ml-brain::before {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    border: 1px solid rgba(34,211,238,.16);
+    border-radius: 50%;
+    box-shadow:
+        0 0 25px rgba(34,211,238,.08),
+        inset 0 0 25px rgba(34,211,238,.05);
+    animation: csxAiRing 6s linear infinite;
+}
+
+.csx-ml-brain::after {
+    content: "";
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.65),
+        transparent
+    );
+    box-shadow: 0 0 12px rgba(34,211,238,.45);
+    animation: csxAiScan 2.8s ease-in-out infinite;
+}
+
+.csx-brain {
+    position: relative;
+    z-index: 3;
+    color: #67e8f9 !important;
+    filter:
+        drop-shadow(0 0 10px rgba(34,211,238,.75))
+        drop-shadow(0 0 28px rgba(34,211,238,.25));
+    animation: csxAiPulse 2.8s ease-in-out infinite !important;
+}
+
+@keyframes csxAiRing {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes csxAiScan {
+    0%, 100% {
+        transform: translateY(-55px);
+        opacity: 0;
+    }
+    45%, 55% {
+        transform: translateY(55px);
+        opacity: .8;
+    }
+}
+
+@keyframes csxAiPulse {
+    0%, 100% {
+        transform: scale(1);
+        filter:
+            drop-shadow(0 0 10px rgba(34,211,238,.7))
+            drop-shadow(0 0 24px rgba(34,211,238,.2));
+    }
+    50% {
+        transform: scale(1.07);
+        filter:
+            drop-shadow(0 0 18px rgba(34,211,238,.95))
+            drop-shadow(0 0 38px rgba(34,211,238,.35));
+    }
+}
+
+.csx-ml-card {
+    position: relative;
+    border-color: rgba(255,255,255,.065);
+    transition: .25s ease;
+}
+
+.csx-ml-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(34,211,238,.2);
+    box-shadow: 0 0 22px rgba(34,211,238,.07);
+}
+
+
+/* ===== PREMIUM SECURITY ALERT FEED ===== */
+
+.csx-alert,
+.csx-alert-row,
+.csx-alert-item {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(255,255,255,.065);
+    background:
+        linear-gradient(
+            100deg,
+            rgba(14,24,40,.92),
+            rgba(7,14,25,.88)
+        );
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        box-shadow .22s ease;
+}
+
+.csx-alert:hover,
+.csx-alert-row:hover,
+.csx-alert-item:hover {
+    transform: translateX(3px);
+    border-color: rgba(34,211,238,.20);
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.25),
+        -3px 0 18px rgba(34,211,238,.06);
+}
+
+.csx-alert::before,
+.csx-alert-row::before,
+.csx-alert-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 12%;
+    bottom: 12%;
+    width: 2px;
+    background: #22d3ee;
+    box-shadow: 0 0 12px rgba(34,211,238,.45);
+    opacity: .65;
+}
+
+.risk-critical::before {
+    background: #ef4444;
+    box-shadow: 0 0 14px rgba(239,68,68,.7);
+}
+
+.risk-high::before {
+    background: #fb923c;
+    box-shadow: 0 0 14px rgba(251,146,60,.65);
+}
+
+.risk-suspicious::before {
+    background: #facc15;
+    box-shadow: 0 0 14px rgba(250,204,21,.6);
+}
+
+
+/* ===== SOC SEVERITY VISUALIZATION ===== */
+
+.csx-severity,
+.csx-severity-grid {
+    position: relative;
+}
+
+.csx-severity > *,
+.csx-severity-grid > * {
+    position: relative;
+    z-index: 2;
+}
+
+.csx-severity-card,
+.csx-severity-item {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.065);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(14,24,40,.92),
+            rgba(6,13,24,.96)
+        );
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        box-shadow .22s ease;
+}
+
+.csx-severity-card:hover,
+.csx-severity-item:hover {
+    transform: translateY(-3px);
+    border-color: rgba(34,211,238,.18);
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.3),
+        0 0 20px rgba(34,211,238,.055);
+}
+
+.csx-severity-card::after,
+.csx-severity-item::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(
+            120deg,
+            transparent 35%,
+            rgba(255,255,255,.025) 50%,
+            transparent 65%
+        );
+    transform: translateX(-100%);
+    transition: transform .7s ease;
+}
+
+.csx-severity-card:hover::after,
+.csx-severity-item:hover::after {
+    transform: translateX(100%);
+}
+
+
+/* ===== PREMIUM CYBER GRID ===== */
+
+.csx-main {
+    position: relative;
+    isolation: isolate;
+}
+
+.csx-main::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    margin-left: 255px;
+    pointer-events: none;
+    z-index: -1;
+    background:
+        linear-gradient(
+            90deg,
+            transparent 49.8%,
+            rgba(34,211,238,.035) 50%,
+            transparent 50.2%
+        ),
+        linear-gradient(
+            0deg,
+            transparent 49.8%,
+            rgba(34,211,238,.035) 50%,
+            transparent 50.2%
+        );
+    background-size: 90px 90px;
+    mask-image: linear-gradient(
+        to bottom,
+        rgba(0,0,0,.8),
+        transparent 82%
+    );
+    animation: csxGridDrift 18s linear infinite;
+}
+
+@keyframes csxGridDrift {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 90px 90px;
+    }
+}
+
+/* subtle glass depth */
+
+.csx-panel,
+.csx-metric {
+    box-shadow:
+        0 16px 42px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+
+/* ===== PREMIUM PAGE ENTRANCE ===== */
+
+.csx-main {
+    animation: csxPageIn .55s ease-out both;
+}
+
+.csx-sidebar {
+    animation: csxSidebarIn .45s ease-out both;
+}
+
+.csx-topbar {
+    animation: csxTopbarIn .65s ease-out both;
+}
+
+.csx-metric {
+    animation: csxMetricIn .5s ease-out both;
+}
+
+@keyframes csxPageIn {
+    from {
+        opacity: .72;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes csxSidebarIn {
+    from {
+        opacity: .7;
+        transform: translateX(-14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes csxTopbarIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes csxMetricIn {
+    from {
+        opacity: .65;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ===== PREMIUM SOC SIDEBAR ===== */
+
+.csx-sidebar {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(4,10,19,.98),
+            rgba(3,8,15,.96)
+        ) !important;
+    box-shadow:
+        14px 0 45px rgba(0,0,0,.25),
+        inset -1px 0 rgba(34,211,238,.04);
+}
+
+.csx-logo {
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 0 22px rgba(34,211,238,.14),
+        inset 0 0 18px rgba(34,211,238,.06);
+}
+
+.csx-logo::after {
+    content: "";
+    position: absolute;
+    inset: -40%;
+    background: linear-gradient(
+        120deg,
+        transparent 42%,
+        rgba(255,255,255,.14) 50%,
+        transparent 58%
+    );
+    transform: translateX(-70%) rotate(12deg);
+    transition: transform .6s ease;
+}
+
+.csx-logo:hover::after {
+    transform: translateX(70%) rotate(12deg);
+}
+
+.csx-brand-name {
+    color: #f1f7ff !important;
+    text-shadow: 0 0 14px rgba(34,211,238,.12);
+}
+
+.csx-nav-title {
+    color: #4dd9ee !important;
+    opacity: .85;
+}
+
+.csx-nav-item {
+    background: rgba(255,255,255,.012);
+}
+
+.csx-nav-item.active {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(34,211,238,.12),
+            rgba(34,211,238,.035)
+        ) !important;
+    box-shadow:
+        inset 0 0 22px rgba(34,211,238,.035),
+        0 0 18px rgba(34,211,238,.035);
+}
+
+.csx-nav-item:hover {
+    background: rgba(34,211,238,.075);
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — PREMIUM COMMAND CENTER BACKGROUND
+   ========================================================= */
+
+body {
+    position: relative;
+    overflow-x: hidden;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(34,211,238,.08), transparent 24%),
+        radial-gradient(circle at 85% 15%, rgba(96,165,250,.07), transparent 25%),
+        radial-gradient(circle at 55% 90%, rgba(99,102,241,.055), transparent 28%),
+        #050912 !important;
+}
+
+/* Animated cyber grid — background only */
+body .csx-app::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: .28;
+    background-image:
+        linear-gradient(rgba(34,211,238,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,.045) 1px, transparent 1px);
+    background-size: 52px 52px;
+    mask-image: linear-gradient(to bottom, black 0%, rgba(0,0,0,.7) 55%, transparent 100%);
+    animation: csxGridMove 22s linear infinite;
+}
+
+@keyframes csxGridMove {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 52px 52px, 52px 52px; }
+}
+
+/* Soft moving ambient glow */
+body .csx-app::after {
+    content: "";
+    position: fixed;
+    width: 520px;
+    height: 520px;
+    left: 38%;
+    top: 18%;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,211,238,.055), transparent 68%);
+    filter: blur(35px);
+    animation: csxAmbientFloat 10s ease-in-out infinite alternate;
+}
+
+@keyframes csxAmbientFloat {
+    from {
+        transform: translate3d(-80px, 20px, 0) scale(.9);
+        opacity: .45;
+    }
+    to {
+        transform: translate3d(100px, -30px, 0) scale(1.12);
+        opacity: .8;
+    }
+}
+
+/* Keep every dashboard element above the animated background */
+.csx-sidebar,
+.csx-main,
+.csx-topbar,
+.csx-panel,
+.csx-metric,
+.csx-network,
+.csx-card {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — PREMIUM SOC CARD MOTION
+   ========================================================= */
+
+.csx-metric,
+.csx-panel,
+.csx-card {
+    transition:
+        transform .28s cubic-bezier(.2,.8,.2,1),
+        border-color .28s ease,
+        box-shadow .28s ease;
+}
+
+/* Premium lift */
+.csx-metric:hover,
+.csx-panel:hover,
+.csx-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(34,211,238,.28) !important;
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.28),
+        0 0 24px rgba(34,211,238,.055);
+}
+
+/* Moving energy line */
+.csx-metric::after,
+.csx-panel::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -120%;
+    width: 70%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.75),
+        transparent
+    );
+    pointer-events: none;
+    opacity: 0;
+}
+
+.csx-metric:hover::after,
+.csx-panel:hover::after {
+    opacity: 1;
+    animation: csxEnergySweep 1.2s ease-out;
+}
+
+@keyframes csxEnergySweep {
+    from { left: -120%; }
+    to   { left: 140%; }
+}
+
+/* Metric icon micro-animation */
+.csx-metric:hover .csx-metric-icon {
+    transform: translateY(-2px) scale(1.08);
+    filter: drop-shadow(0 0 9px rgba(34,211,238,.45));
+}
+
+.csx-metric-icon {
+    transition: transform .28s ease, filter .28s ease;
+}
+
+/* Keep text crisp */
+.csx-metric *,
+.csx-panel *,
+.csx-card * {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — THREAT + AI INTELLIGENCE MOTION
+   ========================================================= */
+
+.metric-orange {
+    --threat-glow: #f59e0b;
+}
+
+.metric-orange .csx-metric-icon {
+    animation: csxThreatPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes csxThreatPulse {
+    0%,100% {
+        filter: drop-shadow(0 0 3px rgba(245,158,11,.25));
+        transform: scale(1);
+    }
+    50% {
+        filter: drop-shadow(0 0 12px rgba(245,158,11,.65));
+        transform: scale(1.06);
+    }
+}
+
+.metric-orange #threatScore {
+    position: relative;
+    z-index: 5;
+    text-shadow:
+        0 0 12px rgba(245,158,11,.28),
+        0 0 28px rgba(245,158,11,.12);
+}
+
+/* AI brain */
+.csx-ml-brain {
+    position: relative;
+    overflow: hidden;
+}
+
+.csx-ml-brain::before {
+    content: "";
+    position: absolute;
+    inset: 12%;
+    border: 1px solid rgba(34,211,238,.22);
+    border-radius: 50%;
+    animation: csxAiOrbit 5s linear infinite;
+}
+
+.csx-ml-brain::after {
+    content: "";
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    top: 50%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.8),
+        transparent
+    );
+    animation: csxAiScan 2.2s ease-in-out infinite;
+}
+
+.csx-brain {
+    position: relative;
+    z-index: 3;
+    animation: csxAiPulse 2s ease-in-out infinite;
+}
+
+@keyframes csxAiOrbit {
+    from { transform: rotate(0deg) scale(.92); }
+    to   { transform: rotate(360deg) scale(.92); }
+}
+
+@keyframes csxAiScan {
+    0%,100% {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    45%,55% {
+        transform: translateY(30px);
+        opacity: 1;
+    }
+}
+
+@keyframes csxAiPulse {
+    0%,100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 5px rgba(34,211,238,.35));
+    }
+    50% {
+        transform: scale(1.08);
+        filter: drop-shadow(0 0 18px rgba(34,211,238,.8));
+    }
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — ALERT INTELLIGENCE MOTION
+   ========================================================= */
+
+.csx-alert,
+.csx-alert-row,
+.csx-alert-item {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
+
+.csx-alert:hover,
+.csx-alert-row:hover,
+.csx-alert-item:hover {
+    transform: translateX(4px);
+    border-color: rgba(34,211,238,.28) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,.22);
+}
+
+/* Severity energy bar */
+.risk-critical::before,
+.risk-high::before,
+.risk-suspicious::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10%;
+    bottom: 10%;
+    width: 2px;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.risk-critical::before {
+    background: #ef4444;
+    box-shadow: 0 0 12px rgba(239,68,68,.7);
+    animation: csxCriticalPulse 1.8s ease-in-out infinite;
+}
+
+.risk-high::before {
+    background: #fb923c;
+    box-shadow: 0 0 10px rgba(251,146,60,.55);
+}
+
+.risk-suspicious::before {
+    background: #facc15;
+    box-shadow: 0 0 9px rgba(250,204,21,.45);
+}
+
+@keyframes csxCriticalPulse {
+    0%,100% { opacity: .45; }
+    50% { opacity: 1; }
+}
+
+/* Severity cards */
+.csx-severity-card,
+.csx-severity-item {
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
+
+.csx-severity-card:hover,
+.csx-severity-item:hover {
+    transform: translateY(-3px);
+    border-color: rgba(34,211,238,.22) !important;
+    box-shadow: 0 10px 28px rgba(0,0,0,.24);
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — COMMAND NAVIGATION MOTION
+   ========================================================= */
+
+.csx-sidebar {
+    transition: border-color .3s ease, box-shadow .3s ease;
+}
+
+.csx-sidebar:hover {
+    border-right-color: rgba(34,211,238,.28) !important;
+    box-shadow: 8px 0 35px rgba(0,0,0,.18);
+}
+
+.csx-nav-item {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform .22s ease,
+        background .22s ease,
+        color .22s ease,
+        box-shadow .22s ease;
+}
+
+.csx-nav-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 2px;
+    border-radius: 4px;
+    background: #22d3ee;
+    transform: scaleY(0);
+    transition: transform .25s ease;
+    box-shadow: 0 0 12px rgba(34,211,238,.7);
+}
+
+.csx-nav-item:hover {
+    transform: translateX(4px);
+    background: rgba(34,211,238,.055) !important;
+}
+
+.csx-nav-item:hover::before,
+.csx-nav-item.active::before {
+    transform: scaleY(1);
+}
+
+.csx-nav-item.active {
+    box-shadow:
+        inset 0 0 24px rgba(34,211,238,.035),
+        0 0 18px rgba(34,211,238,.035);
+}
+
+/* Top command bar */
+.csx-topbar {
+    position: relative;
+    overflow: hidden;
+}
+
+.csx-topbar::before {
+    content: "";
+    position: absolute;
+    left: -25%;
+    top: 0;
+    width: 25%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #22d3ee,
+        transparent
+    );
+    animation: csxTopbarSweep 4s linear infinite;
+}
+
+@keyframes csxTopbarSweep {
+    from { left: -25%; }
+    to   { left: 125%; }
+}
+
+/* System status */
+.csx-status {
+    transition: box-shadow .25s ease, border-color .25s ease;
+}
+
+.csx-status:hover {
+    border-color: rgba(34,197,94,.38) !important;
+    box-shadow: 0 0 18px rgba(34,197,94,.08);
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — PREMIUM PAGE ENTRANCE
+   ========================================================= */
+
+.csx-main {
+    animation: csxMainEnter .55s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.csx-sidebar {
+    animation: csxSidebarEnter .45s ease-out both;
+}
+
+.csx-topbar {
+    animation: csxTopEnter .55s ease-out both;
+}
+
+.csx-metric {
+    animation: csxMetricEnter .5s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.csx-metric:nth-child(1) { animation-delay: .05s; }
+.csx-metric:nth-child(2) { animation-delay: .10s; }
+.csx-metric:nth-child(3) { animation-delay: .15s; }
+.csx-metric:nth-child(4) { animation-delay: .20s; }
+
+@keyframes csxMainEnter {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes csxSidebarEnter {
+    from {
+        opacity: 0;
+        transform: translateX(-18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes csxTopEnter {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes csxMetricEnter {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — PREMIUM SECTION HEADERS
+   ========================================================= */
+
+.csx-panel-head {
+    position: relative;
+    overflow: hidden;
+}
+
+.csx-panel-head::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 85px;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        #22d3ee,
+        rgba(34,211,238,.15),
+        transparent
+    );
+    box-shadow: 0 0 8px rgba(34,211,238,.35);
+    animation: csxHeaderGlow 3s ease-in-out infinite;
+}
+
+.csx-panel-title {
+    position: relative;
+    z-index: 3;
+    letter-spacing: .02em;
+}
+
+.csx-panel-tag {
+    position: relative;
+    z-index: 3;
+    transition: color .25s ease, text-shadow .25s ease;
+}
+
+.csx-panel:hover .csx-panel-tag {
+    color: #67e8f9 !important;
+    text-shadow: 0 0 9px rgba(34,211,238,.35);
+}
+
+@keyframes csxHeaderGlow {
+    0%,100% {
+        width: 55px;
+        opacity: .55;
+    }
+    50% {
+        width: 115px;
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — FINAL VISUAL POLISH
+   ========================================================= */
+
+.csx-panel,
+.csx-metric,
+.csx-card {
+    border-radius: 16px;
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+/* Clean premium scrollbar */
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: #050912;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+        180deg,
+        rgba(34,211,238,.55),
+        rgba(96,165,250,.35)
+    );
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #22d3ee;
+}
+
+/* Selection */
+::selection {
+    background: rgba(34,211,238,.22);
+    color: #f8fafc;
+}
+
+/* Premium focus state */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 1px solid rgba(34,211,238,.65);
+    outline-offset: 3px;
+}
+
+/* Prevent animation layers from affecting text */
+.csx-title,
+.csx-subtitle,
+.csx-panel-title,
+.csx-panel-tag,
+.csx-metric-label,
+.csx-metric-value,
+.csx-metric-info,
+.csx-status,
+.csx-nav-item {
+    position: relative;
+    z-index: 5;
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — NETWORK COMMAND CENTER
+   ========================================================= */
+
+.csx-network {
+    position: relative;
+    min-height: 300px;
+    overflow: hidden;
+    border: 1px solid rgba(34,211,238,.12);
+    background:
+        radial-gradient(circle at 50% 55%, rgba(34,211,238,.065), transparent 48%),
+        #07101b !important;
+    box-shadow:
+        inset 0 0 45px rgba(34,211,238,.025),
+        0 12px 35px rgba(0,0,0,.22);
+}
+
+/* Technical grid */
+.csx-network-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .32;
+    background-image:
+        linear-gradient(rgba(34,211,238,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,.045) 1px, transparent 1px);
+    background-size: 34px 34px;
+    animation: csxNetworkGridMove 12s linear infinite;
+}
+
+@keyframes csxNetworkGridMove {
+    from { background-position: 0 0, 0 0; }
+    to   { background-position: 34px 34px, 34px 34px; }
+}
+
+/* Moving telemetry sweep */
+.csx-network::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -25%;
+    width: 20%;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.07),
+        transparent
+    );
+    filter: blur(2px);
+    animation: csxTelemetrySweep 4.5s ease-in-out infinite;
+}
+
+@keyframes csxTelemetrySweep {
+    0%   { left: -25%; }
+    60%  { left: 115%; }
+    100% { left: 115%; }
+}
+
+/* LIVE badge */
+.csx-live {
+    position: relative;
+    z-index: 6;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px;
+    border: 1px solid rgba(34,197,94,.22);
+    border-radius: 999px;
+    background: rgba(34,197,94,.055);
+    box-shadow: 0 0 18px rgba(34,197,94,.05);
+}
+
+/* SVG telemetry line */
+.csx-network svg {
+    position: relative;
+    z-index: 3;
+    overflow: visible;
+}
+
+.csx-line {
+    filter:
+        drop-shadow(0 0 5px rgba(34,211,238,.65))
+        drop-shadow(0 0 14px rgba(34,211,238,.22));
+    stroke-dasharray: 14 10;
+    animation: csxDataFlow 3.2s linear infinite;
+}
+
+@keyframes csxDataFlow {
+    to { stroke-dashoffset: -48; }
+}
+
+.csx-area {
+    opacity: .55;
+}
+
+/* Live network graph */
+#csxNetworkGraph {
+    position: relative;
+    z-index: 4;
+    border: 1px solid rgba(34,211,238,.09);
+    box-shadow:
+        inset 0 0 30px rgba(34,211,238,.025),
+        0 0 20px rgba(0,0,0,.15);
+}
+
+#networkTrafficCanvas {
+    filter: drop-shadow(0 0 5px rgba(34,211,238,.18));
+}
+
+/* Network statistics */
+.csx-net-stat {
+    position: relative;
+    overflow: hidden;
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        background .22s ease;
+}
+
+.csx-net-stat:hover {
+    transform: translateY(-3px);
+    border-color: rgba(34,211,238,.25);
+    background: rgba(34,211,238,.035);
+}
+
+.csx-net-value {
+    text-shadow: 0 0 10px rgba(34,211,238,.18);
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — PREMIUM TELEMETRY METRICS
+   ========================================================= */
+
+.csx-metric {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 150px;
+    background:
+        linear-gradient(145deg, rgba(13,25,42,.98), rgba(6,14,25,.98)) !important;
+}
+
+/* Animated edge energy */
+.csx-metric::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -45%;
+    width: 38%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.035),
+        transparent
+    );
+    transform: skewX(-18deg);
+    animation: csxMetricEnergy 5s ease-in-out infinite;
+}
+
+@keyframes csxMetricEnergy {
+    0%,55% {
+        left: -45%;
+        opacity: 0;
+    }
+    65% {
+        opacity: 1;
+    }
+    85%,100% {
+        left: 125%;
+        opacity: 0;
+    }
+}
+
+/* Content always above animation */
+.csx-metric > * {
+    position: relative;
+    z-index: 4;
+}
+
+/* Metric value */
+.csx-metric-value {
+    font-size: 38px !important;
+    font-weight: 850 !important;
+    letter-spacing: -.025em;
+    transition:
+        transform .3s ease,
+        text-shadow .3s ease;
+}
+
+.csx-metric:hover .csx-metric-value {
+    transform: translateX(3px);
+    text-shadow:
+        0 0 12px rgba(34,211,238,.28),
+        0 0 28px rgba(34,211,238,.10);
+}
+
+/* Sparkline data flow */
+.csx-spark {
+    position: relative;
+    z-index: 4;
+    overflow: hidden;
+    opacity: .82;
+}
+
+.csx-spark svg {
+    overflow: visible;
+}
+
+.csx-spark polyline {
+    stroke-dasharray: 18 10;
+    stroke-linecap: round;
+    animation: csxSparkFlow 2.8s linear infinite;
+    filter: drop-shadow(0 0 4px currentColor);
+}
+
+@keyframes csxSparkFlow {
+    to {
+        stroke-dashoffset: -56;
+    }
+}
+
+/* Individual metric identity */
+.metric-red {
+    border-color: rgba(239,68,68,.14) !important;
+}
+
+.metric-red:hover {
+    box-shadow:
+        0 18px 42px rgba(0,0,0,.30),
+        0 0 24px rgba(239,68,68,.08);
+}
+
+.metric-green {
+    border-color: rgba(34,197,94,.14) !important;
+}
+
+.metric-green:hover {
+    box-shadow:
+        0 18px 42px rgba(0,0,0,.30),
+        0 0 24px rgba(34,197,94,.08);
+}
+
+.metric-purple {
+    border-color: rgba(168,85,247,.14) !important;
+}
+
+.metric-purple:hover {
+    box-shadow:
+        0 18px 42px rgba(0,0,0,.30),
+        0 0 24px rgba(168,85,247,.08);
+}
+
+.metric-orange {
+    border-color: rgba(245,158,11,.16) !important;
+}
+
+.metric-orange:hover {
+    box-shadow:
+        0 18px 42px rgba(0,0,0,.30),
+        0 0 26px rgba(245,158,11,.09);
+}
+
+
+/* =========================================================
+   CSX — FUTURISTIC METRIC HUD DETAILS
+   ========================================================= */
+
+.csx-metric::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    border-top: 1px solid rgba(34,211,238,.35);
+    border-right: 1px solid rgba(34,211,238,.35);
+    border-radius: 0 10px 0 0;
+    pointer-events: none;
+    z-index: 2;
+    transition: width .3s ease, height .3s ease;
+}
+
+.csx-metric:hover::before {
+    width: 48px;
+    height: 48px;
+}
+
+.csx-metric::marker {
+    display: none;
+}
+
+/* Tiny live telemetry signal */
+.csx-metric-icon {
+    position: relative;
+    transition: transform .3s ease, filter .3s ease;
+}
+
+.csx-metric-icon::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    right: -2px;
+    top: -2px;
+    border-radius: 50%;
+    background: #22d3ee;
+    box-shadow: 0 0 8px rgba(34,211,238,.85);
+    animation: csxMetricSignal 1.8s ease-in-out infinite;
+}
+
+@keyframes csxMetricSignal {
+    0%,100% {
+        transform: scale(.7);
+        opacity: .35;
+    }
+    50% {
+        transform: scale(1.35);
+        opacity: 1;
+    }
+}
+
+/* Accent-specific signal colors */
+.metric-red .csx-metric-icon::after {
+    background: #ef4444;
+    box-shadow: 0 0 9px rgba(239,68,68,.8);
+}
+
+.metric-green .csx-metric-icon::after {
+    background: #22c55e;
+    box-shadow: 0 0 9px rgba(34,197,94,.8);
+}
+
+.metric-purple .csx-metric-icon::after {
+    background: #a855f7;
+    box-shadow: 0 0 9px rgba(168,85,247,.8);
+}
+
+.metric-orange .csx-metric-icon::after {
+    background: #f59e0b;
+    box-shadow: 0 0 9px rgba(245,158,11,.8);
+}
+
+
+/* =========================================================
+   CSX — THREAT SCORE COMMAND GAUGE
+   ========================================================= */
+
+.metric-orange {
+    position: relative;
+    isolation: isolate;
+}
+
+.metric-orange::after {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    right: -65px;
+    bottom: -75px;
+    border-radius: 50%;
+    border: 1px solid rgba(245,158,11,.13);
+    box-shadow:
+        0 0 30px rgba(245,158,11,.05),
+        inset 0 0 25px rgba(245,158,11,.035);
+    animation: csxThreatRing 5s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.metric-orange::before {
+    content: "";
+    position: absolute;
+    width: 115px;
+    height: 115px;
+    right: -38px;
+    bottom: -48px;
+    border-radius: 50%;
+    border: 1px dashed rgba(245,158,11,.18);
+    animation: csxThreatRingReverse 8s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes csxThreatRing {
+    from {
+        transform: rotate(0deg) scale(.92);
+        opacity: .35;
+    }
+    50% {
+        transform: rotate(180deg) scale(1);
+        opacity: .8;
+    }
+    to {
+        transform: rotate(360deg) scale(.92);
+        opacity: .35;
+    }
+}
+
+@keyframes csxThreatRingReverse {
+    from {
+        transform: rotate(360deg);
+        opacity: .25;
+    }
+    to {
+        transform: rotate(0deg);
+        opacity: .7;
+    }
+}
+
+/* Threat score gets controlled live pulse */
+.metric-orange #threatScore {
+    position: relative;
+    z-index: 8;
+    animation: csxThreatNumber 2.8s ease-in-out infinite;
+}
+
+@keyframes csxThreatNumber {
+    0%,100% {
+        text-shadow:
+            0 0 8px rgba(245,158,11,.16);
+    }
+    50% {
+        text-shadow:
+            0 0 14px rgba(245,158,11,.42),
+            0 0 30px rgba(245,158,11,.12);
+    }
+}
+
+/* Keep labels above decorative rings */
+.metric-orange .csx-metric-label,
+.metric-orange .csx-metric-info {
+    position: relative;
+    z-index: 8;
+}
+
+
+/* =========================================================
+   CSX — SOC COMMAND CENTER LIVE SCAN
+   ========================================================= */
+
+.csx-main {
+    position: relative;
+    isolation: isolate;
+}
+
+.csx-main::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -8%;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(34,211,238,.35),
+        rgba(34,211,238,.08),
+        transparent
+    );
+    box-shadow: 0 0 18px rgba(34,211,238,.18);
+    pointer-events: none;
+    z-index: 1;
+    animation: csxVerticalScan 8s ease-in-out infinite;
+}
+
+@keyframes csxVerticalScan {
+    0%,100% {
+        left: -8%;
+        opacity: 0;
+    }
+    12% {
+        opacity: .7;
+    }
+    55% {
+        left: 108%;
+        opacity: .35;
+    }
+    70%,100% {
+        left: 108%;
+        opacity: 0;
+    }
+}
+
+/* Subtle horizontal command line */
+.csx-main::after {
+    content: "";
+    position: absolute;
+    top: 18%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.12),
+        transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+    animation: csxHorizontalScan 6s ease-in-out infinite;
+}
+
+@keyframes csxHorizontalScan {
+    0%,100% {
+        transform: translateY(-25px);
+        opacity: 0;
+    }
+    45% {
+        transform: translateY(0);
+        opacity: .65;
+    }
+    70% {
+        transform: translateY(35px);
+        opacity: 0;
+    }
+}
+
+.csx-main > * {
+    position: relative;
+    z-index: 3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .csx-main::before,
+    .csx-main::after {
+        animation: none !important;
+        opacity: 0 !important;
+    }
+}
+
+
+/* =========================================================
+   CSX — LIVE SECURITY EVENT STREAM
+   ========================================================= */
+
+.csx-alert,
+.csx-alert-row,
+.csx-alert-item {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Moving event scanner */
+.csx-alert::after,
+.csx-alert-row::after,
+.csx-alert-item::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -35%;
+    width: 22%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.055),
+        transparent
+    );
+    transform: skewX(-15deg);
+    pointer-events: none;
+    animation: csxAlertSweep 5.5s ease-in-out infinite;
+}
+
+@keyframes csxAlertSweep {
+    0%,55% {
+        left: -35%;
+        opacity: 0;
+    }
+    65% {
+        opacity: 1;
+    }
+    90%,100% {
+        left: 125%;
+        opacity: 0;
+    }
+}
+
+/* Critical events stay visually alive */
+.risk-critical {
+    box-shadow:
+        inset 3px 0 0 rgba(239,68,68,.75),
+        0 0 18px rgba(239,68,68,.035);
+}
+
+.risk-critical .csx-alert-icon,
+.risk-critical .csx-alert-severity {
+    animation: csxCriticalSignal 1.9s ease-in-out infinite;
+}
+
+@keyframes csxCriticalSignal {
+    0%,100% {
+        filter: drop-shadow(0 0 2px rgba(239,68,68,.2));
+    }
+    50% {
+        filter: drop-shadow(0 0 9px rgba(239,68,68,.7));
+    }
+}
+
+/* High severity */
+.risk-high {
+    box-shadow: inset 3px 0 0 rgba(251,146,60,.55);
+}
+
+/* Suspicious */
+.risk-suspicious {
+    box-shadow: inset 3px 0 0 rgba(250,204,21,.45);
+}
+
+/* Event hover = command-console interaction */
+.csx-alert:hover,
+.csx-alert-row:hover,
+.csx-alert-item:hover {
+    transform: translateX(5px);
+    border-color: rgba(34,211,238,.25) !important;
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.25),
+        0 0 18px rgba(34,211,238,.045);
+}
+
+/* Keep event text above animation */
+.csx-alert *,
+.csx-alert-row *,
+.csx-alert-item * {
+    position: relative;
+    z-index: 4;
+}
+
+
+/* =========================================================
+   CSX — AI ANOMALY ENGINE / NEURAL MONITOR
+   ========================================================= */
+
+.csx-ml-brain {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(34,211,238,.075),
+            transparent 58%
+        ) !important;
+}
+
+/* Neural orbit */
+.csx-ml-brain::before {
+    content: "";
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    border: 1px solid rgba(34,211,238,.16);
+    border-left-color: transparent;
+    border-right-color: rgba(96,165,250,.28);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: csxNeuralOrbit 7s linear infinite;
+}
+
+/* Inner neural ring */
+.csx-ml-brain::after {
+    content: "";
+    position: absolute;
+    width: 92px;
+    height: 92px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    border: 1px dashed rgba(34,211,238,.18);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: csxNeuralReverse 5s linear infinite;
+}
+
+@keyframes csxNeuralOrbit {
+    from {
+        transform: translate(-50%,-50%) rotate(0deg);
+    }
+    to {
+        transform: translate(-50%,-50%) rotate(360deg);
+    }
+}
+
+@keyframes csxNeuralReverse {
+    from {
+        transform: translate(-50%,-50%) rotate(360deg);
+    }
+    to {
+        transform: translate(-50%,-50%) rotate(0deg);
+    }
+}
+
+/* Neural scanning beam */
+.csx-ml-brain .csx-brain {
+    position: relative;
+    z-index: 5;
+    animation: csxBrainPulse 2.8s ease-in-out infinite;
+}
+
+.csx-ml-brain .csx-brain::after {
+    content: "";
+    position: absolute;
+    left: -28px;
+    right: -28px;
+    top: 50%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.8),
+        transparent
+    );
+    box-shadow: 0 0 10px rgba(34,211,238,.45);
+    animation: csxNeuralScan 2.4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes csxBrainPulse {
+    0%,100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 5px rgba(34,211,238,.3));
+    }
+    50% {
+        transform: scale(1.055);
+        filter:
+            drop-shadow(0 0 10px rgba(34,211,238,.65))
+            drop-shadow(0 0 22px rgba(34,211,238,.18));
+    }
+}
+
+@keyframes csxNeuralScan {
+    0%,100% {
+        transform: translateY(-34px);
+        opacity: 0;
+    }
+    35%,65% {
+        transform: translateY(34px);
+        opacity: .9;
+    }
+}
+
+/* AI status indicator */
+.csx-ml-brain .csx-status {
+    position: relative;
+    z-index: 8;
+    transition: border-color .3s ease, box-shadow .3s ease;
+}
+
+.csx-ml-brain .csx-status:hover {
+    border-color: rgba(34,211,238,.42) !important;
+    box-shadow:
+        0 0 18px rgba(34,211,238,.10),
+        inset 0 0 12px rgba(34,211,238,.035);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .csx-ml-brain::before,
+    .csx-ml-brain::after,
+    .csx-ml-brain .csx-brain,
+    .csx-ml-brain .csx-brain::after {
+        animation: none !important;
+    }
+}
+
+
+/* =========================================================
+   CSX — LIVE SEVERITY MONITOR
+   ========================================================= */
+
+.csx-severity-card,
+.csx-severity-item {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+        transform .28s ease,
+        border-color .28s ease,
+        box-shadow .28s ease;
+}
+
+.csx-severity-card::before,
+.csx-severity-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    transform: scaleX(.15);
+    transform-origin: left;
+    opacity: .45;
+    transition: transform .35s ease;
+    pointer-events: none;
+}
+
+.csx-severity-card:hover::before,
+.csx-severity-item:hover::before {
+    transform: scaleX(1);
+    opacity: .9;
+}
+
+.csx-severity-card:hover,
+.csx-severity-item:hover {
+    transform: translateY(-4px);
+}
+
+/* Severity-specific signal bars */
+.csx-severity-card.risk-critical::before,
+.csx-severity-item.risk-critical::before {
+    background: #ef4444;
+    box-shadow: 0 0 12px rgba(239,68,68,.7);
+}
+
+.csx-severity-card.risk-high::before,
+.csx-severity-item.risk-high::before {
+    background: #fb923c;
+    box-shadow: 0 0 12px rgba(251,146,60,.65);
+}
+
+.csx-severity-card.risk-suspicious::before,
+.csx-severity-item.risk-suspicious::before {
+    background: #facc15;
+    box-shadow: 0 0 12px rgba(250,204,21,.6);
+}
+
+/* Live counter pulse */
+.csx-severity-card .count,
+.csx-severity-item .count,
+.csx-severity-card .value,
+.csx-severity-item .value {
+    position: relative;
+    z-index: 5;
+    transition: transform .3s ease, text-shadow .3s ease;
+}
+
+.csx-severity-card:hover .count,
+.csx-severity-card:hover .value,
+.csx-severity-item:hover .count,
+.csx-severity-item:hover .value {
+    transform: scale(1.06);
+    text-shadow: 0 0 14px rgba(34,211,238,.28);
+}
+
+/* Tiny monitoring pulse */
+.csx-severity-card::after,
+.csx-severity-item::after {
+    content: "";
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    right: -35px;
+    top: -35px;
+    border-radius: 50%;
+    border: 1px solid rgba(34,211,238,.08);
+    pointer-events: none;
+    animation: csxSeverityPulse 4s ease-in-out infinite;
+}
+
+@keyframes csxSeverityPulse {
+    0%,100% {
+        transform: scale(.75);
+        opacity: .15;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: .65;
+    }
+}
+
+
+/* =========================================================
+   CSX — SECURITY INTELLIGENCE / ASSET THREAT STREAM
+   ========================================================= */
+
+.csx-asset,
+.csx-asset-row,
+.csx-threat-asset {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        background .25s ease;
+}
+
+/* Moving security scanner */
+.csx-asset::after,
+.csx-asset-row::after,
+.csx-threat-asset::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -30%;
+    width: 18%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.07),
+        transparent
+    );
+    transform: skewX(-18deg);
+    pointer-events: none;
+    animation: csxAssetScan 6s ease-in-out infinite;
+}
+
+@keyframes csxAssetScan {
+    0%,58% {
+        left: -30%;
+        opacity: 0;
+    }
+    68% {
+        opacity: 1;
+    }
+    88%,100% {
+        left: 125%;
+        opacity: 0;
+    }
+}
+
+/* Asset hover */
+.csx-asset:hover,
+.csx-asset-row:hover,
+.csx-threat-asset:hover {
+    transform: translateX(4px);
+    border-color: rgba(34,211,238,.28) !important;
+    background: rgba(34,211,238,.025) !important;
+    box-shadow:
+        0 8px 24px rgba(0,0,0,.22),
+        0 0 16px rgba(34,211,238,.035);
+}
+
+/* Threat indicator */
+.csx-asset .threat-dot,
+.csx-asset-row .threat-dot,
+.csx-threat-asset .threat-dot {
+    position: relative;
+    z-index: 5;
+}
+
+.csx-asset .threat-dot::after,
+.csx-asset-row .threat-dot::after,
+.csx-threat-asset .threat-dot::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    opacity: .25;
+    animation: csxAssetPulse 2.2s ease-out infinite;
+}
+
+@keyframes csxAssetPulse {
+    0% {
+        transform: scale(.65);
+        opacity: .55;
+    }
+    70%,100% {
+        transform: scale(1.7);
+        opacity: 0;
+    }
+}
+
+/* Keep asset information readable */
+.csx-asset *,
+.csx-asset-row *,
+.csx-threat-asset * {
+    position: relative;
+    z-index: 4;
+}
+
+
+/* =========================================================
+   CSX — PREMIUM SOC COMMAND HEADER
+   ========================================================= */
+
+.csx-topbar {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 72px;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(8,18,31,.98),
+            rgba(9,22,37,.96),
+            rgba(7,16,28,.98)
+        ) !important;
+    border-bottom: 1px solid rgba(34,211,238,.14) !important;
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.22),
+        inset 0 -1px 0 rgba(34,211,238,.035);
+}
+
+/* Command-center telemetry line */
+.csx-topbar::before {
+    content: "";
+    position: absolute;
+    left: -25%;
+    top: 0;
+    width: 25%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #22d3ee,
+        rgba(96,165,250,.8),
+        transparent
+    );
+    box-shadow: 0 0 12px rgba(34,211,238,.5);
+    animation: csxHeaderTelemetry 4.5s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes csxHeaderTelemetry {
+    from { left: -25%; }
+    to   { left: 125%; }
+}
+
+/* Subtle lower scan line */
+.csx-topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.18),
+        transparent
+    );
+    animation: csxHeaderGlow 3.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes csxHeaderGlow {
+    0%,100% { opacity: .25; }
+    50%      { opacity: .9; }
+}
+
+/* Header content stays above effects */
+.csx-topbar > * {
+    position: relative;
+    z-index: 5;
+}
+
+/* SOC identity / title */
+.csx-title {
+    font-weight: 850 !important;
+    letter-spacing: .055em;
+    text-transform: uppercase;
+    text-shadow:
+        0 0 10px rgba(34,211,238,.16),
+        0 0 24px rgba(34,211,238,.06);
+    transition:
+        letter-spacing .3s ease,
+        text-shadow .3s ease;
+}
+
+.csx-title:hover {
+    letter-spacing: .075em;
+    text-shadow:
+        0 0 12px rgba(34,211,238,.35),
+        0 0 28px rgba(34,211,238,.12);
+}
+
+/* Subtitle */
+.csx-subtitle {
+    color: rgba(148,163,184,.82) !important;
+    letter-spacing: .025em;
+}
+
+/* Live SOC status */
+.csx-status {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid rgba(34,197,94,.22) !important;
+    border-radius: 999px;
+    background: rgba(34,197,94,.045) !important;
+    box-shadow:
+        inset 0 0 12px rgba(34,197,94,.025),
+        0 0 14px rgba(34,197,94,.035);
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
+
+.csx-status:hover {
+    transform: translateY(-2px);
+    border-color: rgba(34,197,94,.42) !important;
+    box-shadow:
+        0 0 20px rgba(34,197,94,.10),
+        inset 0 0 14px rgba(34,197,94,.04);
+}
+
+/* Live indicator */
+.csx-status .live-dot,
+.csx-status .status-dot {
+    position: relative;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 8px rgba(34,197,94,.8);
+    animation: csxLiveDot 1.7s ease-in-out infinite;
+}
+
+@keyframes csxLiveDot {
+    0%,100% {
+        transform: scale(.85);
+        box-shadow: 0 0 5px rgba(34,197,94,.45);
+    }
+    50% {
+        transform: scale(1.15);
+        box-shadow:
+            0 0 10px rgba(34,197,94,.9),
+            0 0 20px rgba(34,197,94,.28);
+    }
+}
+
+/* Header controls */
+.csx-topbar button,
+.csx-topbar a {
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        box-shadow .22s ease,
+        background .22s ease;
+}
+
+.csx-topbar button:hover,
+.csx-topbar a:hover {
+    transform: translateY(-2px);
+    border-color: rgba(34,211,238,.32) !important;
+    box-shadow: 0 0 18px rgba(34,211,238,.07);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .csx-topbar::before,
+    .csx-topbar::after,
+    .csx-status .live-dot,
+    .csx-status .status-dot {
+        animation: none !important;
+    }
+}
+
+
+/* =========================================================
+   CSX — PREMIUM SOC NAVIGATION CONSOLE
+   ========================================================= */
+
+.csx-sidebar {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(7,15,27,.99),
+            rgba(5,11,20,.99)
+        ) !important;
+    border-right: 1px solid rgba(34,211,238,.14) !important;
+    box-shadow:
+        12px 0 40px rgba(0,0,0,.18),
+        inset -1px 0 rgba(34,211,238,.025);
+}
+
+/* Vertical command telemetry */
+.csx-sidebar::before {
+    content: "";
+    position: absolute;
+    top: -15%;
+    right: 0;
+    width: 1px;
+    height: 28%;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        #22d3ee,
+        transparent
+    );
+    box-shadow: 0 0 12px rgba(34,211,238,.55);
+    animation: csxSidebarScan 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes csxSidebarScan {
+    0% {
+        top: -15%;
+        opacity: 0;
+    }
+    15% {
+        opacity: .8;
+    }
+    70% {
+        top: 100%;
+        opacity: .35;
+    }
+    100% {
+        top: 115%;
+        opacity: 0;
+    }
+}
+
+/* Navigation item */
+.csx-nav-item {
+    position: relative;
+    overflow: hidden;
+    margin: 3px 10px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition:
+        transform .22s ease,
+        background .22s ease,
+        border-color .22s ease,
+        box-shadow .22s ease;
+}
+
+/* Active command indicator */
+.csx-nav-item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 18%;
+    bottom: 18%;
+    width: 2px;
+    border-radius: 4px;
+    background: #22d3ee;
+    box-shadow:
+        0 0 8px rgba(34,211,238,.8),
+        0 0 18px rgba(34,211,238,.25);
+    transform: scaleY(0);
+    transition: transform .25s ease;
+}
+
+.csx-nav-item:hover {
+    transform: translateX(4px);
+    background: rgba(34,211,238,.045) !important;
+    border-color: rgba(34,211,238,.12);
+}
+
+.csx-nav-item:hover::before,
+.csx-nav-item.active::before {
+    transform: scaleY(1);
+}
+
+.csx-nav-item.active {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(34,211,238,.075),
+            rgba(34,211,238,.018),
+            transparent
+        ) !important;
+    border-color: rgba(34,211,238,.16);
+    box-shadow:
+        inset 0 0 22px rgba(34,211,238,.025),
+        0 0 16px rgba(34,211,238,.025);
+}
+
+/* Navigation icon */
+.csx-nav-item svg,
+.csx-nav-item i {
+    transition:
+        transform .25s ease,
+        filter .25s ease;
+}
+
+.csx-nav-item:hover svg,
+.csx-nav-item:hover i {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 6px rgba(34,211,238,.45));
+}
+
+/* Section labels */
+.csx-sidebar .csx-section-label {
+    position: relative;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(100,116,139,.75);
+}
+
+.csx-sidebar .csx-section-label::after {
+    content: "";
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    margin-left: 8px;
+    vertical-align: middle;
+    background: linear-gradient(
+        90deg,
+        rgba(34,211,238,.45),
+        transparent
+    );
+}
+
+/* Sidebar footer/status */
+.csx-sidebar .csx-status {
+    transition:
+        transform .25s ease,
+        border-color .25s ease,
+        box-shadow .25s ease;
+}
+
+.csx-sidebar .csx-status:hover {
+    transform: translateY(-2px);
+    border-color: rgba(34,211,238,.25) !important;
+    box-shadow: 0 0 18px rgba(34,211,238,.06);
+}
+
+
+/* =========================================================
+   CSX — PREMIUM COMMAND STRIP
+   ========================================================= */
+
+.csx-panel-head {
+    position: relative;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(34,211,238,.08);
+}
+
+/* Moving command signal */
+.csx-panel-head::before {
+    content: "";
+    position: absolute;
+    left: -20%;
+    bottom: 0;
+    width: 20%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #22d3ee,
+        transparent
+    );
+    box-shadow: 0 0 10px rgba(34,211,238,.45);
+    animation: csxCommandSweep 4s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes csxCommandSweep {
+    from {
+        left: -20%;
+    }
+    to {
+        left: 120%;
+    }
+}
+
+/* Section title */
+.csx-panel-title {
+    position: relative;
+    z-index: 5;
+    font-weight: 750 !important;
+    letter-spacing: .035em;
+    transition:
+        letter-spacing .25s ease,
+        text-shadow .25s ease;
+}
+
+.csx-panel:hover .csx-panel-title {
+    letter-spacing: .055em;
+    text-shadow: 0 0 10px rgba(34,211,238,.18);
+}
+
+/* Live command tag */
+.csx-panel-tag {
+    position: relative;
+    z-index: 5;
+    padding: 4px 9px;
+    border: 1px solid rgba(34,211,238,.14);
+    border-radius: 999px;
+    background: rgba(34,211,238,.035);
+    color: rgba(103,232,249,.75);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    transition:
+        border-color .25s ease,
+        box-shadow .25s ease,
+        color .25s ease;
+}
+
+.csx-panel:hover .csx-panel-tag {
+    border-color: rgba(34,211,238,.3);
+    color: #67e8f9 !important;
+    box-shadow: 0 0 14px rgba(34,211,238,.06);
+}
+
+/* Tiny live indicator */
+.csx-panel-tag::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-right: 6px;
+    vertical-align: middle;
+    border-radius: 50%;
+    background: #22d3ee;
+    box-shadow: 0 0 7px rgba(34,211,238,.75);
+    animation: csxCommandDot 1.8s ease-in-out infinite;
+}
+
+@keyframes csxCommandDot {
+    0%,100% {
+        transform: scale(.75);
+        opacity: .4;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   CSX — SOC OPERATOR CONTROL BUTTONS
+   ========================================================= */
+
+.csx-main button,
+.csx-main .csx-action,
+.csx-main .csx-btn {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(34,211,238,.14);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(15,31,49,.95),
+            rgba(7,17,29,.95)
+        );
+    color: #cbd5e1;
+    border-radius: 9px;
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        box-shadow .22s ease,
+        color .22s ease,
+        background .22s ease;
+}
+
+/* Button telemetry sweep */
+.csx-main button::after,
+.csx-main .csx-action::after,
+.csx-main .csx-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -70%;
+    width: 45%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(34,211,238,.10),
+        transparent
+    );
+    transform: skewX(-18deg);
+    pointer-events: none;
+}
+
+.csx-main button:hover::after,
+.csx-main .csx-action:hover::after,
+.csx-main .csx-btn:hover::after {
+    animation: csxButtonSweep .8s ease-out;
+}
+
+@keyframes csxButtonSweep {
+    from { left: -70%; }
+    to   { left: 130%; }
+}
+
+.csx-main button:hover,
+.csx-main .csx-action:hover,
+.csx-main .csx-btn:hover {
+    transform: translateY(-2px);
+    color: #67e8f9;
+    border-color: rgba(34,211,238,.34);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(18,39,59,.98),
+            rgba(8,22,36,.98)
+        );
+    box-shadow:
+        0 8px 22px rgba(0,0,0,.25),
+        0 0 16px rgba(34,211,238,.06);
+}
+
+.csx-main button:active,
+.csx-main .csx-action:active,
+.csx-main .csx-btn:active {
+    transform: translateY(0) scale(.98);
+}
+
+
+/* =========================================================
+   CSX — STATIC PREMIUM SOC COLORS
+   Disable automatic color/glow changes on dashboard
+   ========================================================= */
+
+.csx-metric-icon,
+.metric-orange #threatScore,
+.csx-brain,
+.csx-severity-card,
+.csx-severity-item,
+.csx-alert,
+.csx-alert-row,
+.csx-alert-item,
+.csx-status,
+.csx-panel-tag {
+    animation: none !important;
+}
+
+/* Keep severity colors fixed */
+.risk-critical::before {
+    opacity: 1 !important;
+    animation: none !important;
+}
+
+.risk-high::before,
+.risk-suspicious::before {
+    animation: none !important;
+}
+
+/* Static threat score glow */
+.metric-orange #threatScore {
+    text-shadow: 0 0 12px rgba(245,158,11,.28) !important;
+}
+
+/* Static AI glow */
+.csx-brain {
+    filter: drop-shadow(0 0 8px rgba(34,211,238,.42)) !important;
+}
+
+/* Static live indicators */
+.csx-status .live-dot,
+.csx-status .status-dot {
+    animation: none !important;
+    transform: scale(1) !important;
+}
+
+/* No automatic colour transitions */
+.csx-metric,
+.csx-panel,
+.csx-card,
+.csx-alert,
+.csx-alert-row,
+.csx-alert-item,
+.csx-severity-card,
+.csx-severity-item {
+    transition: transform .25s ease,
+                border-color .25s ease,
+                box-shadow .25s ease !important;
+}
+
+
+/* =========================================================
+   CSX — STATIC PREMIUM SOC COLORS
+   Disable automatic color/glow changes on dashboard
+   ========================================================= */
+
+.csx-metric-icon,
+.metric-orange #threatScore,
+.csx-brain,
+.csx-severity-card,
+.csx-severity-item,
+.csx-alert,
+.csx-alert-row,
+.csx-alert-item,
+.csx-status,
+.csx-panel-tag {
+    animation: none !important;
+}
+
+/* Keep severity colors fixed */
+.risk-critical::before {
+    opacity: 1 !important;
+    animation: none !important;
+}
+
+.risk-high::before,
+.risk-suspicious::before {
+    animation: none !important;
+}
+
+/* Static threat score glow */
+.metric-orange #threatScore {
+    text-shadow: 0 0 12px rgba(245,158,11,.28) !important;
+}
+
+/* Static AI glow */
+.csx-brain {
+    filter: drop-shadow(0 0 8px rgba(34,211,238,.42)) !important;
+}
+
+/* Static live indicators */
+.csx-status .live-dot,
+.csx-status .status-dot {
+    animation: none !important;
+    transform: scale(1) !important;
+}
+
+/* No automatic colour transitions */
+.csx-metric,
+.csx-panel,
+.csx-card,
+.csx-alert,
+.csx-alert-row,
+.csx-alert-item,
+.csx-severity-card,
+.csx-severity-item {
+    transition: transform .25s ease,
+                border-color .25s ease,
+                box-shadow .25s ease !important;
+}
+
+
+/* =========================================================
+   CSX — CLEAN STATIC PREMIUM BACKGROUND
+   ========================================================= */
+
+body .csx-app::before,
+body .csx-app::after {
+    animation: none !important;
+}
+
+body .csx-app::before {
+    opacity: .18 !important;
+    background-position: 0 0, 0 0 !important;
+}
+
+body .csx-app::after {
+    opacity: .35 !important;
+    transform: translate3d(0,0,0) scale(1) !important;
+}
+
+.csx-network-grid {
+    animation: none !important;
+    background-position: 0 0 !important;
+}
+
+.csx-network::after,
+.csx-main::before,
+.csx-main::after,
+.csx-topbar::before,
+.csx-topbar::after,
+.csx-panel-head::before {
+    animation: none !important;
+    opacity: .35 !important;
+}
+
+
+/* =========================================================
+   CSX — UNIFIED PREMIUM COMMAND SURFACE
+   ========================================================= */
+
+.csx-metric,
+.csx-panel,
+.csx-card,
+.csx-network {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(10,20,34,.98),
+            rgba(6,14,25,.98)
+        ) !important;
+    border: 1px solid rgba(100,116,139,.16) !important;
+    box-shadow:
+        0 8px 28px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+/* Static cyan hierarchy */
+.csx-panel-head {
+    border-bottom-color: rgba(34,211,238,.10) !important;
+}
+
+.csx-metric:hover,
+.csx-panel:hover,
+.csx-card:hover,
+.csx-network:hover {
+    border-color: rgba(34,211,238,.24) !important;
+    box-shadow:
+        0 14px 34px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.03) !important;
+}
+
+/* Keep all text crisp */
+.csx-title,
+.csx-subtitle,
+.csx-panel-title,
+.csx-panel-tag,
+.csx-metric-label,
+.csx-metric-value,
+.csx-metric-info {
+    opacity: 1 !important;
+    filter: none !important;
+}
+
+
+/* =========================================================
+   CSX — HARD STOP AUTOMATIC COLOR / MOTION EFFECTS
+   ========================================================= */
+
+.csx-app .csx-metric,
+.csx-app .csx-metric *,
+.csx-app .csx-panel,
+.csx-app .csx-panel *,
+.csx-app .csx-card,
+.csx-app .csx-card *,
+.csx-app .csx-network,
+.csx-app .csx-network *,
+.csx-app .csx-alert,
+.csx-app .csx-alert *,
+.csx-app .csx-alert-row,
+.csx-app .csx-alert-row *,
+.csx-app .csx-alert-item,
+.csx-app .csx-alert-item *,
+.csx-app .csx-severity-card,
+.csx-app .csx-severity-card *,
+.csx-app .csx-severity-item,
+.csx-app .csx-severity-item *,
+.csx-app .csx-ml-brain,
+.csx-app .csx-ml-brain *,
+.csx-app .csx-sidebar,
+.csx-app .csx-sidebar *,
+.csx-app .csx-topbar,
+.csx-app .csx-topbar *,
+.csx-app .csx-panel-head,
+.csx-app .csx-panel-head * {
+    animation: none !important;
+}
+
+/* Remove automatic visual filters */
+.csx-app .csx-metric *,
+.csx-app .csx-panel *,
+.csx-app .csx-card *,
+.csx-app .csx-network *,
+.csx-app .csx-ml-brain * {
+    animation-play-state: paused !important;
+}
+
+/* Static pseudo-elements */
+.csx-app .csx-metric::before,
+.csx-app .csx-metric::after,
+.csx-app .csx-panel::before,
+.csx-app .csx-panel::after,
+.csx-app .csx-card::before,
+.csx-app .csx-card::after,
+.csx-app .csx-network::after,
+.csx-app .csx-ml-brain::before,
+.csx-app .csx-ml-brain::after,
+.csx-app .csx-main::before,
+.csx-app .csx-main::after,
+.csx-app .csx-topbar::before,
+.csx-app .csx-topbar::after,
+.csx-app .csx-sidebar::before {
+    animation: none !important;
+}
+
+/* Stop animated sparkline flow */
+.csx-app .csx-spark polyline,
+.csx-app .csx-line {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+}
+
+/* Stop rotating threat / AI rings */
+.csx-app .metric-orange::before,
+.csx-app .metric-orange::after,
+.csx-app .csx-ml-brain::before,
+.csx-app .csx-ml-brain::after {
+    animation: none !important;
+    transform: none !important;
+}
+
+/* No automatic glow changes */
+.csx-app #threatScore,
+.csx-app .csx-brain,
+.csx-app .csx-metric-icon,
+.csx-app .csx-status .live-dot,
+.csx-app .csx-status .status-dot {
+    animation: none !important;
+}
+
+
+/* =========================================================
+   CSX — RESTORE NETWORK ACTIVITY MOTION ONLY
+   ========================================================= */
+
+.csx-app .csx-network .csx-network-grid {
+    animation: csxNetworkGridMove 12s linear infinite !important;
+}
+
+.csx-app .csx-network::after {
+    animation: csxTelemetrySweep 4.5s ease-in-out infinite !important;
+}
+
+.csx-app .csx-network .csx-line {
+    animation: csxDataFlow 3.2s linear infinite !important;
+}
+
+.csx-app .csx-network {
+    animation: none !important;
+}
+
+
+/* =========================================================
+   CSX — NETWORK ACTIVITY HEARTBEAT
+   ========================================================= */
+
+.csx-app .csx-network .csx-network-grid,
+.csx-app .csx-network::after {
+    animation: none !important;
+    opacity: .18 !important;
+}
+
+.csx-app .csx-network .csx-line {
+    animation: csxNetworkHeartbeat 1.8s ease-in-out infinite !important;
+    stroke: #22d3ee !important;
+    filter:
+        drop-shadow(0 0 4px rgba(34,211,238,.65))
+        drop-shadow(0 0 10px rgba(34,211,238,.18));
+}
+
+@keyframes csxNetworkHeartbeat {
+    0%, 100% {
+        opacity: .55;
+        filter:
+            drop-shadow(0 0 3px rgba(34,211,238,.35))
+            drop-shadow(0 0 7px rgba(34,211,238,.10));
+    }
+
+    15% {
+        opacity: 1;
+        filter:
+            drop-shadow(0 0 7px rgba(34,211,238,.85))
+            drop-shadow(0 0 18px rgba(34,211,238,.25));
+    }
+
+    30% {
+        opacity: .62;
+    }
+
+    45% {
+        opacity: .95;
+        filter:
+            drop-shadow(0 0 6px rgba(34,211,238,.7))
+            drop-shadow(0 0 14px rgba(34,211,238,.18));
+    }
+
+    70%, 100% {
+        opacity: .55;
+    }
+}
+
+
+/* NETWORK SIGNAL — RESTORE LIVE FLOW */
+
+.csx-app .csx-network .csx-line {
+    animation: csxDataFlow 2.4s linear infinite !important;
+    animation-play-state: running !important;
+    stroke: #22d3ee !important;
+    stroke-dasharray: 14 10 !important;
+    stroke-dashoffset: 0;
+    opacity: 1 !important;
+}
+
+@keyframes csxDataFlow {
+    from {
+        stroke-dashoffset: 0;
+        opacity: .65;
+    }
+    50% {
+        opacity: 1;
+    }
+    to {
+        stroke-dashoffset: -48;
+        opacity: .65;
+    }
+}
+
+/* Network grid stays calm */
+.csx-app .csx-network .csx-network-grid {
+    animation: none !important;
+    opacity: .18 !important;
+}
+
+
+/* =========================================================
+   CYBER SENTINEL X — NEW PREMIUM SOC COMMAND CENTER
+   Reference-inspired UI layer
+   ========================================================= */
+
+.csx-app {
+    background: #05080f !important;
+    color: #e8f3ff !important;
+}
+
+.csx-main {
+    background:
+        radial-gradient(circle at 75% 5%, rgba(34,211,238,.055), transparent 28%),
+        #05080f !important;
+}
+
+/* TOP BAR */
+.csx-topbar {
+    background: rgba(7,14,25,.96) !important;
+    border: 1px solid rgba(34,211,238,.12) !important;
+    border-radius: 18px !important;
+    padding: 20px 24px !important;
+    margin-bottom: 22px !important;
+}
+
+.csx-title {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    letter-spacing: -.5px !important;
+}
+
+.csx-subtitle {
+    color: #7f96ad !important;
+}
+
+/* METRIC CARDS */
+.csx-metrics {
+    gap: 16px !important;
+}
+
+.csx-metric {
+    min-height: 145px !important;
+    background: linear-gradient(145deg,#0b1422,#07101b) !important;
+    border: 1px solid rgba(90,180,220,.13) !important;
+    border-radius: 18px !important;
+    padding: 20px !important;
+    box-shadow: 0 12px 35px rgba(0,0,0,.22) !important;
+    overflow: hidden !important;
+}
+
+.csx-metric-label {
+    color: #8fa6bb !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.csx-metric-value {
+    font-size: 34px !important;
+    font-weight: 800 !important;
+    margin-top: 8px !important;
+}
+
+.csx-metric-info {
+    color: #60778c !important;
+    font-size: 11px !important;
+}
+
+/* MAIN PANELS */
+.csx-panel {
+    background: #08111d !important;
+    border: 1px solid rgba(79,190,225,.12) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 14px 40px rgba(0,0,0,.25) !important;
+    overflow: hidden !important;
+}
+
+.csx-panel-head {
+    background: rgba(12,23,37,.72) !important;
+    border-bottom: 1px solid rgba(79,190,225,.09) !important;
+    padding: 17px 20px !important;
+}
+
+.csx-panel-title {
+    font-size: 14px !important;
+    font-weight: 750 !important;
+    letter-spacing: .3px !important;
+}
+
+.csx-panel-tag {
+    color: #22d3ee !important;
+    background: rgba(34,211,238,.07) !important;
+    border: 1px solid rgba(34,211,238,.14) !important;
+    border-radius: 999px !important;
+    padding: 5px 9px !important;
+    font-size: 9px !important;
+}
+
+.csx-panel-body {
+    padding: 20px !important;
+}
+
+/* NETWORK */
+.csx-network {
+    border-radius: 14px !important;
+    background:
+        radial-gradient(circle at 50% 55%,rgba(34,211,238,.07),transparent 48%),
+        #050c15 !important;
+    border: 1px solid rgba(34,211,238,.10) !important;
+}
+
+/* RISK */
+.csx-risk-wrap {
+    min-height: 300px !important;
+}
+
+.csx-gauge {
+    filter: drop-shadow(0 0 12px rgba(34,211,238,.10));
+}
+
+.csx-risk-number {
+    font-size: 42px !important;
+    font-weight: 850 !important;
+}
+
+.csx-risk-label {
+    color: #71869a !important;
+}
+
+/* ALERTS */
+.csx-alert {
+    background: rgba(255,255,255,.018) !important;
+    border: 1px solid rgba(255,255,255,.055) !important;
+    border-radius: 12px !important;
+    padding: 13px 15px !important;
+    margin-bottom: 9px !important;
+}
+
+.csx-alert-title {
+    font-weight: 650 !important;
+}
+
+.csx-alert-source {
+    color: #71869a !important;
+}
+
+/* ML */
+.csx-ml-card {
+    background: #07111d !important;
+    border: 1px solid rgba(34,211,238,.09) !important;
+    border-radius: 12px !important;
+}
+
+.csx-ml-label {
+    color: #60778c !important;
+}
+
+/* ASSETS */
+.csx-asset {
+    background: rgba(255,255,255,.015) !important;
+    border-radius: 11px !important;
+    padding: 11px !important;
+    margin-bottom: 9px !important;
+}
+
+.csx-progress {
+    background: #101d2b !important;
+    border-radius: 99px !important;
+    overflow: hidden !important;
+}
+
+/* SIDEBAR */
+.csx-sidebar {
+    background: #060c15 !important;
+    border-right: 1px solid rgba(34,211,238,.10) !important;
+}
+
+.csx-nav-item {
+    border-radius: 10px !important;
+    margin: 3px 8px !important;
+}
+
+.csx-nav-item:hover {
+    background: rgba(34,211,238,.055) !important;
+}
+
+
+/* =========================================================
+   CSX V2 — COMMAND CENTER LAYOUT
+   ========================================================= */
+
+.csx-main {
+    padding: 24px 28px 34px !important;
+    max-width: 1800px !important;
+    margin-left: 250px !important;
+}
+
+/* KPI ROW */
+.csx-metrics {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+    margin-bottom: 18px !important;
+}
+
+.csx-metric {
+    position: relative !important;
+    min-width: 0 !important;
+    min-height: 132px !important;
+    padding: 18px !important;
+}
+
+/* MAIN CONTENT */
+.csx-grid-main {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1.65fr) minmax(320px, .75fr) !important;
+    gap: 18px !important;
+    align-items: stretch !important;
+    margin-bottom: 18px !important;
+}
+
+.csx-grid-main > .csx-panel {
+    min-width: 0 !important;
+}
+
+/* BOTTOM CONTENT */
+.csx-grid-bottom {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 18px !important;
+}
+
+.csx-grid-bottom > .csx-panel {
+    min-width: 0 !important;
+}
+
+/* NETWORK PANEL */
+.csx-grid-main > .csx-panel:first-child .csx-panel-body {
+    min-height: 420px !important;
+}
+
+.csx-network {
+    min-height: 300px !important;
+}
+
+/* RISK PANEL */
+.csx-risk-wrap {
+    min-height: 300px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    gap: 25px !important;
+}
+
+/* CLEAN SPACING */
+.csx-panel-body {
+    min-width: 0 !important;
+}
+
+@media (max-width: 1250px) {
+    .csx-metrics {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    .csx-grid-main {
+        grid-template-columns: 1fr !important;
+    }
+
+    .csx-grid-bottom {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 800px) {
+    .csx-main {
+        margin-left: 72px !important;
+        padding: 16px !important;
+    }
+
+    .csx-metrics,
+    .csx-grid-bottom {
+        grid-template-columns: 1fr !important;
+    }
+}
+

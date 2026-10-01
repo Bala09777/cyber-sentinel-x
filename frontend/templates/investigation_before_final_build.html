@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYBER SENTINEL X — Investigation Workspace</title>
+<link rel="stylesheet" href="/static/css/soc.css">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    color:#e7f7ff;
+    font-family:Arial,Helvetica,sans-serif;
+    background:
+        linear-gradient(90deg,rgba(2,7,18,.95),rgba(3,13,28,.86),rgba(2,7,18,.96)),
+        url("/static/assets/soc-bg.png") center/cover fixed no-repeat;
+}
+
+body:before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,.012) 0,
+        rgba(255,255,255,.012) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+}
+
+.page{
+    max-width:1600px;
+    margin:auto;
+    padding:24px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    padding:18px 22px;
+    border:1px solid rgba(74,210,255,.18);
+    border-radius:16px;
+    background:rgba(4,12,27,.78);
+    backdrop-filter:blur(18px);
+    box-shadow:0 15px 50px rgba(0,0,0,.4);
+}
+
+.brand{
+    font-size:21px;
+    font-weight:900;
+    letter-spacing:3px;
+}
+
+.subtitle{
+    color:#718da2;
+    font-size:11px;
+    margin-top:5px;
+    letter-spacing:1px;
+}
+
+.status{
+    padding:9px 15px;
+    border-radius:30px;
+    border:1px solid rgba(34,211,238,.4);
+    background:rgba(34,211,238,.08);
+    color:#22d3ee;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.toolbar{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+}
+
+button{
+    border:1px solid rgba(74,210,255,.2);
+    border-radius:8px;
+    padding:9px 14px;
+    background:rgba(8,25,48,.8);
+    color:#ccefff;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:bold;
+}
+
+button:hover{
+    border-color:rgba(34,211,238,.5);
+    background:rgba(34,211,238,.08);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr;
+    gap:16px;
+    margin-top:16px;
+}
+
+.card{
+    border:1px solid rgba(85,210,255,.15);
+    border-radius:15px;
+    background:rgba(4,12,27,.76);
+    backdrop-filter:blur(18px);
+    box-shadow:0 12px 45px rgba(0,0,0,.3);
+    padding:20px;
+}
+
+.card h3{
+    margin:0 0 16px;
+    font-size:11px;
+    letter-spacing:2px;
+    color:#83dff5;
+}
+
+.incident{
+    grid-column:1 / -1;
+}
+
+.incident-title{
+    font-size:25px;
+    font-weight:900;
+}
+
+.incident-id{
+    color:#22d3ee;
+    font-family:monospace;
+    font-size:11px;
+    margin-top:7px;
+}
+
+.description{
+    color:#7892a5;
+    margin-top:12px;
+    line-height:1.6;
+    font-size:13px;
+}
+
+.badges{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:16px;
+}
+
+.badge{
+    padding:6px 10px;
+    border-radius:20px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    font-size:10px;
+    color:#a7c2d2;
+}
+
+.critical{
+    color:#ff526b;
+}
+
+.high{
+    color:#ff9d4d;
+}
+
+.suspicious{
+    color:#ffd166;
+}
+
+.normal{
+    color:#54e38e;
+}
+
+.metric{
+    font-size:42px;
+    font-weight:900;
+}
+
+.metric-label{
+    color:#718da2;
+    font-size:9px;
+    letter-spacing:1.5px;
+    margin-top:4px;
+}
+
+.risk-bar{
+    height:8px;
+    margin-top:14px;
+    border-radius:20px;
+    background:rgba(255,255,255,.07);
+    overflow:hidden;
+}
+
+.risk-fill{
+    height:100%;
+    width:0;
+    background:linear-gradient(90deg,#22d3ee,#ff526b);
+    border-radius:20px;
+    transition:.4s;
+}
+
+.info-row{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:10px 0;
+    border-bottom:1px solid rgba(255,255,255,.055);
+    font-size:12px;
+}
+
+.info-row:last-child{
+    border-bottom:0;
+}
+
+.info-label{
+    color:#718da2;
+}
+
+.info-value{
+    color:#dff7ff;
+    font-family:monospace;
+    text-align:right;
+}
+
+.analysis-grid{
+    grid-column:1 / -1;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+.analysis-value{
+    font-size:28px;
+    font-weight:900;
+}
+
+.analysis-status{
+    margin-top:7px;
+    font-size:10px;
+    letter-spacing:1px;
+}
+
+.chain{
+    grid-column:1 / -1;
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+}
+
+.chain-box{
+    padding:17px 10px;
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:11px;
+    background:rgba(255,255,255,.025);
+    text-align:center;
+    position:relative;
+}
+
+.chain-box:not(:last-child):after{
+    content:"→";
+    position:absolute;
+    right:-17px;
+    top:50%;
+    color:#22d3ee;
+    font-size:18px;
+}
+
+.chain-icon{
+    font-size:20px;
+}
+
+.chain-box strong{
+    display:block;
+    margin-top:8px;
+    font-size:11px;
+}
+
+.chain-box span{
+    color:#708a9d;
+    font-size:9px;
+}
+
+.timeline{
+    grid-column:1 / -1;
+}
+
+.event{
+    display:grid;
+    grid-template-columns:170px 1fr 90px;
+    gap:18px;
+    padding:15px 0;
+    border-bottom:1px solid rgba(255,255,255,.055);
+}
+
+.event:last-child{
+    border-bottom:0;
+}
+
+.time{
+    color:#718da2;
+    font-family:monospace;
+    font-size:11px;
+}
+
+.event-id{
+    color:#22d3ee;
+    font-family:monospace;
+    font-size:10px;
+}
+
+.activity{
+    font-weight:800;
+    margin-top:5px;
+    font-size:13px;
+}
+
+.context{
+    color:#708a9d;
+    font-size:10px;
+    margin-top:6px;
+}
+
+.event-risk{
+    font-size:19px;
+    font-weight:900;
+    text-align:right;
+}
+
+.actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.action-danger{
+    border-color:rgba(255,82,107,.35);
+    color:#ff7184;
+}
+
+.action-safe{
+    border-color:rgba(84,227,142,.25);
+    color:#54e38e;
+}
+
+.footer{
+    text-align:center;
+    color:#526b7c;
+    font-size:10px;
+    margin:20px 0 5px;
+}
+
+@media(max-width:1000px){
+    .grid,
+    .analysis-grid{
+        grid-template-columns:1fr;
+    }
+
+    .chain{
+        grid-template-columns:1fr;
+    }
+
+    .chain-box:not(:last-child):after{
+        content:"↓";
+        right:auto;
+        left:50%;
+        top:auto;
+        bottom:-20px;
+    }
+
+    .event{
+        grid-template-columns:1fr;
+    }
+
+    .event-risk{
+        text-align:left;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="topbar">
+        <div>
+            <div class="brand">CYBER SENTINEL X</div>
+            <div class="subtitle">SECURITY OPERATIONS CENTER / INVESTIGATION WORKSPACE</div>
+        </div>
+
+        <div class="status" id="systemStatus">
+            ● INVESTIGATION ACTIVE
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button onclick="loadInvestigation()">↻ REFRESH</button>
+        <button onclick="setStatus('INVESTIGATING')">INVESTIGATING</button>
+        <button class="action-safe" onclick="setStatus('RESOLVED')">RESOLVE</button>
+        <button class="action-danger" onclick="setStatus('CLOSED')">CLOSE</button>
+    </div>
+
+    <div class="grid">
+
+        <section class="card incident">
+            <h3>INCIDENT OVERVIEW</h3>
+
+            <div class="incident-title" id="incidentTitle">
+                Loading investigation...
+            </div>
+
+            <div class="incident-id" id="incidentId">—</div>
+
+            <div class="description" id="incidentDescription">
+                Loading incident intelligence...
+            </div>
+
+            <div class="badges">
+                <span class="badge" id="incidentSeverity">SEVERITY: —</span>
+                <span class="badge" id="incidentStatus">STATUS: —</span>
+                <span class="badge" id="incidentType">TYPE: —</span>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3>RISK SCORE</h3>
+            <div class="metric critical" id="riskScore">0</div>
+            <div class="metric-label">FINAL RISK / 100</div>
+            <div class="risk-bar">
+                <div class="risk-fill" id="riskFill"></div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3>NETWORK CONTEXT</h3>
+
+            <div class="info-row">
+                <span class="info-label">SOURCE</span>
+                <span class="info-value" id="sourceIp">—</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">DESTINATION</span>
+                <span class="info-value" id="destinationIp">—</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">FIRST SEEN</span>
+                <span class="info-value" id="firstSeen">—</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">LAST SEEN</span>
+                <span class="info-value" id="lastSeen">—</span>
+            </div>
+        </section>
+
+        <section class="card">
+            <h3>INCIDENT METADATA</h3>
+
+            <div class="info-row">
+                <span class="info-label">ASSIGNED TO</span>
+                <span class="info-value" id="assignedTo">UNASSIGNED</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">ATTACK TYPE</span>
+                <span class="info-value" id="attackType">—</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">MITRE TACTIC</span>
+                <span class="info-value" id="mitreTactic">NOT MAPPED</span>
+            </div>
+
+            <div class="info-row">
+                <span class="info-label">MITRE TECHNIQUE</span>
+                <span class="info-value" id="mitreTechnique">NOT MAPPED</span>
+            </div>
+        </section>
+
+        <div class="analysis-grid">
+
+            <section class="card">
+                <h3>BEHAVIOUR ANALYSIS</h3>
+                <div class="analysis-value" id="behaviourScore">—</div>
+                <div class="metric-label">BEHAVIOUR SCORE</div>
+                <div class="analysis-status" id="behaviourStatus">ANALYSIS AVAILABLE FROM PIPELINE</div>
+            </section>
+
+            <section class="card">
+                <h3>ML ANOMALY DETECTION</h3>
+                <div class="analysis-value" id="mlScore">—</div>
+                <div class="metric-label">ANOMALY SCORE</div>
+                <div class="analysis-status" id="mlStatus">MODEL STATUS: ENABLED</div>
+            </section>
+
+            <section class="card">
+                <h3>THREAT INTELLIGENCE</h3>
+                <div class="analysis-value" id="tiScore">—</div>
+                <div class="metric-label">THREAT SCORE</div>
+                <div class="analysis-status" id="tiStatus">LOCAL INTELLIGENCE</div>
+            </section>
+
+        </div>
+
+        <section class="card chain">
+            <div class="chain-box">
+                <div class="chain-icon">◉</div>
+                <strong>NETWORK EVENT</strong>
+                <span>Observed activity</span>
+            </div>
+
+            <div class="chain-box">
+                <div class="chain-icon">⚙</div>
+                <strong>DETECTION</strong>
+                <span>Rules + behaviour</span>
+            </div>
+
+            <div class="chain-box">
+                <div class="chain-icon">◈</div>
+                <strong>ML / TI</strong>
+                <span>Anomaly + intelligence</span>
+            </div>
+
+            <div class="chain-box">
+                <div class="chain-icon">▲</div>
+                <strong>RISK ENGINE</strong>
+                <span>Risk calculation</span>
+            </div>
+
+            <div class="chain-box">
+                <div class="chain-icon">!</div>
+                <strong>INCIDENT</strong>
+                <span>Investigation created</span>
+            </div>
+        </section>
+
+        <section class="card timeline">
+            <h3>EVENT TIMELINE</h3>
+            <div id="timeline">
+                Loading event timeline...
+            </div>
+        </section>
+
+        <section class="card">
+            <h3>ANALYST ACTIONS</h3>
+
+            <div class="actions">
+                <button onclick="setStatus('INVESTIGATING')">
+                    MARK INVESTIGATING
+                </button>
+
+                <button class="action-safe" onclick="setStatus('RESOLVED')">
+                    MARK RESOLVED
+                </button>
+
+                <button class="action-danger" onclick="setStatus('CLOSED')">
+                    CLOSE INCIDENT
+                </button>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="footer">
+        CYBER SENTINEL X • DEFENSIVE SECURITY OPERATIONS PLATFORM
+    </div>
+
+</div>
+
+<script>
+
+const INCIDENT_ID = "INC-20260904192625-B2FDCBC2";
+
+function severityClass(value){
+    const s = String(value || "").toUpperCase();
+
+    if(s === "CRITICAL") return "critical";
+    if(s === "HIGH") return "high";
+    if(s === "SUSPICIOUS") return "suspicious";
+    return "normal";
+}
+
+function escapeHtml(value){
+    return String(value ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+}
+
+async function loadInvestigation(){
+
+    try{
+
+        const incidentResponse = await fetch(
+            `/api/incidents/${encodeURIComponent(INCIDENT_ID)}`
+        );
+
+        if(!incidentResponse.ok){
+            throw new Error("Incident API failed");
+        }
+
+        const incident = await incidentResponse.json();
+
+        document.getElementById("incidentTitle").textContent =
+            incident.title || "Security Incident";
+
+        document.getElementById("incidentId").textContent =
+            incident.incident_id || INCIDENT_ID;
+
+        document.getElementById("incidentDescription").textContent =
+            incident.description || "No incident description available.";
+
+        document.getElementById("incidentSeverity").textContent =
+            `SEVERITY: ${incident.severity || "UNKNOWN"}`;
+
+        document.getElementById("incidentSeverity").className =
+            `badge ${severityClass(incident.severity)}`;
+
+        document.getElementById("incidentStatus").textContent =
+            `STATUS: ${incident.status || "UNKNOWN"}`;
+
+        document.getElementById("incidentType").textContent =
+            `TYPE: ${incident.attack_type || "UNKNOWN"}`;
+
+        const risk = Number(incident.risk_score || 0);
+
+        document.getElementById("riskScore").textContent = risk;
+
+        document.getElementById("riskFill").style.width =
+            `${Math.min(Math.max(risk,0),100)}%`;
+
+        document.getElementById("sourceIp").textContent =
+            incident.source_ip || "—";
+
+        document.getElementById("destinationIp").textContent =
+            incident.destination_ip || "—";
+
+        document.getElementById("firstSeen").textContent =
+            incident.first_seen || "—";
+
+        document.getElementById("lastSeen").textContent =
+            incident.last_seen || "—";
+
+        document.getElementById("assignedTo").textContent =
+            incident.assigned_to || "UNASSIGNED";
+
+        document.getElementById("attackType").textContent =
+            incident.attack_type || "—";
+
+        document.getElementById("mitreTactic").textContent =
+            incident.mitre_tactic || "NOT MAPPED";
+
+        document.getElementById("mitreTechnique").textContent =
+            incident.mitre_technique || "NOT MAPPED";
+
+        await loadTimeline();
+
+    }catch(error){
+
+        console.error("INVESTIGATION_LOAD_ERROR", error);
+
+        document.getElementById("incidentTitle").textContent =
+            "Unable to load investigation";
+
+        document.getElementById("timeline").textContent =
+            "Investigation API unavailable.";
+    }
+}
+
+async function loadTimeline(){
+
+    const response = await fetch(
+        `/api/incidents/${encodeURIComponent(INCIDENT_ID)}/timeline`
+    );
+
+    if(!response.ok){
+        throw new Error("Timeline API failed");
+    }
+
+    const events = await response.json();
+
+    const timeline = document.getElementById("timeline");
+
+    if(!Array.isArray(events) || events.length === 0){
+        timeline.innerHTML =
+            `<div class="context">No related events found.</div>`;
+        return;
+    }
+
+    timeline.innerHTML = events.map(event => {
+
+        const risk = Number(event.risk_score || 0);
+
+        return `
+            <div class="event">
+
+                <div>
+                    <div class="time">
+                        ${escapeHtml(event.created_at || "—")}
+                    </div>
+                    <div class="event-id">
+                        ${escapeHtml(event.event_id || "—")}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="activity">
+                        ${escapeHtml(event.activity || "NETWORK_ACTIVITY")}
+                    </div>
+
+                    <div class="context">
+                        ${escapeHtml(event.source_ip || "—")}
+                        →
+                        ${escapeHtml(event.destination_ip || "—")}
+                        |
+                        ${escapeHtml(event.protocol || "—")}
+                        |
+                        ${escapeHtml(event.severity || "NORMAL")}
+                    </div>
+                </div>
+
+                <div class="event-risk ${severityClass(event.severity)}">
+                    ${risk}
+                </div>
+
+            </div>
+        `;
+
+    }).join("");
+
+    updateDerivedAnalysis(events);
+}
+
+function updateDerivedAnalysis(events){
+
+    if(!events.length) return;
+
+    const risks = events.map(
+        e => Number(e.risk_score || 0)
+    );
+
+    const maxRisk = Math.max(...risks);
+
+    const avgRisk =
+        risks.reduce((a,b) => a+b, 0) / risks.length;
+
+    const criticalCount =
+        events.filter(
+            e => String(e.severity).toUpperCase() === "CRITICAL"
+        ).length;
+
+    const uniqueSources =
+        new Set(events.map(e => e.source_ip)).size;
+
+    document.getElementById("behaviourScore").textContent =
+        Math.round(Math.min(
+            100,
+            avgRisk + (events.length >= 3 ? 20 : 0)
+        ));
+
+    document.getElementById("behaviourStatus").textContent =
+        `CORRELATED EVENTS: ${events.length} | SOURCES: ${uniqueSources}`;
+
+    document.getElementById("mlScore").textContent =
+        maxRisk >= 80 ? "1.00" :
+        maxRisk >= 60 ? "0.70" :
+        maxRisk >= 40 ? "0.40" : "0.10";
+
+    document.getElementById("mlStatus").textContent =
+        criticalCount > 0
+        ? `ANOMALOUS PATTERN | CRITICAL EVENTS: ${criticalCount}`
+        : "NO CRITICAL ANOMALY INDICATOR";
+
+    document.getElementById("tiScore").textContent = "0";
+
+    document.getElementById("tiStatus").textContent =
+        "LOCAL TI | NO MALICIOUS MATCH IN INCIDENT EVENTS";
+}
+
+async function setStatus(newStatus){
+
+    try{
+
+        const response = await fetch(
+            `/api/incidents/${encodeURIComponent(INCIDENT_ID)}/status`,
+            {
+                method:"PATCH",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    status:newStatus,
+                    user:"SOC_ANALYST"
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if(!response.ok){
+            throw new Error(data.error || "Status update failed");
+        }
+
+        await loadInvestigation();
+
+    }catch(error){
+
+        console.error("STATUS_UPDATE_ERROR", error);
+
+        alert("Unable to update incident status.");
+    }
+}
+
+loadInvestigation();
+
+setInterval(loadInvestigation, 10000);
+
+</script>
+
+</body>
+</html>

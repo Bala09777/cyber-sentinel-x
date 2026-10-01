@@ -1,0 +1,4425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CYBER SENTINEL X — SOC Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/soc.css') }}">
+
+    
+<style>
+:root{
+  --bg:#030810;
+  --panel:#07121e;
+  --panel2:#091827;
+  --cyan:#35d8ff;
+  --blue:#4c8dff;
+  --green:#32e6a1;
+  --red:#ff4d6d;
+  --orange:#ffb84d;
+  --purple:#a779ff;
+  --text:#e9f8ff;
+  --muted:#6d879b;
+  --line:rgba(53,216,255,.13);
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+  background:#030810!important;
+  color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+
+body{
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 78% 5%,rgba(25,150,255,.10),transparent 25%),
+    radial-gradient(circle at 20% 85%,rgba(0,210,255,.045),transparent 25%),
+    #030810!important;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.12;
+  background-image:
+    linear-gradient(rgba(53,216,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(53,216,255,.045) 1px,transparent 1px);
+  background-size:42px 42px;
+}
+
+.csx-app{
+  min-height:100vh;
+  display:flex;
+  position:relative;
+  z-index:1;
+}
+
+/* SIDEBAR */
+
+.csx-sidebar{
+  width:230px!important;
+  min-height:100vh;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  padding:18px 13px;
+  background:
+    linear-gradient(180deg,#06121e 0%,#030a12 100%)!important;
+  border-right:1px solid rgba(53,216,255,.14)!important;
+  box-shadow:12px 0 45px rgba(0,0,0,.35);
+  z-index:50;
+}
+
+.csx-brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:7px 7px 18px;
+  border-bottom:1px solid rgba(53,216,255,.08);
+}
+
+.csx-logo{
+  width:40px!important;
+  height:40px!important;
+  display:grid;
+  place-items:center;
+  color:var(--cyan)!important;
+  font-size:21px!important;
+  border:1px solid rgba(53,216,255,.35)!important;
+  background:rgba(53,216,255,.055)!important;
+  box-shadow:
+    0 0 20px rgba(53,216,255,.13),
+    inset 0 0 16px rgba(53,216,255,.04);
+  border-radius:11px!important;
+}
+
+.csx-brand-name{
+  font-size:13px!important;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.csx-brand-sub{
+  color:#587083!important;
+  font-size:7px!important;
+  margin-top:4px;
+  letter-spacing:.13em;
+}
+
+.csx-nav-title{
+  color:#4fbddd!important;
+  font-size:8px!important;
+  font-weight:900;
+  letter-spacing:.18em;
+  margin:20px 9px 7px!important;
+}
+
+.csx-nav{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.csx-nav-item{
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 11px;
+  border-radius:8px;
+  color:#71899c!important;
+  font-size:11px!important;
+  border:1px solid transparent!important;
+  transition:.22s ease;
+}
+
+.csx-nav-item:hover{
+  color:#e5faff!important;
+  background:rgba(53,216,255,.055)!important;
+  border-color:rgba(53,216,255,.10)!important;
+}
+
+.csx-nav-item.active{
+  color:#effcff!important;
+  background:
+    linear-gradient(90deg,rgba(53,216,255,.14),rgba(53,216,255,.025))!important;
+  border-color:rgba(53,216,255,.18)!important;
+  box-shadow:inset 3px 0 0 var(--cyan);
+}
+
+.csx-nav-icon{
+  width:18px;
+  text-align:center;
+  color:#587285!important;
+}
+
+.csx-nav-item.active .csx-nav-icon{
+  color:var(--cyan)!important;
+}
+
+/* MAIN */
+
+.csx-main{
+  width:calc(100% - 230px)!important;
+  margin-left:230px!important;
+  padding:20px 22px 16px!important;
+  min-width:0;
+}
+
+/* TOPBAR */
+
+.csx-topbar{
+  min-height:66px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:0 2px 15px;
+  border-bottom:1px solid rgba(53,216,255,.10);
+}
+
+.csx-eyebrow{
+  color:#55798c!important;
+  font-size:8px!important;
+  font-weight:900;
+  letter-spacing:.18em;
+}
+
+.csx-title{
+  margin:4px 0 3px!important;
+  font-size:23px!important;
+  line-height:1.1;
+  font-weight:900!important;
+  letter-spacing:-.025em;
+}
+
+.csx-subtitle{
+  color:#698294!important;
+  font-size:9px!important;
+}
+
+.csx-topbar-right{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.csx-clock{
+  text-align:right;
+  padding-right:13px;
+  border-right:1px solid rgba(53,216,255,.10);
+}
+
+.csx-clock span{
+  display:block;
+  color:#587083;
+  font-size:7px;
+}
+
+.csx-clock strong{
+  display:block;
+  margin-top:3px;
+  color:#d9f7ff;
+  font-family:monospace;
+  font-size:12px;
+}
+
+.csx-admin{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.csx-admin strong{
+  display:block;
+  font-size:9px;
+}
+
+.csx-admin small{
+  display:block;
+  color:#5f7689;
+  font-size:7px;
+  margin-top:2px;
+}
+
+.csx-admin-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+}
+
+/* HERO */
+
+.csx-hero-strip{
+  margin:14px 0 12px!important;
+  min-height:78px;
+  padding:15px 18px!important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(53,216,255,.14)!important;
+  border-radius:10px!important;
+  background:
+    linear-gradient(105deg,rgba(7,31,49,.95),rgba(4,13,23,.96))!important;
+  box-shadow:
+    0 15px 35px rgba(0,0,0,.22),
+    inset 0 0 35px rgba(53,216,255,.025);
+}
+
+.csx-hero-strip:after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-25%;
+  width:30%;
+  height:1px;
+  background:var(--cyan);
+  box-shadow:0 0 18px var(--cyan);
+  animation:csxScan 6s linear infinite;
+}
+
+@keyframes csxScan{
+  from{left:-30%}
+  to{left:110%}
+}
+
+.csx-live-mark{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#70e8c2!important;
+  font-size:7px!important;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+
+.csx-live-mark i,
+.csx-live-badge i{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 10px var(--green);
+  animation:csxPulse 1.5s infinite;
+}
+
+@keyframes csxPulse{
+  50%{opacity:.35;transform:scale(.7)}
+}
+
+.csx-hero-strip h2{
+  margin:6px 0 3px!important;
+  font-size:16px!important;
+}
+
+.csx-hero-strip p{
+  margin:0!important;
+  color:#688295!important;
+  font-size:8px!important;
+}
+
+.csx-hero-meta{
+  text-align:right;
+}
+
+.csx-hero-meta span{
+  display:block;
+  color:#587083;
+  font-size:7px;
+  letter-spacing:.13em;
+}
+
+.csx-hero-meta strong{
+  display:block;
+  margin-top:4px;
+  color:var(--cyan);
+  font-family:monospace;
+  font-size:11px;
+}
+
+/* KPI */
+
+.csx-metrics{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:9px!important;
+  margin-bottom:12px!important;
+}
+
+.csx-metric{
+  min-width:0;
+  min-height:91px!important;
+  padding:13px!important;
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(145deg,rgba(10,25,41,.98),rgba(4,11,19,.98))!important;
+  border:1px solid rgba(53,216,255,.11)!important;
+  border-radius:9px!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.22);
+  transition:.22s ease;
+}
+
+.csx-metric:hover{
+  transform:translateY(-2px);
+  border-color:rgba(53,216,255,.30)!important;
+}
+
+.csx-metric:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:2px;
+  background:var(--metric-accent);
+  box-shadow:0 0 10px var(--metric-accent);
+  opacity:.7;
+}
+
+.metric-blue{--metric-accent:var(--cyan)}
+.metric-red{--metric-accent:var(--red)}
+.metric-green{--metric-accent:var(--green)}
+.metric-purple{--metric-accent:var(--purple)}
+.metric-orange{--metric-accent:var(--orange)}
+
+.csx-metric-head{
+  display:flex;
+  justify-content:space-between;
+  color:#668095!important;
+  font-size:7px!important;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+
+.csx-metric-head b{
+  color:var(--metric-accent)!important;
+}
+
+.csx-metric-value,
+.csx-metric>strong{
+  display:block;
+  margin-top:10px!important;
+  color:#edfaff!important;
+  font-family:monospace;
+  font-size:25px!important;
+  font-weight:900;
+}
+
+.csx-metric-info,
+.csx-metric small{
+  color:#597184!important;
+  font-size:7px!important;
+  margin-top:5px!important;
+}
+
+.csx-spark{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:8px;
+  height:16px;
+  opacity:.45;
+}
+
+
+/* KPI PREMIUM MOTION */
+
+.csx-metric{
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
+}
+
+.csx-metric::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 25%,
+      rgba(255,255,255,.035) 50%,
+      transparent 75%
+    );
+  transform:translateX(-120%);
+  animation:csxMetricSweep 6s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes csxMetricSweep{
+  0%,55%{transform:translateX(-120%)}
+  75%,100%{transform:translateX(120%)}
+}
+
+.csx-metric:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 14px 32px rgba(0,0,0,.30),
+    0 0 22px color-mix(in srgb,var(--metric-accent) 12%,transparent);
+}
+
+.csx-metric>strong{
+  text-shadow:
+    0 0 12px color-mix(in srgb,var(--metric-accent) 22%,transparent);
+  animation:csxMetricNumber 3s ease-in-out infinite;
+}
+
+@keyframes csxMetricNumber{
+  0%,100%{opacity:1}
+  50%{opacity:.86}
+}
+
+.csx-metric:after{
+  height:2px;
+  opacity:.9;
+  animation:csxMetricBar 2.8s ease-in-out infinite;
+}
+
+@keyframes csxMetricBar{
+  0%,100%{transform:scaleX(.72);transform-origin:left}
+  50%{transform:scaleX(1);transform-origin:left}
+}
+
+.csx-metric-head b{
+  text-shadow:0 0 8px var(--metric-accent);
+  animation:csxMetricDot 1.8s ease-in-out infinite;
+}
+
+@keyframes csxMetricDot{
+  50%{opacity:.35}
+}
+
+
+/* RISK ANALYTICS — PREMIUM MOTION */
+.csx-threat-panel{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(53,216,255,.045), transparent 42%),
+    linear-gradient(145deg,rgba(9,22,35,.98),rgba(4,10,17,.98)) !important;
+}
+
+.csx-threat-panel::before{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(53,216,255,.045) 55deg,
+    transparent 110deg,
+    rgba(99,232,189,.035) 190deg,
+    transparent 250deg
+  );
+  animation:csxRiskAmbient 12s linear infinite;
+  pointer-events:none;
+}
+
+.csx-threat-panel > *{
+  position:relative;
+  z-index:1;
+}
+
+.csx-threat-panel .csx-panel-tag{
+  box-shadow:0 0 12px rgba(53,216,255,.10);
+}
+
+.csx-donut-wrap{
+  position:relative;
+}
+
+.csx-donut-wrap::before{
+  content:"";
+  position:absolute;
+  width:190px;
+  height:190px;
+  border:1px solid rgba(53,216,255,.08);
+  border-radius:50%;
+  box-shadow:
+    0 0 25px rgba(53,216,255,.04),
+    inset 0 0 25px rgba(53,216,255,.025);
+  animation:csxRiskRing 5s ease-in-out infinite;
+}
+
+.csx-threat-panel .csx-donut{
+  filter:drop-shadow(0 0 12px rgba(53,216,255,.10));
+  transition:filter .3s ease,transform .3s ease;
+}
+
+.csx-threat-panel:hover .csx-donut{
+  filter:drop-shadow(0 0 20px rgba(53,216,255,.18));
+  transform:scale(1.025);
+}
+
+.csx-threat-legend > div{
+  transition:transform .2s ease,background .2s ease;
+  border-radius:6px;
+  padding-left:6px;
+  padding-right:6px;
+}
+
+.csx-threat-legend > div:hover{
+  transform:translateX(3px);
+  background:rgba(53,216,255,.035);
+}
+
+@keyframes csxRiskAmbient{
+  to{transform:rotate(360deg)}
+}
+
+@keyframes csxRiskRing{
+  0%,100%{transform:scale(.98);opacity:.55}
+  50%{transform:scale(1.04);opacity:1}
+}
+
+/* PANELS */
+
+.csx-main-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.72fr) minmax(290px,.78fr)!important;
+  gap:12px!important;
+}
+
+.csx-bottom-grid{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.55fr) minmax(290px,.78fr)!important;
+  gap:12px!important;
+  margin-top:12px!important;
+}
+
+.csx-panel{
+  min-width:0;
+  overflow:hidden;
+  background:
+    linear-gradient(145deg,rgba(8,21,35,.98),rgba(3,10,17,.98))!important;
+  border:1px solid rgba(53,216,255,.11)!important;
+  border-radius:10px!important;
+  box-shadow:
+    0 14px 40px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.015);
+}
+
+.csx-panel-head{
+  min-height:56px!important;
+  padding:12px 15px!important;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid rgba(53,216,255,.075)!important;
+}
+
+.csx-panel-title,
+.csx-panel-head h3{
+  margin:4px 0 0!important;
+  color:#dff7ff!important;
+  font-size:12px!important;
+  font-weight:850;
+}
+
+.csx-panel-kicker{
+  color:#4d7185!important;
+  font-size:6px!important;
+  font-weight:900;
+  letter-spacing:.18em;
+}
+
+.csx-panel-tag,
+.csx-count-badge,
+.csx-health-ok{
+  padding:5px 7px!important;
+  color:#72d9ee!important;
+  font-size:6px!important;
+  font-weight:900;
+  letter-spacing:.12em;
+  border:1px solid rgba(53,216,255,.14)!important;
+  background:rgba(53,216,255,.035)!important;
+  border-radius:5px!important;
+}
+
+.csx-panel-body{
+  padding:13px!important;
+}
+
+/* CYBER SENTINEL X — PREMIUM NETWORK TELEMETRY */
+
+.csx-network-panel,
+.csx-threat-panel{
+  min-height:375px;
+}
+
+.csx-network-map{
+  height:292px!important;
+  min-height:292px!important;
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(0,210,255,.12),transparent 22%),
+    radial-gradient(circle at 20% 50%,rgba(35,105,255,.07),transparent 30%),
+    linear-gradient(135deg,#06111d 0%,#030912 55%,#02070d 100%)!important;
+  border:1px solid rgba(53,216,255,.10)!important;
+  border-radius:14px!important;
+}
+
+/* subtle moving telemetry grid */
+
+.csx-net-grid{
+  position:absolute;
+  inset:0;
+  opacity:.22;
+  background-image:
+    linear-gradient(rgba(53,216,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(53,216,255,.055) 1px,transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(circle at center,#000 0%,rgba(0,0,0,.75) 48%,transparent 100%);
+  animation:csxTelemetryGrid 10s linear infinite;
+  z-index:0;
+}
+
+@keyframes csxTelemetryGrid{
+  from{transform:translateY(0)}
+  to{transform:translateY(36px)}
+}
+
+.csx-net-vignette{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at center,transparent 35%,rgba(0,0,0,.28) 100%),
+    linear-gradient(90deg,rgba(2,8,14,.35),transparent 18%,transparent 82%,rgba(2,8,14,.35));
+  pointer-events:none;
+  z-index:1;
+}
+
+/* orbital telemetry rings */
+
+.csx-net-orbit{
+  position:absolute;
+  left:50%;
+  top:50%;
+  border:1px solid rgba(53,216,255,.12);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  z-index:2;
+}
+
+.orbit-1{
+  width:110px;
+  height:110px;
+  border-color:rgba(53,216,255,.24);
+  animation:csxOrbitPulse 3.5s ease-in-out infinite;
+}
+
+.orbit-2{
+  width:170px;
+  height:170px;
+  border-style:dashed;
+  border-color:rgba(53,216,255,.12);
+  animation:csxOrbitSpin 18s linear infinite;
+}
+
+.orbit-3{
+  width:245px;
+  height:245px;
+  border-color:rgba(76,141,255,.08);
+  animation:csxOrbitSpinReverse 28s linear infinite;
+}
+
+@keyframes csxOrbitPulse{
+  50%{transform:translate(-50%,-50%) scale(1.05);opacity:.65}
+}
+
+@keyframes csxOrbitSpin{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+
+@keyframes csxOrbitSpinReverse{
+  to{transform:translate(-50%,-50%) rotate(-360deg)}
+}
+
+/* traffic paths */
+
+.csx-net-lines{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:3;
+  overflow:visible;
+  pointer-events:none;
+}
+
+.csx-net-lines .net-line{
+  fill:none!important;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-dasharray:8 12;
+  animation:csxNetworkFlow 3.2s linear infinite;
+  filter:drop-shadow(0 0 5px currentColor);
+}
+
+.csx-net-lines .cyan-line{
+  stroke:#35d8ff;
+  color:#35d8ff;
+  opacity:.72;
+}
+
+.csx-net-lines .blue-line{
+  stroke:#4c8dff;
+  color:#4c8dff;
+  opacity:.58;
+  animation-duration:4.4s;
+}
+
+.csx-net-lines .green-line{
+  stroke:#32e6a1;
+  color:#32e6a1;
+  opacity:.48;
+  animation-duration:5.2s;
+}
+
+@keyframes csxNetworkFlow{
+  to{stroke-dashoffset:-80}
+}
+
+.csx-net-lines .net-point{
+  fill:#071722;
+  stroke:#35d8ff;
+  stroke-width:1.5;
+  filter:drop-shadow(0 0 6px #35d8ff);
+  animation:csxPointPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes csxPointPulse{
+  50%{r:7;opacity:.8}
+}
+
+/* edge / SOC nodes */
+
+.csx-net-node{
+  position:absolute;
+  z-index:5;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:rgba(3,13,22,.92);
+  border:1px solid rgba(53,216,255,.30);
+  box-shadow:
+    0 0 18px rgba(53,216,255,.12),
+    inset 0 0 18px rgba(53,216,255,.05);
+  backdrop-filter:blur(8px);
+}
+
+.csx-net-node b{
+  color:#bdefff;
+  font-size:8px;
+  letter-spacing:.16em;
+}
+
+.csx-net-node span{
+  margin-top:4px;
+  color:#4e8198;
+  font-size:6px;
+  letter-spacing:.12em;
+}
+
+.node-left{
+  left:7%;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.node-right{
+  right:7%;
+  top:50%;
+  transform:translateY(-50%);
+}
+
+.node-core{
+  left:50%;
+  top:50%;
+  width:86px;
+  height:86px;
+  transform:translate(-50%,-50%);
+  border-color:rgba(53,216,255,.48);
+  box-shadow:
+    0 0 28px rgba(53,216,255,.20),
+    0 0 65px rgba(53,216,255,.08),
+    inset 0 0 25px rgba(53,216,255,.08);
+}
+
+.node-core strong{
+  color:#e5fbff;
+  font-family:monospace;
+  font-size:14px;
+  letter-spacing:.18em;
+}
+
+.node-core span{
+  color:#62d7ef;
+  font-size:6px;
+}
+
+.core-pulse{
+  position:absolute;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#35d8ff;
+  box-shadow:0 0 12px #35d8ff,0 0 28px rgba(53,216,255,.75);
+  animation:csxCorePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes csxCorePulse{
+  50%{transform:scale(1.55);opacity:.45}
+}
+
+/* telemetry labels */
+
+.csx-net-label{
+  position:absolute;
+  z-index:6;
+  color:#4f8196;
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:.18em;
+  padding:5px 7px;
+  border:1px solid rgba(53,216,255,.10);
+  border-radius:5px;
+  background:rgba(3,12,20,.72);
+  backdrop-filter:blur(5px);
+}
+
+.label-a{left:13%;top:18%}
+.label-b{left:50%;top:13%;transform:translateX(-50%)}
+.label-c{right:13%;top:18%}
+
+.csx-net-status{
+  position:absolute;
+  left:50%;
+  bottom:12px;
+  transform:translateX(-50%);
+  z-index:7;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 10px;
+  border:1px solid rgba(50,230,161,.14);
+  border-radius:999px;
+  background:rgba(3,12,20,.78);
+  color:#62cda8;
+  font-size:6px;
+  font-weight:800;
+  letter-spacing:.13em;
+  white-space:nowrap;
+}
+
+.csx-net-status i{
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#32e6a1;
+  box-shadow:0 0 8px #32e6a1;
+  animation:csxStatusPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes csxStatusPulse{
+  50%{opacity:.35;transform:scale(.7)}
+}
+
+.csx-network-stats{
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  border-top:1px solid rgba(53,216,255,.08)!important;
+}
+
+.csx-network-stats div{
+  padding:10px 12px!important;
+  border-right:1px solid rgba(53,216,255,.07)!important;
+  text-align:center;
+}
+
+.csx-network-stats div:last-child{
+  border-right:0!important;
+}
+
+.csx-network-stats span{
+  display:block;
+  color:#4f687b!important;
+  font-size:6px!important;
+  letter-spacing:.12em;
+}
+
+.csx-network-stats strong{
+  display:block;
+  margin-top:4px!important;
+  color:#d9f6ff!important;
+  font-family:monospace;
+  font-size:10px!important;
+}
+
+/* THREAT / DONUT */
+
+.csx-threat-panel{
+  display:flex;
+  flex-direction:column;
+}
+
+.csx-donut-wrap{
+  flex:1;
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.csx-gauge{
+  width:160px!important;
+  height:160px!important;
+  border-radius:50%;
+  display:grid!important;
+  place-items:center;
+  background:
+    conic-gradient(
+      var(--green) 0deg 95deg,
+      #facc15 95deg 190deg,
+      var(--orange) 190deg 275deg,
+      var(--red) 275deg 330deg,
+      #172333 330deg 360deg
+    )!important;
+  box-shadow:
+    0 0 28px rgba(53,216,255,.08),
+    0 0 55px rgba(53,216,255,.035);
+  animation:csxGauge 8s ease-in-out infinite;
+}
+
+@keyframes csxGauge{
+  50%{filter:brightness(1.08)}
+}
+
+.csx-gauge-inner{
+  width:124px!important;
+  height:124px!important;
+  border-radius:50%;
+  display:grid!important;
+  place-items:center;
+  text-align:center;
+  background:#06101a!important;
+  border:1px solid rgba(53,216,255,.10)!important;
+}
+
+.csx-risk-number{
+  color:#edfbff!important;
+  font-family:monospace;
+  font-size:35px!important;
+  font-weight:900;
+}
+
+.csx-risk-label{
+  color:#597183!important;
+  font-size:7px!important;
+}
+
+.csx-risk-level{
+  color:#63e8bd!important;
+  font-size:9px!important;
+  font-weight:900;
+  margin-top:4px;
+}
+
+.csx-risk-wrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  padding:15px;
+}
+
+.csx-breakdown{
+  flex:1;
+}
+
+.csx-break-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 0!important;
+  border-bottom:1px solid rgba(53,216,255,.06)!important;
+}
+
+.csx-dot{
+  width:7px!important;
+  height:7px!important;
+  border-radius:50%;
+}
+
+.dot-red{background:var(--red)!important;box-shadow:0 0 8px var(--red)}
+.dot-orange{background:var(--orange)!important}
+.dot-yellow{background:#facc15!important}
+.dot-green{background:var(--green)!important}
+
+.csx-break-name{
+  flex:1;
+  color:#8097a8!important;
+  font-size:8px!important;
+}
+
+.csx-break-count{
+  color:#d9f6ff!important;
+  font-size:9px!important;
+}
+
+/* LOWER PANELS */
+
+.csx-bottom-grid .csx-panel{
+  min-height:270px!important;
+}
+
+.csx-alert{
+  display:flex;
+  gap:10px;
+  padding:10px 0!important;
+  border-bottom:1px solid rgba(53,216,255,.06)!important;
+}
+
+.csx-alert-icon{
+  width:29px!important;
+  height:29px!important;
+  border-radius:8px!important;
+}
+
+.csx-alert-title{
+  color:#dceff7!important;
+  font-size:9px!important;
+}
+
+.csx-alert-source{
+  color:#587083!important;
+  font-size:7px!important;
+  margin-top:3px;
+}
+
+.csx-alert-time{
+  color:#ff6d83!important;
+  font-size:7px!important;
+}
+
+.csx-asset{
+  padding:9px 0!important;
+  border-bottom:1px solid rgba(53,216,255,.06)!important;
+}
+
+.csx-asset-head{
+  font-size:8px!important;
+}
+
+.csx-asset-ip{
+  color:#c9e2ec!important;
+}
+
+.csx-progress{
+  height:4px!important;
+  margin-top:6px!important;
+  background:#122131!important;
+}
+
+.csx-progress span{
+  background:linear-gradient(90deg,var(--cyan),var(--blue))!important;
+  box-shadow:0 0 8px rgba(53,216,255,.35);
+}
+
+/* ML */
+
+.csx-ml-brain{
+  background:
+    radial-gradient(circle,rgba(53,216,255,.14),transparent 48%),
+    #06101a!important;
+  border-color:rgba(53,216,255,.12)!important;
+}
+
+.csx-brain{
+  color:var(--cyan)!important;
+  filter:drop-shadow(0 0 15px rgba(53,216,255,.8));
+}
+
+.csx-ml-card{
+  background:rgba(53,216,255,.025)!important;
+  border:1px solid rgba(53,216,255,.07)!important;
+}
+
+.csx-ml-label{
+  color:#557184!important;
+  font-size:6px!important;
+}
+
+.csx-ml-value{
+  color:#d9f7ff!important;
+  font-size:12px!important;
+}
+
+.online{
+  color:var(--green)!important;
+}
+
+/* HEALTH */
+
+.csx-health-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+
+.csx-health-grid > div{
+  padding:9px;
+  border:1px solid rgba(53,216,255,.065);
+  background:rgba(53,216,255,.018);
+  border-radius:7px;
+}
+
+.csx-health-grid strong{
+  color:#dceff7;
+  font-size:8px;
+}
+
+.csx-health-grid small{
+  display:block;
+  color:#577083;
+  font-size:6px;
+  margin-top:3px;
+}
+
+/* FOOTER */
+
+.csx-footer{
+  margin-top:12px!important;
+  padding:10px 3px!important;
+  display:flex;
+  justify-content:space-between;
+  color:#40586a!important;
+  font-size:7px!important;
+  border-top:1px solid rgba(53,216,255,.07)!important;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1200px){
+  .csx-metrics{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+
+  .csx-main-grid,
+  .csx-bottom-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+@media(max-width:850px){
+  .csx-sidebar{
+    width:68px!important;
+  }
+
+  .csx-main{
+    width:calc(100% - 68px)!important;
+    margin-left:68px!important;
+    padding:14px!important;
+  }
+
+  .csx-brand-name,
+  .csx-brand-sub,
+  .csx-nav-title,
+  .csx-nav-item span:not(.csx-nav-icon){
+    display:none!important;
+  }
+
+  .csx-metrics{
+    grid-template-columns:1fr 1fr!important;
+  }
+
+  .csx-topbar-right{
+    gap:7px;
+  }
+}
+
+@media(max-width:600px){
+  .csx-metrics{
+    grid-template-columns:1fr!important;
+  }
+
+  .csx-risk-wrap{
+    flex-direction:column;
+  }
+
+  .csx-network-stats{
+    grid-template-columns:1fr 1fr!important;
+  }
+
+  .csx-topbar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .csx-topbar-right{
+    width:100%;
+    justify-content:flex-start;
+  }
+}
+
+/* ============================================================
+   CYBER SENTINEL X — MASTER PREMIUM SOC VISUAL LAYER
+   ============================================================ */
+
+:root{
+  --csx-bg:#02070d;
+  --csx-panel:rgba(7,16,27,.94);
+  --csx-panel2:rgba(10,23,37,.92);
+  --csx-border:rgba(77,210,255,.13);
+  --csx-cyan:#35d8ff;
+  --csx-blue:#4d7cff;
+  --csx-green:#63e8bd;
+  --csx-red:#ff5578;
+  --csx-orange:#ffad42;
+}
+
+body{
+  background:
+    radial-gradient(circle at 18% 8%,rgba(30,120,180,.08),transparent 28%),
+    radial-gradient(circle at 85% 22%,rgba(58,75,210,.07),transparent 30%),
+    linear-gradient(135deg,#02070d 0%,#03101a 48%,#02070d 100%) !important;
+}
+
+/* main shell */
+.csx-panel,
+.csx-metric,
+.csx-hero-strip{
+  border:1px solid var(--csx-border) !important;
+  background:
+    linear-gradient(145deg,rgba(9,23,37,.97),rgba(3,10,17,.97)) !important;
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+/* premium panel edge */
+.csx-panel{
+  position:relative;
+  overflow:hidden;
+  transition:
+    transform .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease;
+}
+
+.csx-panel::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-30%;
+  width:30%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--csx-cyan),transparent);
+  opacity:.55;
+  animation:csxPanelScan 5s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.csx-panel:hover{
+  transform:translateY(-2px);
+  border-color:rgba(53,216,255,.24) !important;
+  box-shadow:
+    0 22px 55px rgba(0,0,0,.34),
+    0 0 28px rgba(53,216,255,.045) !important;
+}
+
+@keyframes csxPanelScan{
+  0%,65%{left:-30%;opacity:0}
+  72%{opacity:.55}
+  100%{left:105%;opacity:0}
+}
+
+/* section headers */
+.csx-panel-head{
+  position:relative;
+}
+
+.csx-panel-kicker{
+  color:var(--csx-cyan) !important;
+  letter-spacing:.16em !important;
+  text-shadow:0 0 10px rgba(53,216,255,.18);
+}
+
+.csx-panel-head h3{
+  color:#e8f8ff !important;
+}
+
+/* hero */
+.csx-hero-strip{
+  position:relative;
+  overflow:hidden;
+  min-height:86px;
+}
+
+.csx-hero-strip::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,transparent,rgba(53,216,255,.035),transparent);
+  transform:translateX(-100%);
+  animation:csxHeroSweep 7s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes csxHeroSweep{
+  to{transform:translateX(100%)}
+}
+
+.csx-live-mark{
+  text-shadow:0 0 12px rgba(99,232,189,.25);
+}
+
+.csx-live-mark i{
+  box-shadow:0 0 12px var(--csx-green) !important;
+  animation:csxLivePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes csxLivePulse{
+  50%{opacity:.35;transform:scale(.72)}
+}
+
+/* KPI */
+.csx-metric{
+  backdrop-filter:blur(10px);
+}
+
+.csx-metric>strong{
+  text-shadow:0 0 16px color-mix(in srgb,var(--metric-accent) 20%,transparent);
+}
+
+.csx-metric-head b{
+  text-shadow:0 0 9px var(--metric-accent);
+}
+
+/* threat distribution */
+.csx-threat-panel{
+  background:
+    radial-gradient(circle at 50% 42%,rgba(53,216,255,.045),transparent 40%),
+    linear-gradient(145deg,rgba(9,23,37,.97),rgba(3,10,17,.97)) !important;
+}
+
+.csx-threat-panel .csx-donut{
+  filter:drop-shadow(0 0 14px rgba(53,216,255,.10));
+  transition:transform .3s ease,filter .3s ease;
+}
+
+.csx-threat-panel:hover .csx-donut{
+  transform:scale(1.025);
+  filter:drop-shadow(0 0 23px rgba(53,216,255,.18));
+}
+
+.csx-threat-legend > div{
+  border-radius:7px;
+  transition:transform .2s ease,background .2s ease;
+}
+
+.csx-threat-legend > div:hover{
+  transform:translateX(4px);
+  background:rgba(53,216,255,.035);
+}
+
+/* table */
+.csx-table-wrap{
+  background:rgba(2,8,14,.45) !important;
+  border:1px solid rgba(53,216,255,.07) !important;
+  border-radius:10px !important;
+  overflow:hidden !important;
+}
+
+.csx-table{
+  width:100%;
+}
+
+.csx-table thead{
+  background:rgba(53,216,255,.035) !important;
+}
+
+.csx-table th{
+  color:#5f8ca4 !important;
+  letter-spacing:.12em;
+  font-size:9px !important;
+  border-bottom:1px solid rgba(53,216,255,.10) !important;
+}
+
+.csx-table td{
+  color:#c5dce8 !important;
+  border-bottom:1px solid rgba(53,216,255,.055) !important;
+  transition:background .2s ease;
+}
+
+.csx-table tbody tr{
+  transition:
+    background .2s ease,
+    transform .2s ease;
+}
+
+.csx-table tbody tr:hover{
+  background:rgba(53,216,255,.035) !important;
+}
+
+.csx-empty{
+  color:#557183 !important;
+}
+
+/* count badge */
+.csx-count-badge{
+  border:1px solid rgba(53,216,255,.18) !important;
+  background:rgba(53,216,255,.045) !important;
+  box-shadow:0 0 14px rgba(53,216,255,.05);
+}
+
+/* bottom cards */
+.csx-risk-source-panel,
+.csx-health-panel{
+  background:
+    linear-gradient(145deg,rgba(8,20,32,.97),rgba(3,10,17,.97)) !important;
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:#02070d}
+::-webkit-scrollbar-thumb{
+  background:rgba(53,216,255,.22);
+  border-radius:10px;
+}
+::-webkit-scrollbar-thumb:hover{
+  background:rgba(53,216,255,.38);
+}
+
+
+/* ============================================================
+   FINAL SOC SHELL — SIDEBAR + TOPBAR
+   ============================================================ */
+
+.csx-sidebar{
+  width:218px !important;
+  background:
+    linear-gradient(180deg,rgba(5,15,25,.99),rgba(2,8,14,.99)) !important;
+  border-right:1px solid rgba(53,216,255,.11) !important;
+  box-shadow:12px 0 40px rgba(0,0,0,.28);
+  position:fixed !important;
+  left:0;
+  top:0;
+  bottom:0;
+  z-index:50;
+}
+
+.csx-sidebar::after{
+  content:"";
+  position:absolute;
+  top:0;
+  right:-1px;
+  width:1px;
+  height:100%;
+  background:linear-gradient(
+    transparent,
+    rgba(53,216,255,.35),
+    transparent
+  );
+  opacity:.55;
+  animation:csxSideScan 5s ease-in-out infinite;
+}
+
+@keyframes csxSideScan{
+  0%,100%{transform:translateY(-35%);opacity:0}
+  50%{transform:translateY(35%);opacity:.7}
+}
+
+.csx-nav-title{
+  color:#426276 !important;
+  font-size:8px !important;
+  font-weight:800 !important;
+  letter-spacing:.18em !important;
+  margin-top:22px !important;
+  margin-bottom:8px !important;
+}
+
+.csx-nav-item{
+  margin:3px 10px !important;
+  min-height:38px !important;
+  border:1px solid transparent !important;
+  border-radius:8px !important;
+  color:#7892a3 !important;
+  transition:
+    color .2s ease,
+    background .2s ease,
+    border-color .2s ease,
+    transform .2s ease !important;
+}
+
+.csx-nav-item:hover{
+  color:#dff8ff !important;
+  background:rgba(53,216,255,.045) !important;
+  border-color:rgba(53,216,255,.09) !important;
+  transform:translateX(3px);
+}
+
+.csx-nav-item.active{
+  color:#e8fbff !important;
+  background:
+    linear-gradient(90deg,rgba(53,216,255,.12),rgba(53,216,255,.025)) !important;
+  border-color:rgba(53,216,255,.18) !important;
+  box-shadow:
+    inset 3px 0 0 var(--csx-cyan),
+    0 0 18px rgba(53,216,255,.045) !important;
+}
+
+.csx-nav-item.active .csx-nav-icon{
+  color:var(--csx-cyan) !important;
+  text-shadow:0 0 10px rgba(53,216,255,.55);
+}
+
+.csx-main{
+  margin-left:218px !important;
+  width:calc(100% - 218px) !important;
+  background:transparent !important;
+}
+
+.csx-topbar{
+  height:68px !important;
+  padding:0 24px !important;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3,11,19,.96),
+      rgba(3,11,19,.82)
+    ) !important;
+  border-bottom:1px solid rgba(53,216,255,.09) !important;
+  backdrop-filter:blur(16px);
+  position:sticky !important;
+  top:0;
+  z-index:30;
+}
+
+.csx-title{
+  color:#e9f9ff !important;
+  letter-spacing:.02em;
+  text-shadow:0 0 18px rgba(53,216,255,.07);
+}
+
+.csx-subtitle{
+  color:#587386 !important;
+}
+
+.csx-clock{
+  padding-right:16px;
+  border-right:1px solid rgba(53,216,255,.09);
+}
+
+.csx-clock strong{
+  color:#dff8ff !important;
+  text-shadow:0 0 12px rgba(53,216,255,.12);
+}
+
+.csx-admin{
+  padding:7px 11px;
+  border:1px solid rgba(53,216,255,.08);
+  border-radius:8px;
+  background:rgba(53,216,255,.025);
+}
+
+.csx-admin-dot{
+  box-shadow:0 0 10px var(--csx-green) !important;
+}
+
+.csx-system-pill{
+  border-color:rgba(99,232,189,.16) !important;
+  background:rgba(99,232,189,.045) !important;
+  box-shadow:0 0 15px rgba(99,232,189,.035);
+}
+
+/* dashboard breathing space */
+.csx-main > *:not(.csx-topbar){
+  max-width:1600px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.csx-hero-strip{
+  margin-top:16px !important;
+  margin-left:18px !important;
+  margin-right:18px !important;
+}
+
+.csx-metrics,
+.csx-main-grid,
+.csx-bottom-grid{
+  margin-left:18px !important;
+  margin-right:18px !important;
+}
+
+@media(max-width:1100px){
+  .csx-sidebar{
+    width:190px !important;
+  }
+  .csx-main{
+    margin-left:190px !important;
+    width:calc(100% - 190px) !important;
+  }
+}
+
+
+/* ============================================================
+   FINAL CONTENT COMPOSITION — PREMIUM SOC
+   ============================================================ */
+
+.csx-hero-strip{
+  min-height:92px !important;
+  padding:18px 22px !important;
+  border-radius:12px !important;
+}
+
+.csx-hero-strip h2{
+  margin:5px 0 3px !important;
+  font-size:24px !important;
+  font-weight:850 !important;
+  letter-spacing:-.02em;
+  color:#e9fbff !important;
+}
+
+.csx-hero-strip p{
+  color:#668395 !important;
+  font-size:10px !important;
+}
+
+.csx-hero-meta{
+  min-width:105px;
+  padding:10px 13px !important;
+  border:1px solid rgba(53,216,255,.10);
+  border-radius:8px;
+  background:rgba(53,216,255,.025);
+}
+
+.csx-hero-meta span{
+  color:#4e7387 !important;
+  font-size:7px !important;
+  letter-spacing:.15em;
+}
+
+.csx-hero-meta strong{
+  color:var(--csx-green) !important;
+  text-shadow:0 0 12px rgba(99,232,189,.22);
+}
+
+/* KPI composition */
+.csx-metrics{
+  gap:10px !important;
+  margin-top:12px !important;
+  margin-bottom:12px !important;
+}
+
+.csx-metric{
+  min-height:98px !important;
+  padding:14px !important;
+  border-radius:10px !important;
+}
+
+.csx-metric-head span{
+  font-size:7px !important;
+  letter-spacing:.14em;
+  color:#638092 !important;
+}
+
+.csx-metric>strong{
+  display:block;
+  margin-top:9px !important;
+  font-family:monospace;
+  font-size:26px !important;
+  line-height:1 !important;
+  color:#e7faff !important;
+}
+
+.csx-metric>strong em{
+  color:#4d6878 !important;
+  font-size:10px !important;
+  font-style:normal;
+}
+
+.csx-metric small{
+  display:block;
+  margin-top:8px !important;
+  color:#506878 !important;
+  font-size:7px !important;
+}
+
+/* main composition */
+.csx-main-grid{
+  gap:12px !important;
+  margin-top:0 !important;
+}
+
+.csx-network-panel,
+.csx-threat-panel{
+  min-height:365px !important;
+  border-radius:12px !important;
+}
+
+/* network becomes visual focal point */
+.csx-network-panel{
+  box-shadow:
+    0 20px 55px rgba(0,0,0,.32),
+    0 0 35px rgba(53,216,255,.025),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+.csx-network-map{
+  border:1px solid rgba(53,216,255,.09) !important;
+  box-shadow:
+    inset 0 0 35px rgba(0,0,0,.35),
+    0 0 20px rgba(53,216,255,.025);
+}
+
+/* risk panel */
+.csx-threat-panel{
+  box-shadow:
+    0 20px 55px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+.csx-threat-panel .csx-panel-head{
+  padding-bottom:10px;
+}
+
+/* bottom composition */
+.csx-bottom-grid{
+  gap:12px !important;
+  margin-top:12px !important;
+}
+
+.csx-bottom-grid .csx-panel{
+  min-height:220px;
+  border-radius:12px !important;
+}
+
+/* security event rows */
+.csx-table td{
+  padding:10px 9px !important;
+  font-size:9px !important;
+}
+
+.csx-table th{
+  padding:9px !important;
+}
+
+/* visual hierarchy */
+.csx-alert-panel{
+  box-shadow:
+    0 20px 50px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+.csx-risk-source-panel,
+.csx-health-panel{
+  box-shadow:
+    0 20px 45px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+/* subtle page grid */
+.csx-main{
+  position:relative;
+}
+
+.csx-main::before{
+  content:"";
+  position:fixed;
+  inset:68px 0 0 218px;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(53,216,255,.012) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(53,216,255,.012) 1px,transparent 1px);
+  background-size:55px 55px;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,.65),transparent 82%);
+  z-index:0;
+}
+
+.csx-main > *{
+  position:relative;
+  z-index:1;
+}
+
+
+/* ============================================================
+   FINAL SOC CARDS — EVENTS / RISK / HEALTH
+   ============================================================ */
+
+.csx-alert-panel,
+.csx-risk-source-panel,
+.csx-health-panel{
+  position:relative;
+}
+
+/* security event table */
+.csx-alert-panel .csx-table-wrap{
+  margin-top:8px !important;
+}
+
+.csx-table tbody tr{
+  position:relative;
+}
+
+.csx-table tbody tr:hover td{
+  color:#e5f9ff !important;
+}
+
+/* live alert cards if rendered by API */
+.csx-live-alert-row{
+  display:grid;
+  grid-template-columns:78px 1fr 55px 78px;
+  align-items:center;
+  gap:12px;
+  min-height:52px;
+  padding:8px 12px;
+  border-bottom:1px solid rgba(53,216,255,.055);
+  background:rgba(3,10,17,.35);
+  transition:.2s ease;
+}
+
+.csx-live-alert-row:hover{
+  background:rgba(53,216,255,.045);
+  transform:translateX(2px);
+}
+
+.csx-alert-severity{
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.csx-alert-severity.critical{
+  color:var(--csx-red);
+  text-shadow:0 0 9px rgba(255,85,120,.35);
+}
+
+.csx-alert-severity.high{
+  color:var(--csx-orange);
+}
+
+.csx-alert-severity.suspicious{
+  color:#facc15;
+}
+
+.csx-alert-severity.normal{
+  color:var(--csx-green);
+}
+
+.csx-alert-title{
+  color:#d8edf5;
+  font-size:9px;
+  font-weight:700;
+}
+
+.csx-alert-flow{
+  margin-top:3px;
+  color:#526e7f;
+  font-family:monospace;
+  font-size:7px;
+}
+
+.csx-alert-risk{
+  color:#dff8ff;
+  font-family:monospace;
+  font-size:13px;
+  font-weight:800;
+  text-align:right;
+}
+
+.csx-alert-time{
+  color:#557181;
+  font-family:monospace;
+  font-size:7px;
+  text-align:right;
+}
+
+/* source intelligence */
+.csx-risk-source-panel{
+  background:
+    radial-gradient(circle at 80% 20%,rgba(77,124,255,.055),transparent 45%),
+    linear-gradient(145deg,rgba(8,20,33,.97),rgba(3,10,17,.97)) !important;
+}
+
+.csx-risk-source-panel::before{
+  content:"";
+  position:absolute;
+  width:120px;
+  height:120px;
+  right:-55px;
+  top:-55px;
+  border:1px solid rgba(77,124,255,.12);
+  border-radius:50%;
+  box-shadow:0 0 30px rgba(77,124,255,.05);
+  animation:csxSourcePulse 4s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes csxSourcePulse{
+  50%{transform:scale(1.18);opacity:.45}
+}
+
+/* health */
+.csx-health-panel{
+  background:
+    radial-gradient(circle at 20% 80%,rgba(99,232,189,.045),transparent 45%),
+    linear-gradient(145deg,rgba(8,20,33,.97),rgba(3,10,17,.97)) !important;
+}
+
+.csx-health-panel::before{
+  content:"";
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:14px;
+  height:1px;
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(99,232,189,.22),
+    transparent
+  );
+  animation:csxHealthScan 3.5s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes csxHealthScan{
+  0%,100%{transform:scaleX(.45);opacity:.25}
+  50%{transform:scaleX(1);opacity:.8}
+}
+
+/* all bottom panels */
+.csx-bottom-grid .csx-panel-head{
+  min-height:42px;
+}
+
+.csx-bottom-grid .csx-panel-kicker{
+  font-size:7px !important;
+}
+
+.csx-bottom-grid h3{
+  font-size:13px !important;
+}
+
+/* mobile safety */
+@media(max-width:850px){
+  .csx-live-alert-row{
+    grid-template-columns:65px 1fr 45px;
+  }
+
+  .csx-alert-time{
+    display:none;
+  }
+}
+
+
+/* ============================================================
+   FINAL POLISH — CLEAN / PREMIUM / READABLE
+   ============================================================ */
+
+.csx-panel,
+.csx-metric,
+.csx-hero-strip{
+  isolation:isolate;
+}
+
+.csx-panel-head h3,
+.csx-title,
+.csx-hero-strip h2,
+.csx-metric>strong{
+  text-rendering:geometricPrecision;
+}
+
+/* keep motion subtle */
+.csx-panel,
+.csx-metric,
+.csx-nav-item,
+.csx-table tbody tr{
+  will-change:auto;
+}
+
+/* premium focus accents */
+.csx-network-panel .csx-panel-tag,
+.csx-threat-panel .csx-panel-tag{
+  color:#73ddff !important;
+  border-color:rgba(53,216,255,.15) !important;
+  background:rgba(53,216,255,.035) !important;
+}
+
+/* operational indicator */
+.csx-system-pill span{
+  box-shadow:
+    0 0 5px var(--csx-green),
+    0 0 12px rgba(99,232,189,.35) !important;
+}
+
+/* cleaner hero/live state */
+.csx-live-mark{
+  color:#73ddff !important;
+  letter-spacing:.13em !important;
+}
+
+/* stronger readable numbers */
+.csx-metric>strong{
+  color:#ecfbff !important;
+  font-variant-numeric:tabular-nums;
+}
+
+/* no excessive glow on text */
+.csx-panel p,
+.csx-panel span,
+.csx-panel small,
+.csx-table td{
+  text-shadow:none;
+}
+
+/* subtle active edge */
+.csx-nav-item.active::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:8px;
+  bottom:8px;
+  width:2px;
+  border-radius:2px;
+  background:var(--csx-cyan);
+  box-shadow:0 0 9px rgba(53,216,255,.55);
+}
+
+/* footer balance */
+.csx-sidebar-bottom{
+  border-top:1px solid rgba(53,216,255,.07) !important;
+}
+
+/* responsive dashboard */
+@media(max-width:1050px){
+  .csx-metrics{
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  }
+}
+
+@media(max-width:720px){
+  .csx-sidebar{
+    width:64px !important;
+  }
+
+  .csx-main{
+    margin-left:64px !important;
+    width:calc(100% - 64px) !important;
+  }
+
+  .csx-main::before{
+    left:64px;
+  }
+
+  .csx-nav-title{
+    display:none !important;
+  }
+
+  .csx-nav-item span:not(.csx-nav-icon){
+    display:none !important;
+  }
+
+  .csx-metrics{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+
+  .csx-hero-strip{
+    margin-left:10px !important;
+    margin-right:10px !important;
+  }
+}
+
+
+/* ============================================================
+   EXACT REFERENCE COMPOSITION
+   ============================================================ */
+
+.csx-main{
+  padding:18px 22px 24px!important;
+}
+
+.csx-hero-strip{
+  margin-bottom:10px!important;
+  min-height:64px!important;
+}
+
+.csx-metrics{
+  margin-bottom:9px!important;
+  grid-template-columns:repeat(5,1fr)!important;
+}
+
+.csx-metric{
+  min-height:78px!important;
+  padding:11px!important;
+  border-radius:7px!important;
+}
+
+.csx-metric-head span{
+  font-size:6px!important;
+}
+
+.csx-metric>strong{
+  font-size:23px!important;
+  line-height:1!important;
+}
+
+.csx-metric small{
+  font-size:6px!important;
+}
+
+.csx-main-grid{
+  grid-template-columns:minmax(0,2.15fr) minmax(285px,.85fr)!important;
+  gap:8px!important;
+  align-items:stretch!important;
+}
+
+.csx-network-panel,
+.csx-threat-panel{
+  height:292px!important;
+  min-height:292px!important;
+}
+
+.csx-network-panel .csx-network-map{
+  height:208px!important;
+  min-height:208px!important;
+}
+
+.csx-network-stats{
+  height:58px!important;
+}
+
+.csx-threat-panel .csx-panel-head{
+  height:48px!important;
+}
+
+.csx-threat-panel .csx-donut-wrap{
+  min-height:155px!important;
+}
+
+.csx-donut{
+  width:125px!important;
+  height:125px!important;
+}
+
+.csx-bottom-grid{
+  margin-top:8px!important;
+  grid-template-columns:minmax(0,2.15fr) minmax(285px,.85fr)!important;
+  gap:8px!important;
+  align-items:start!important;
+}
+
+.csx-alert-panel{
+  min-height:300px!important;
+}
+
+.csx-risk-source-panel{
+  min-height:150px!important;
+}
+
+.csx-health-panel{
+  min-height:142px!important;
+}
+
+/* compact SOC typography */
+.csx-panel-head{
+  padding:10px 12px!important;
+}
+
+.csx-panel-kicker{
+  font-size:6px!important;
+}
+
+.csx-panel-head h3{
+  font-size:11px!important;
+}
+
+.csx-panel-tag,
+.csx-count-badge{
+  font-size:6px!important;
+}
+
+/* reference-style sidebar */
+.csx-sidebar{
+  width:165px!important;
+  padding:14px 9px!important;
+}
+
+.csx-main{
+  margin-left:165px!important;
+  width:calc(100% - 165px)!important;
+}
+
+.csx-brand{
+  padding:5px 5px 14px!important;
+  gap:8px!important;
+}
+
+.csx-logo{
+  width:30px!important;
+  height:30px!important;
+  border-radius:8px!important;
+  font-size:15px!important;
+}
+
+.csx-brand-name{
+  font-size:10px!important;
+}
+
+.csx-brand-sub{
+  font-size:5px!important;
+}
+
+.csx-nav-title{
+  font-size:6px!important;
+  margin:14px 6px 6px!important;
+}
+
+.csx-nav-item{
+  padding:8px 7px!important;
+  gap:7px!important;
+  font-size:8px!important;
+  border-radius:7px!important;
+}
+
+/* AI / ML remains visually prominent */
+.csx-reference-ml{
+  margin-top:6px!important;
+  min-height:135px!important;
+}
+
+.csx-ml-title{
+  font-size:12px!important;
+}
+
+.csx-ml-core{
+  margin-top:8px!important;
+}
+
+.csx-ml-orb{
+  width:62px!important;
+  height:62px!important;
+}
+
+.csx-ml-stat{
+  padding:5px!important;
+}
+
+.csx-ml-stat strong{
+  font-size:8px!important;
+}
+
+/* remove excessive decorative darkness */
+.csx-panel{
+  box-shadow:0 8px 25px rgba(0,0,0,.22)!important;
+}
+
+@media(max-width:1000px){
+  .csx-main-grid,
+  .csx-bottom-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .csx-network-panel,
+  .csx-threat-panel{
+    height:auto!important;
+  }
+}
+
+
+/* ============================================================
+   REFERENCE FINAL VISUAL LAYER
+   ============================================================ */
+
+.csx-app{
+  background:
+    radial-gradient(circle at 70% 10%,rgba(53,216,255,.035),transparent 30%),
+    #02070d!important;
+}
+
+/* live top status */
+.csx-system-pill{
+  border:1px solid rgba(99,232,189,.18)!important;
+  background:rgba(99,232,189,.035)!important;
+}
+
+.csx-system-pill::before{
+  content:"";
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#63e8bd;
+  box-shadow:0 0 10px #63e8bd;
+  animation:refLive 1.4s ease-in-out infinite;
+}
+
+@keyframes refLive{
+  50%{opacity:.35;transform:scale(.65)}
+}
+
+/* network live signal */
+.csx-net-status{
+  color:#63e8bd!important;
+  font-family:monospace!important;
+  letter-spacing:.08em!important;
+}
+
+.csx-net-status::first-letter{
+  text-shadow:0 0 10px #63e8bd;
+}
+
+/* network lines should feel alive */
+.csx-net-lines{
+  overflow:visible;
+}
+
+.csx-net-lines .net-line{
+  filter:drop-shadow(0 0 3px rgba(53,216,255,.55));
+}
+
+.csx-net-lines .cyan-line{
+  stroke:#35d8ff!important;
+}
+
+.csx-net-lines .blue-line{
+  stroke:#4d7cff!important;
+}
+
+.csx-net-lines .green-line{
+  stroke:#63e8bd!important;
+}
+
+/* core */
+.node-core strong{
+  color:#dffaff!important;
+  text-shadow:0 0 12px rgba(53,216,255,.55);
+}
+
+.node-core span{
+  color:#4f91a8!important;
+}
+
+/* KPI live accent */
+.csx-metric{
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease!important;
+}
+
+.csx-metric:hover{
+  transform:translateY(-3px)!important;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.35),
+    0 0 18px color-mix(in srgb,var(--metric-accent) 12%,transparent)!important;
+}
+
+/* alert table live hover */
+.csx-table tbody tr{
+  transition:background .18s ease,transform .18s ease;
+}
+
+.csx-table tbody tr:hover{
+  background:rgba(53,216,255,.035)!important;
+  transform:translateX(2px);
+}
+
+/* threat legend */
+.csx-threat-legend strong{
+  color:#dff8ff!important;
+  font-family:monospace!important;
+}
+
+/* panel edge */
+.csx-panel{
+  border-color:rgba(53,216,255,.105)!important;
+}
+
+.csx-panel:hover{
+  border-color:rgba(53,216,255,.17)!important;
+}
+
+/* AI/ML status */
+.csx-ml-status{
+  position:relative;
+  z-index:2;
+}
+
+.csx-reference-ml{
+  box-shadow:
+    inset 0 0 35px rgba(53,216,255,.025),
+    0 0 18px rgba(53,216,255,.025);
+}
+
+.csx-ml-orb{
+  filter:drop-shadow(0 0 10px rgba(53,216,255,.22));
+}
+
+/* compact bottom intelligence cards */
+.csx-bottom-grid{
+  align-items:stretch!important;
+}
+
+.csx-bottom-grid > .csx-panel{
+  background:
+    linear-gradient(145deg,rgba(7,22,35,.98),rgba(3,10,17,.98))!important;
+}
+
+/* no giant empty gaps */
+.csx-table-wrap{
+  min-height:0!important;
+}
+
+/* scrollbar */
+::-webkit-scrollbar{
+  width:5px;
+}
+
+::-webkit-scrollbar-track{
+  background:#02070d;
+}
+
+::-webkit-scrollbar-thumb{
+  background:rgba(53,216,255,.20);
+  border-radius:8px;
+}
+
+/* accessibility/readability */
+.csx-panel h3,
+.csx-metric strong,
+.csx-table td,
+.csx-ml-title{
+  text-shadow:none!important;
+}
+
+/* small screens */
+@media(max-width:700px){
+  .csx-sidebar{
+    width:58px!important;
+  }
+
+  .csx-main{
+    margin-left:58px!important;
+    width:calc(100% - 58px)!important;
+    padding:12px!important;
+  }
+
+  .csx-brand-name,
+  .csx-brand-sub,
+  .csx-nav-title,
+  .csx-nav-item span:not(.csx-nav-icon){
+    display:none!important;
+  }
+}
+
+</style>
+
+
+<style id="csx-reference-build">
+/* ============================================================
+   CYBER SENTINEL X — REFERENCE SOC BUILD
+   ============================================================ */
+
+:root{
+  --ref-bg:#030a12;
+  --ref-panel:#071522;
+  --ref-panel2:#081b2a;
+  --ref-cyan:#35d8ff;
+  --ref-blue:#4d7cff;
+  --ref-green:#63e8bd;
+  --ref-red:#ff5578;
+  --ref-orange:#ffb347;
+}
+
+body{
+  background:
+    radial-gradient(circle at 72% 8%,rgba(35,145,255,.055),transparent 28%),
+    linear-gradient(135deg,#02070d,#04111c 48%,#02070d) !important;
+}
+
+/* ---------- HERO ---------- */
+.csx-hero-strip{
+  min-height:72px!important;
+  border:1px solid rgba(53,216,255,.14)!important;
+  background:
+    radial-gradient(circle at 85% 50%,rgba(53,216,255,.08),transparent 30%),
+    linear-gradient(120deg,rgba(7,27,43,.98),rgba(3,13,22,.98))!important;
+  box-shadow:0 12px 35px rgba(0,0,0,.28)!important;
+}
+
+.csx-hero-strip:after{
+  content:"";
+  position:absolute;
+  left:22%;
+  right:22%;
+  bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#35d8ff,transparent);
+  box-shadow:0 0 12px rgba(53,216,255,.55);
+}
+
+/* ---------- KPI ---------- */
+.csx-metrics{
+  gap:8px!important;
+}
+
+.csx-metric{
+  min-height:84px!important;
+  background:
+    radial-gradient(circle at 90% 0%,color-mix(in srgb,var(--metric-accent) 12%,transparent),transparent 42%),
+    linear-gradient(145deg,#091b2a,#040d17)!important;
+  border:1px solid rgba(53,216,255,.13)!important;
+}
+
+.csx-metric>strong{
+  font-size:25px!important;
+  letter-spacing:-.04em;
+}
+
+.csx-metric small{
+  opacity:.72;
+}
+
+/* ---------- MAIN SOC GRID ---------- */
+.csx-main-grid{
+  grid-template-columns:minmax(0,2.15fr) minmax(300px,.85fr)!important;
+  gap:9px!important;
+}
+
+/* ---------- NETWORK ---------- */
+.csx-network-panel{
+  min-height:330px!important;
+  overflow:hidden!important;
+}
+
+.csx-network-map.csx-network-v2{
+  min-height:270px!important;
+  border:0!important;
+  border-radius:0 0 10px 10px!important;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(30,165,255,.14),transparent 34%),
+    radial-gradient(circle at 20% 70%,rgba(0,255,210,.055),transparent 25%),
+    linear-gradient(135deg,#020b14,#061725 48%,#020911)!important;
+}
+
+/* network world-grid feel */
+.csx-net-grid{
+  opacity:.15!important;
+  background-size:42px 42px!important;
+}
+
+.csx-net-vignette{
+  background:
+    radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.48) 100%)!important;
+}
+
+.csx-net-orbit{
+  opacity:.65!important;
+}
+
+.csx-net-node{
+  filter:drop-shadow(0 0 7px rgba(53,216,255,.45));
+}
+
+.node-core{
+  box-shadow:
+    0 0 0 1px rgba(53,216,255,.15),
+    0 0 25px rgba(53,216,255,.22),
+    inset 0 0 25px rgba(53,216,255,.08)!important;
+}
+
+/* moving network telemetry */
+.csx-net-lines .net-line{
+  stroke-dasharray:9 13!important;
+  animation:csxTrafficFlow 2.2s linear infinite!important;
+}
+
+.csx-net-lines .blue-line{
+  animation-duration:2.8s!important;
+}
+
+.csx-net-lines .green-line{
+  animation-duration:1.8s!important;
+}
+
+@keyframes csxTrafficFlow{
+  to{stroke-dashoffset:-88}
+}
+
+.net-point{
+  animation:csxPointPulse 1.5s ease-in-out infinite alternate!important;
+}
+
+@keyframes csxPointPulse{
+  from{opacity:.35;transform:scale(.8)}
+  to{opacity:1;transform:scale(1.35)}
+}
+
+/* ---------- THREAT DISTRIBUTION ---------- */
+.csx-threat-panel{
+  min-height:330px!important;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(53,216,255,.045),transparent 40%),
+    linear-gradient(145deg,#071725,#030b13)!important;
+}
+
+.csx-threat-panel .csx-donut-wrap{
+  min-height:205px!important;
+}
+
+.csx-donut{
+  width:155px!important;
+  height:155px!important;
+  border-radius:50%!important;
+  position:relative!important;
+  background:conic-gradient(
+    #ff5578 0deg 1deg,
+    #ff9f43 1deg 2deg,
+    #facc15 2deg 3deg,
+    #263849 3deg 360deg
+  );
+  box-shadow:
+    0 0 25px rgba(53,216,255,.08),
+    inset 0 0 25px rgba(0,0,0,.45);
+}
+
+.csx-donut:before{
+  content:"";
+  position:absolute;
+  inset:-7px;
+  border-radius:50%;
+  border:1px solid rgba(53,216,255,.12);
+  animation:csxDonutPulse 3s ease-in-out infinite;
+}
+
+@keyframes csxDonutPulse{
+  50%{transform:scale(1.04);opacity:.45}
+}
+
+.csx-donut-inner{
+  position:absolute!important;
+  inset:21px!important;
+  border-radius:50%!important;
+  background:#06121e!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:column!important;
+  box-shadow:inset 0 0 22px rgba(0,0,0,.55);
+}
+
+.csx-donut-inner strong{
+  font-size:24px!important;
+  color:#e8fbff!important;
+}
+
+.csx-threat-legend{
+  padding:7px 12px 12px!important;
+}
+
+.csx-threat-legend>div{
+  border:1px solid rgba(53,216,255,.055);
+  border-radius:6px;
+  padding:5px 7px;
+  margin-top:4px;
+  background:rgba(2,10,17,.45);
+}
+
+/* ---------- AI / ML PANEL ---------- */
+.csx-reference-ml{
+  margin-top:9px;
+  position:relative;
+  overflow:hidden;
+  min-height:175px;
+  padding:13px;
+  border:1px solid rgba(53,216,255,.12);
+  border-radius:9px;
+  background:
+    radial-gradient(circle at 80% 45%,rgba(77,124,255,.12),transparent 34%),
+    linear-gradient(145deg,#071b2a,#030b14);
+}
+
+.csx-reference-ml:after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:-30%;
+  height:35%;
+  background:linear-gradient(180deg,transparent,rgba(53,216,255,.10),transparent);
+  animation:csxMLScan 3.2s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes csxMLScan{
+  from{transform:translateY(0)}
+  to{transform:translateY(390px)}
+}
+
+.csx-ml-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.csx-ml-kicker{
+  color:#4c9eb8;
+  font-size:7px;
+  letter-spacing:.16em;
+  font-weight:800;
+}
+
+.csx-ml-title{
+  margin-top:3px;
+  color:#e4f8ff;
+  font-size:14px;
+  font-weight:850;
+}
+
+.csx-ml-status{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  color:#63e8bd;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.1em;
+}
+
+.csx-ml-status i{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#63e8bd;
+  box-shadow:0 0 9px #63e8bd;
+  animation:csxMLPulse 1.3s infinite;
+}
+
+@keyframes csxMLPulse{
+  50%{opacity:.35;transform:scale(.65)}
+}
+
+.csx-ml-core{
+  display:grid;
+  grid-template-columns:86px 1fr;
+  gap:12px;
+  align-items:center;
+  margin-top:13px;
+}
+
+.csx-ml-orb{
+  width:76px;
+  height:76px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  position:relative;
+  background:
+    radial-gradient(circle,#0b3144 0 24%,transparent 25%),
+    conic-gradient(from 0deg,#35d8ff,#4d7cff,#63e8bd,#35d8ff);
+  box-shadow:0 0 25px rgba(53,216,255,.18);
+  animation:csxMLRotate 7s linear infinite;
+}
+
+.csx-ml-orb:after{
+  content:"AI";
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  background:#06121e;
+  display:grid;
+  place-items:center;
+  color:#dffaff;
+  font-size:15px;
+  font-weight:900;
+  animation:csxMLRotateReverse 7s linear infinite;
+}
+
+@keyframes csxMLRotate{to{transform:rotate(360deg)}}
+@keyframes csxMLRotateReverse{to{transform:rotate(-360deg)}}
+
+.csx-ml-stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.csx-ml-stat{
+  padding:7px;
+  border:1px solid rgba(53,216,255,.065);
+  border-radius:6px;
+  background:rgba(2,9,16,.5);
+}
+
+.csx-ml-stat span{
+  display:block;
+  color:#547487;
+  font-size:6px;
+  letter-spacing:.1em;
+}
+
+.csx-ml-stat strong{
+  display:block;
+  margin-top:3px;
+  color:#d9f8ff;
+  font-family:monospace;
+  font-size:10px;
+}
+
+/* ---------- EVENTS ---------- */
+.csx-alert-panel{
+  min-height:310px!important;
+}
+
+.csx-table{
+  width:100%!important;
+  border-collapse:collapse!important;
+}
+
+.csx-table th{
+  color:#477286!important;
+  font-size:7px!important;
+  letter-spacing:.12em!important;
+  padding:9px!important;
+  border-bottom:1px solid rgba(53,216,255,.09)!important;
+}
+
+.csx-table td{
+  color:#b9d4df!important;
+  font-size:8px!important;
+  padding:9px!important;
+  border-bottom:1px solid rgba(53,216,255,.045)!important;
+}
+
+.csx-event-severity{
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.csx-event-severity.CRITICAL{color:#ff5578}
+.csx-event-severity.HIGH{color:#ff9f43}
+.csx-event-severity.SUSPICIOUS{color:#facc15}
+.csx-event-severity.NORMAL{color:#63e8bd}
+
+/* ---------- RISK SOURCES ---------- */
+.csx-risk-source-panel{
+  min-height:175px!important;
+}
+
+.csx-source-row{
+  display:grid;
+  grid-template-columns:1fr 52px;
+  gap:10px;
+  align-items:center;
+  padding:8px 0;
+  border-bottom:1px solid rgba(53,216,255,.05);
+}
+
+.csx-source-ip{
+  color:#cfeaf3;
+  font-family:monospace;
+  font-size:8px;
+}
+
+.csx-source-meta{
+  margin-top:3px;
+  color:#526e7f;
+  font-size:6px;
+}
+
+.csx-source-risk{
+  text-align:right;
+  color:#ff9f43;
+  font-family:monospace;
+  font-size:11px;
+  font-weight:900;
+}
+
+/* ---------- EMPTY STATE ---------- */
+.csx-empty{
+  color:#496879!important;
+  padding:20px!important;
+  text-align:center!important;
+}
+
+/* ---------- REMOVE OLD GHOST / IMAGE LAYERS ---------- */
+.csx-panel:before,
+.csx-panel:after{
+  pointer-events:none;
+}
+
+.csx-panel{
+  backdrop-filter:none!important;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:1100px){
+  .csx-main-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* ML PREMIUM VISUAL */
+.csx-reference-ml{
+  position:relative;
+  overflow:hidden;
+  padding:18px!important;
+  border:1px solid rgba(53,216,255,.14);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 85% 20%,rgba(53,216,255,.10),transparent 32%),
+    linear-gradient(145deg,rgba(7,25,40,.96),rgba(2,10,18,.98));
+}
+
+.csx-reference-ml::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    110deg,
+    transparent 35%,
+    rgba(53,216,255,.06) 50%,
+    transparent 65%
+  );
+  transform:translateX(-100%);
+  animation:mlScan 4s linear infinite;
+  pointer-events:none;
+}
+
+.csx-ml-status{
+  display:grid!important;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  position:relative;
+  z-index:2;
+}
+
+.csx-ml-status > div{
+  padding:12px 14px;
+  border:1px solid rgba(53,216,255,.10);
+  border-radius:10px;
+  background:rgba(2,12,21,.72);
+  transition:.2s ease;
+}
+
+.csx-ml-status > div:hover{
+  border-color:rgba(53,216,255,.30);
+  box-shadow:0 0 18px rgba(53,216,255,.08);
+  transform:translateY(-2px);
+}
+
+.csx-ml-orb{
+  width:72px!important;
+  height:72px!important;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at center,rgba(53,216,255,.35),rgba(53,216,255,.06) 42%,transparent 70%);
+  animation:mlPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes mlScan{
+  to{transform:translateX(100%);}
+}
+
+@keyframes mlPulse{
+  0%,100%{transform:scale(1);filter:drop-shadow(0 0 8px rgba(53,216,255,.18));}
+  50%{transform:scale(1.08);filter:drop-shadow(0 0 20px rgba(53,216,255,.42));}
+}
+
+@media(max-width:700px){
+  .csx-ml-status{
+    grid-template-columns:1fr;
+  }
+}
+
+</style>
+
+</head>
+
+<body>
+<div class="csx-app">
+
+  <aside class="csx-sidebar">
+    <div class="csx-brand">
+      <div class="csx-logo">⬡</div>
+      <div>
+        <div class="csx-brand-name">CYBER SENTINEL X</div>
+        <div class="csx-brand-sub">SECURITY OPERATIONS PLATFORM</div>
+      </div>
+    </div>
+
+    <div class="csx-nav-title">MONITOR</div>
+    <nav class="csx-nav">
+      <a class="csx-nav-item active" href="/">◈ <span>Dashboard</span></a>
+      <a class="csx-nav-item" href="/">⌁ <span>Live Network</span></a>
+      <a class="csx-nav-item" href="/alerts">⚠ <span>Alerts</span></a>
+      <a class="csx-nav-item" href="/incidents">◉ <span>Incidents</span></a>
+    </nav>
+
+    <div class="csx-nav-title">INVESTIGATE</div>
+    <nav class="csx-nav">
+      <a class="csx-nav-item" href="/investigation">⌕ <span>Investigation</span></a>
+      <a class="csx-nav-item" href="/pcap">▣ <span>PCAP Analysis</span></a>
+      <a class="csx-nav-item" href="/">◌ <span>Threat Intelligence</span></a>
+    </nav>
+
+    <div class="csx-nav-title">MANAGE</div>
+    <nav class="csx-nav">
+      <a class="csx-nav-item" href="/">▦ <span>Assets</span></a>
+      <a class="csx-nav-item" href="/">⚙ <span>Detection Rules</span></a>
+      <a class="csx-nav-item" href="/">▤ <span>Reports</span></a>
+    </nav>
+
+    <div class="csx-sidebar-bottom">
+      <div class="csx-mini-status">
+        <span class="csx-status-dot"></span>
+        <div>
+          <strong>SYSTEM ACTIVE</strong>
+          <small>Monitoring network traffic</small>
+        </div>
+      </div>
+      <div class="csx-powered">Python · Flask · Scapy · ML</div>
+    </div>
+  </aside>
+
+  <main class="csx-main">
+
+    <header class="csx-topbar">
+      <div>
+        <div class="csx-eyebrow">SECURITY OPERATIONS CENTER</div>
+        <h1 class="csx-title">Threat Monitoring Console</h1>
+        <p class="csx-subtitle">Real-time network visibility · AI-assisted threat analysis</p>
+      </div>
+
+      <div class="csx-topbar-right">
+        <div class="csx-clock">
+          <span id="csxDate">--</span>
+          <strong id="csxTime">--:--:--</strong>
+        </div>
+        <div class="csx-admin">
+          <span class="csx-admin-dot"></span>
+          <div>
+            <strong>ADMIN</strong>
+            <small>Authenticated</small>
+          </div>
+        </div>
+        <div class="csx-system-pill">
+          <span></span> OPERATIONAL
+        </div>
+      </div>
+    </header>
+
+    <section class="csx-hero-strip">
+      <div>
+        <span class="csx-live-mark"><i></i> LIVE THREAT DETECTION</span>
+        <h2>Cyber Sentinel X</h2>
+        <p>Unified visibility across network activity, alerts, incidents and anomaly intelligence.</p>
+      </div>
+      <div class="csx-hero-meta">
+        <span>AI ANALYSIS</span>
+        <strong>ONLINE</strong>
+      </div>
+    </section>
+
+    <section class="csx-metrics">
+
+      <div class="csx-metric metric-blue">
+        <div class="csx-metric-head"><span>ACTIVE ALERTS</span><b>●</b></div>
+        <strong id="activeAlerts">0</strong>
+        <small>Security events requiring attention</small>
+        <div class="csx-metric-line"></div>
+      </div>
+
+      <div class="csx-metric metric-red">
+        <div class="csx-metric-head"><span>OPEN INCIDENTS</span><b>●</b></div>
+        <strong id="openIncidents">0</strong>
+        <small>Investigations currently open</small>
+        <div class="csx-metric-line"></div>
+      </div>
+
+      <div class="csx-metric metric-green">
+        <div class="csx-metric-head"><span>MONITORED ASSETS</span><b>●</b></div>
+        <strong id="activeAssets">0</strong>
+        <small>Active assets under monitoring</small>
+        <div class="csx-metric-line"></div>
+      </div>
+
+      <div class="csx-metric metric-purple">
+        <div class="csx-metric-head"><span>EVENTS / MIN</span><b>●</b></div>
+        <strong id="eventCount">0</strong>
+        <small>Observed security activity</small>
+        <div class="csx-metric-line"></div>
+      </div>
+
+      <div class="csx-metric metric-orange">
+        <div class="csx-metric-head"><span>THREAT SCORE</span><b>●</b></div>
+        <strong><span id="threatScore">0</span><em>/100</em></strong>
+        <small id="csxRiskLabel">LOW RISK</small>
+        <div class="csx-metric-line"></div>
+      </div>
+
+    </section>
+
+    <section class="csx-main-grid">
+
+      <div class="csx-panel csx-network-panel">
+        <div class="csx-panel-head">
+          <div>
+            <span class="csx-panel-kicker">NETWORK TELEMETRY</span>
+            <h3>Live Network Activity</h3>
+          </div>
+          <span class="csx-live-badge"><i></i> LIVE</span>
+        </div>
+
+        <div class="csx-network-map csx-network-v2">
+          <div class="csx-net-grid"></div>
+          <div class="csx-net-vignette"></div>
+
+          <div class="csx-net-orbit orbit-1"></div>
+          <div class="csx-net-orbit orbit-2"></div>
+          <div class="csx-net-orbit orbit-3"></div>
+
+          <svg class="csx-net-lines" viewBox="0 0 900 360" preserveAspectRatio="none">
+            <defs>
+              <filter id="csxGlow">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <path class="net-line cyan-line" d="M70 245 C190 70 300 285 450 175 S680 70 835 205"/>
+            <path class="net-line blue-line" d="M75 105 C220 300 350 65 500 225 S705 290 850 105"/>
+            <path class="net-line green-line" d="M165 310 C290 175 420 185 570 100 S755 165 820 295"/>
+
+            <circle class="net-point" cx="70" cy="245" r="5"/>
+            <circle class="net-point" cx="450" cy="175" r="6"/>
+            <circle class="net-point" cx="835" cy="205" r="5"/>
+            <circle class="net-point" cx="75" cy="105" r="4"/>
+            <circle class="net-point" cx="500" cy="225" r="4"/>
+            <circle class="net-point" cx="850" cy="105" r="4"/>
+          </svg>
+
+          <div class="csx-net-node node-left">
+            <b>EDGE</b>
+            <span>01</span>
+          </div>
+
+          <div class="csx-net-node node-core">
+            <div class="core-pulse"></div>
+            <strong>CSX</strong>
+            <span>SOC CORE</span>
+          </div>
+
+          <div class="csx-net-node node-right">
+            <b>EDGE</b>
+            <span>02</span>
+          </div>
+
+          <div class="csx-net-status">
+            <i></i>
+            <span>NETWORK MONITORING ACTIVE</span>
+          </div>
+
+          <div class="csx-net-label label-a">INGRESS</div>
+          <div class="csx-net-label label-b">CORE TELEMETRY</div>
+          <div class="csx-net-label label-c">EGRESS</div>
+        </div>
+
+        <div class="csx-network-stats">
+          <div><span>INBOUND</span><strong id="networkInbound">0 B</strong></div>
+          <div><span>OUTBOUND</span><strong id="networkOutbound">0</strong></div>
+          <div><span>TOTAL TRAFFIC</span><strong id="networkTotal">0 B</strong></div>
+          <div><span>CONNECTIONS</span><strong id="networkConnections">0</strong></div>
+        </div>
+      </div>
+
+      <div class="csx-panel csx-threat-panel">
+        <div class="csx-panel-head">
+          <div>
+            <span class="csx-panel-kicker">RISK ANALYTICS</span>
+            <h3>Threat Distribution</h3>
+          </div>
+          <span class="csx-panel-tag">REAL TIME</span>
+        </div>
+
+        <div class="csx-donut-wrap">
+          <div class="csx-donut" id="threatDonut">
+            <div class="csx-donut-inner">
+              <strong id="donutTotal">0</strong>
+              <span>EVENTS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="csx-threat-legend">
+          <div><i class="dot-critical"></i><span>Critical</span><strong id="severityCritical">0</strong></div>
+          <div><i class="dot-high"></i><span>High</span><strong id="severityHigh">0</strong></div>
+          <div><i class="dot-suspicious"></i><span>Suspicious</span><strong id="severitySuspicious">0</strong></div>
+          <div><i class="dot-normal"></i><span>Normal</span><strong id="severityNormal">0</strong></div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="csx-bottom-grid">
+
+      <div class="csx-panel csx-alert-panel">
+        <div class="csx-panel-head">
+          <div>
+            <span class="csx-panel-kicker">SECURITY EVENTS</span>
+            <h3>Recent Threats & Events</h3>
+          </div>
+          <span class="csx-count-badge" id="recentAlertCount">0 EVENTS</span>
+        </div>
+
+        <div class="csx-table-wrap">
+          <table class="csx-table">
+            <thead>
+              <tr>
+                <th>SEVERITY</th>
+                <th>EVENT</th>
+                <th>SOURCE</th>
+                <th>RISK</th>
+                <th>STATUS</th>
+              </tr>
+            </thead>
+            <tbody id="recentAlertsBody">
+              <tr><td colspan="5" class="csx-empty">Waiting for security telemetry...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="csx-side-stack">
+
+        <div class="csx-panel csx-risk-source-panel">
+          <div class="csx-panel-head">
+            <div>
+              <span class="csx-panel-kicker">THREAT ORIGINS</span>
+              <h3>Top Risk Sources</h3>
+            </div>
+          </div>
+          <div id="riskSources" class="csx-risk-sources">
+            <div class="csx-empty">Collecting source intelligence...</div>
+          </div>
+        </div>
+
+        <div class="csx-panel csx-health-panel">
+          <div class="csx-panel-head">
+            <div>
+              <span class="csx-panel-kicker">PLATFORM STATUS</span>
+              <h3>System Health</h3>
+            </div>
+            <span class="csx-health-ok">HEALTHY</span>
+          </div>
+
+          <div class="csx-health-grid">
+            <div><span>●</span> Authentication <strong>ONLINE</strong></div>
+            <div><span>●</span> Threat Detection <strong>ONLINE</strong></div>
+            <div><span>●</span> ML Engine <strong>ONLINE</strong></div>
+            <div><span>●</span> Network Capture <strong>ONLINE</strong></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer class="csx-footer">
+      <span>CYBER SENTINEL X <b>v2.3.0</b></span>
+      <span>Powered by Python · Flask · Scapy · SQLite · Machine Learning</span>
+      <span><i></i> ALL SYSTEMS MONITORED</span>
+    </footer>
+
+  </main>
+</div>
+
+
+<script>
+
+async function csxFetchJSON(url) {
+    const response = await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        headers: {
+            "Accept": "application/json"
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            `HTTP ${response.status} while fetching ${url}`
+        );
+    }
+
+    return await response.json();
+}
+
+// CYBER SENTINEL X LIVE SOC
+
+
+/* ============================================================
+   CYBER SENTINEL X - LIVE NETWORK GRAPH ENGINE
+   ============================================================ */
+
+const csxNetworkHistory = [];
+const CSX_NETWORK_HISTORY_MAX = 30;
+
+function csxDrawNetworkGraph() {
+    const canvas = document.getElementById("networkTrafficCanvas");
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = Math.max(1, rect.width * dpr);
+    canvas.height = Math.max(1, rect.height * dpr);
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+
+    const width = rect.width;
+    const height = rect.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    if (csxNetworkHistory.length < 2) {
+        ctx.font = "12px sans-serif";
+        ctx.fillText("Waiting for live network traffic...", 18, height / 2);
+        return;
+    }
+
+    const values = csxNetworkHistory.map(x => x.bytes);
+    const maxValue = Math.max(...values, 1);
+
+    const padding = 18;
+    const graphWidth = width - padding * 2;
+    const graphHeight = height - padding * 2;
+
+    ctx.beginPath();
+
+    csxNetworkHistory.forEach((point, index) => {
+        const x =
+            padding +
+            (index / (CSX_NETWORK_HISTORY_MAX - 1)) *
+            graphWidth;
+
+        const y =
+            height -
+            padding -
+            (point.bytes / maxValue) * graphHeight;
+
+        if (index === 0)
+            ctx.moveTo(x, y);
+        else
+            ctx.lineTo(x, y);
+    });
+
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    csxNetworkHistory.forEach((point, index) => {
+        const x =
+            padding +
+            (index / (CSX_NETWORK_HISTORY_MAX - 1)) *
+            graphWidth;
+
+        const y =
+            height -
+            padding -
+            (point.bytes / maxValue) * graphHeight;
+
+        if (index === 0)
+            ctx.moveTo(x, y);
+        else
+            ctx.lineTo(x, y);
+    });
+
+    ctx.lineTo(width - padding, height - padding);
+    ctx.lineTo(padding, height - padding);
+    ctx.closePath();
+    ctx.globalAlpha = 0.08;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+}
+
+function csxRecordNetworkMetric(network) {
+    const bytes = Number(network?.total_bytes || 0);
+
+    csxNetworkHistory.push({
+        timestamp: Date.now(),
+        bytes: bytes
+    });
+
+    if (csxNetworkHistory.length > CSX_NETWORK_HISTORY_MAX) {
+        csxNetworkHistory.shift();
+    }
+
+    csxDrawNetworkGraph();
+}
+
+window.addEventListener("resize", csxDrawNetworkGraph);
+
+
+async function updateLiveSOC() {
+
+    try {
+
+        const data =
+            await csxFetchJSON("/api/soc/summary");
+
+        /* -----------------------------
+           LIVE NETWORK ACTIVITY
+           ----------------------------- */
+
+        try {
+
+            const network =
+                await csxFetchJSON("/api/soc/network");
+
+            csxRecordNetworkMetric(network);
+
+
+            const inbound =
+                document.getElementById("networkInbound");
+
+            const outbound =
+                document.getElementById("networkOutbound");
+
+            const total =
+                document.getElementById("networkTotal");
+
+            const connections =
+                document.getElementById("networkConnections");
+
+            /*
+             * Current backend exposes flow/packet/byte
+             * metrics. Until directional byte counters
+             * are available, show total captured traffic
+             * as the live traffic indicator.
+             */
+
+            const bytes =
+                Number(network.total_bytes || 0);
+
+            const kb =
+                bytes / 1024;
+
+            const traffic =
+                kb >= 1024
+                    ? (kb / 1024).toFixed(2) + " MB"
+                    : kb.toFixed(2) + " KB";
+
+            if (inbound)
+                inbound.textContent = traffic;
+
+            if (outbound)
+                outbound.textContent =
+                    `${network.completed_flows ?? 0} flows`;
+
+            if (total)
+                total.textContent = traffic;
+
+            if (connections)
+                connections.textContent =
+                    Number(network.total_flows_created || 0)
+                        .toLocaleString();
+
+        } catch (networkError) {
+
+            console.warn(
+                "Network metrics unavailable:",
+                networkError
+            );
+
+        }
+
+
+        /* -----------------------------
+           TOP METRICS
+           ----------------------------- */
+
+        const activeAlerts =
+            document.getElementById("activeAlerts");
+
+        const openIncidents =
+            document.getElementById("openIncidents");
+
+        const activeAssets =
+            document.getElementById("activeAssets");
+
+        const eventCount =
+            document.getElementById("eventCount");
+
+        const threatScore =
+            document.getElementById("threatScore");
+
+
+        if (activeAlerts)
+            activeAlerts.textContent =
+                data.active_alerts ?? 0;
+
+        if (openIncidents)
+            openIncidents.textContent =
+                data.open_incidents ?? 0;
+
+        if (activeAssets)
+            activeAssets.textContent =
+                data.active_assets ?? 0;
+
+        if (eventCount)
+            eventCount.textContent =
+                data.events ?? 0;
+
+        if (threatScore)
+            threatScore.textContent =
+                data.threat_score ?? 0;
+
+        const riskValue =
+            document.getElementById("riskValue");
+
+        if (riskValue)
+            riskValue.textContent =
+                data.threat_score ?? 0;
+
+
+        /* -----------------------------
+           RISK LEVEL
+           ----------------------------- */
+
+        const riskLevel =
+            document.querySelector(".csx-risk-level");
+
+        if (riskLevel) {
+
+            const level =
+                data.risk_level || "LOW";
+
+            riskLevel.textContent =
+                `${level} RISK`;
+        }
+
+
+        /* -----------------------------
+           SEVERITY BREAKDOWN
+           ----------------------------- */
+
+        const breakdown =
+            document.querySelectorAll(
+                ".csx-break-row .csx-break-count"
+            );
+
+        const severity =
+            data.severity || {};
+
+        if (breakdown.length >= 4) {
+
+            breakdown[0].textContent =
+                severity.critical ?? 0;
+
+            breakdown[1].textContent =
+                severity.high ?? 0;
+
+            breakdown[2].textContent =
+                severity.suspicious ?? 0;
+
+            breakdown[3].textContent =
+                severity.normal ?? 0;
+        }
+
+
+        /* -----------------------------
+           ML ENGINE
+           ----------------------------- */
+
+        const mlCards =
+            document.querySelectorAll(
+                ".csx-ml-card"
+            );
+
+        if (mlCards.length >= 4) {
+
+            const engineValue =
+                mlCards[0].querySelector(
+                    ".csx-ml-value"
+                );
+
+            const thresholdValue =
+                mlCards[1].querySelector(
+                    ".csx-ml-value"
+                );
+
+            const modelValue =
+                mlCards[3].querySelector(
+                    ".csx-ml-value"
+                );
+
+
+            if (engineValue) {
+
+                engineValue.textContent =
+                    data.platform?.ml_enabled
+                        ? "● ONLINE"
+                        : "● OFFLINE";
+            }
+
+
+            if (thresholdValue) {
+
+                try {
+
+                    const system =
+                        await csxFetchJSON(
+                            "/api/system"
+                        );
+
+                    thresholdValue.textContent =
+                        Number(
+                            system.ml?.threshold ?? 0.70
+                        ).toFixed(2);
+
+                    if (modelValue) {
+
+                        modelValue.textContent =
+                            system.ml?.model ||
+                            "BASELINE";
+                    }
+
+                } catch (error) {
+
+                    console.log(
+                        "ML information unavailable"
+                    );
+                }
+            }
+        }
+
+
+        console.log(
+            "CSX LIVE SOC UPDATED",
+            data
+        );
+
+    } catch (error) {
+
+        console.error(
+            "CSX SOC API ERROR:",
+            error
+        );
+    }
+}
+
+
+/* ============================================================
+   RECENT SECURITY ALERTS
+   ============================================================ */
+
+
+/* ============================================================
+   CYBER SENTINEL X - LIVE ALERT CENTER
+   ============================================================ */
+
+function csxFormatAlertTime(value) {
+    if (!value) return "--";
+    try {
+        return new Date(value).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        });
+    } catch {
+        return String(value);
+    }
+}
+
+function csxAlertSeverityClass(severity) {
+    return String(severity || "NORMAL")
+        .toLowerCase()
+        .replace(/[^a-z]/g, "");
+}
+
+function csxRenderLiveAlert(alert) {
+    const severity = alert.severity || "SUSPICIOUS";
+    const source =
+        alert.source_ip ||
+        alert.src_ip ||
+        "UNKNOWN";
+
+    const destination =
+        alert.destination_ip ||
+        alert.dst_ip ||
+        "UNKNOWN";
+
+    const title =
+        alert.title ||
+        alert.activity ||
+        "Suspicious network activity";
+
+    const risk =
+        Number(
+            alert.risk_score ??
+            alert.risk ??
+            0
+        );
+
+    return `
+        <div class="csx-live-alert-row"
+             data-alert-id="${alert.alert_id || alert.id || ""}">
+            <div class="csx-alert-severity ${csxAlertSeverityClass(severity)}">
+                ${severity}
+            </div>
+
+            <div class="csx-alert-main">
+                <div class="csx-alert-title">
+                    ${title}
+                </div>
+
+                <div class="csx-alert-flow">
+                    ${source} → ${destination}
+                </div>
+            </div>
+
+            <div class="csx-alert-risk">
+                ${risk}
+            </div>
+
+            <div class="csx-alert-time">
+                ${csxFormatAlertTime(
+                    alert.created_at ||
+                    alert.timestamp
+                )}
+            </div>
+        </div>
+    `;
+}
+
+
+async function updateLiveAlerts() {
+
+    try {
+
+        const data =
+            await csxFetchJSON(
+                "/api/soc/alerts"
+            );
+
+        const alerts =
+            Array.isArray(data.alerts)
+                ? data.alerts
+                : [];
+
+        console.log(
+            "CSX LIVE ALERTS:",
+            alerts.length
+        );
+
+        /* Render latest backend alerts into SOC alert containers */
+        const alertContainers = document.querySelectorAll(
+            ".csx-alert-list, .csx-alerts-list, [data-alert-list]"
+        );
+
+        if (alertContainers.length > 0) {
+            const html = alerts.slice(0, 10)
+                .map(csxRenderLiveAlert)
+                .join("");
+
+            alertContainers.forEach(container => {
+                container.innerHTML = html ||
+                    '<div class="csx-alert-empty">No active alerts</div>';
+            });
+        }
+
+
+
+        const containers =
+            document.querySelectorAll(
+                ".csx-alert"
+            );
+
+        alerts
+            .slice(0, containers.length)
+            .forEach((alert, index) => {
+
+                const container =
+                    containers[index];
+
+                const title =
+                    container.querySelector(
+                        ".csx-alert-title"
+                    );
+
+                const source =
+                    container.querySelector(
+                        ".csx-alert-source"
+                    );
+
+                const time =
+                    container.querySelector(
+                        ".csx-alert-time"
+                    );
+
+
+                const severity =
+                    String(
+                        alert.severity ||
+                        "SUSPICIOUS"
+                    ).toUpperCase();
+
+
+                if (title) {
+
+                    title.textContent =
+                        alert.title ||
+                        alert.name ||
+                        alert.activity ||
+                        `${severity} Security Alert`;
+                }
+
+
+                if (source) {
+
+                    source.textContent =
+                        `Source: ${
+                            alert.source_ip ||
+                            alert.ip_address ||
+                            "Unknown"
+                        }`;
+                }
+
+
+                if (time) {
+
+                    time.textContent =
+                        alert.created_at ||
+                        alert.timestamp ||
+                        "Recent";
+                }
+            });
+
+    } catch (error) {
+
+        console.error(
+            "CSX ALERT API ERROR:",
+            error
+        );
+    }
+}
+
+
+/* ============================================================
+   TOP ATTACKED ASSETS
+   ============================================================ */
+
+async function updateLiveAssets() {
+
+    try {
+
+        const data =
+            await csxFetchJSON(
+                "/api/soc/assets"
+            );
+
+        let assets =
+            Array.isArray(data.assets)
+                ? data.assets
+                : [];
+
+
+        /* Highest-risk assets first */
+
+        assets.sort(
+            (a, b) =>
+                Number(
+                    b.risk_score ?? b.risk ?? 0
+                )
+                -
+                Number(
+                    a.risk_score ?? a.risk ?? 0
+                )
+        );
+
+
+        const containers =
+            document.querySelectorAll(
+                ".csx-asset"
+            );
+
+
+        assets
+            .slice(0, containers.length)
+            .forEach((asset, index) => {
+
+                const container =
+                    containers[index];
+
+                const ip =
+                    container.querySelector(
+                        ".csx-asset-ip"
+                    );
+
+                const risk =
+                    container.querySelector(
+                        ".csx-asset-risk"
+                    );
+
+                const progress =
+                    container.querySelector(
+                        ".csx-progress span"
+                    );
+
+
+                const address =
+                    asset.ip_address ||
+                    asset.ip ||
+                    asset.hostname ||
+                    "Unknown Asset";
+
+
+                const score =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            Number(
+                                asset.risk_score ??
+                                asset.risk ??
+                                0
+                            )
+                        )
+                    );
+
+
+                if (ip)
+                    ip.textContent =
+                        address;
+
+
+                if (risk)
+                    risk.textContent =
+                        Math.round(score);
+
+
+                if (progress)
+                    progress.style.width =
+                        `${score}%`;
+            });
+
+    } catch (error) {
+
+        console.error(
+            "CSX ASSET API ERROR:",
+            error
+        );
+    }
+}
+
+
+/* ============================================================
+   MASTER UPDATE
+   ============================================================ */
+
+async function refreshCyberSentinelX() {
+
+    await updateLiveSOC();
+
+    await Promise.allSettled([
+        updateLiveAlerts(),
+        updateLiveAssets()
+    ]);
+}
+
+
+/* Initial load */
+
+refreshCyberSentinelX();
+
+
+/* Real-time dashboard refresh */
+
+setInterval(
+    refreshCyberSentinelX,
+    5000
+);
+
+</script>
+
+
+<script id="csx-reference-live">
+/* ============================================================
+   CYBER SENTINEL X — LIVE REFERENCE DATA LAYER
+   ============================================================ */
+(function(){
+
+  const $ = s => document.querySelector(s);
+
+  async function getJSON(url){
+    try{
+      const r = await fetch(url,{cache:"no-store"});
+      if(!r.ok) throw new Error(url);
+      return await r.json();
+    }catch(e){
+      return null;
+    }
+  }
+
+  function esc(v){
+    return String(v ?? "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;");
+  }
+
+  /* ---------- AI / ML ENGINE ---------- */
+  function installMLPanel(){
+    const host = document.querySelector(".csx-risk-source-panel");
+    if(!host || document.querySelector(".csx-reference-ml")) return;
+
+    host.innerHTML = `
+      <div class="csx-panel-head">
+        <div>
+          <span class="csx-panel-kicker">AI / ML ANALYTICS</span>
+          <h3>ML Anomaly Engine</h3>
+        </div>
+        <span class="csx-panel-tag">LIVE</span>
+      </div>
+
+      <div class="csx-reference-ml">
+        <div class="csx-ml-head">
+          <div>
+            <div class="csx-ml-kicker">NETWORK INTELLIGENCE</div>
+            <div class="csx-ml-title">AI Threat Analysis</div>
+          </div>
+          <div class="csx-ml-status">
+            <i></i><span id="csxMLStatus">CHECKING</span>
+          </div>
+        </div>
+
+        <div class="csx-ml-core">
+          <div class="csx-ml-orb"></div>
+          <div class="csx-ml-stats">
+            <div class="csx-ml-stat">
+              <span>MODEL</span>
+              <strong id="csxMLModel">—</strong>
+            </div>
+            <div class="csx-ml-stat">
+              <span>THRESHOLD</span>
+              <strong id="csxMLThreshold">—</strong>
+            </div>
+            <div class="csx-ml-stat">
+              <span>ENGINE</span>
+              <strong id="csxMLEngine">—</strong>
+            </div>
+            <div class="csx-ml-stat">
+              <span>MODE</span>
+              <strong>ANOMALY</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function updateML(){
+    const d = await getJSON("/api/system");
+    if(!d || !d.ml) return;
+
+    const enabled = !!d.ml.enabled;
+
+    const st = $("#csxMLStatus");
+    const model = $("#csxMLModel");
+    const threshold = $("#csxMLThreshold");
+    const engine = $("#csxMLEngine");
+
+    if(st) st.textContent = enabled ? "ENGINE ONLINE" : "DISABLED";
+    if(model) model.textContent = d.ml.model || "network_anomaly_model";
+    if(threshold) threshold.textContent = d.ml.threshold ?? "0.7";
+    if(engine) engine.textContent = enabled ? "RUNNING" : "OFFLINE";
+
+    const hero = document.querySelector(".csx-hero-meta");
+    if(hero && !document.querySelector("#csxMLLiveBadge")){
+      const b = document.createElement("span");
+      b.id = "csxMLLiveBadge";
+      b.style.cssText =
+        "margin-left:10px;color:#63e8bd;font-size:7px;font-weight:900;letter-spacing:.12em";
+      b.textContent = enabled ? "● AI/ML ONLINE" : "● AI/ML OFFLINE";
+      hero.appendChild(b);
+    }
+  }
+
+  /* ---------- THREAT DISTRIBUTION ---------- */
+  async function updateThreats(){
+    const d = await getJSON("/api/soc/summary");
+    if(!d) return;
+
+    const sev = d.severity || {};
+    const c = Number(sev.critical || 0);
+    const h = Number(sev.high || 0);
+    const s = Number(sev.suspicious || 0);
+    const n = Number(sev.normal || 0);
+    const total = Number(d.events || (c+h+s+n) || 0);
+
+    const set = (id,v) => {
+      const e = document.getElementById(id);
+      if(e) e.textContent = v;
+    };
+
+    set("donutTotal",total);
+    set("severityCritical",c);
+    set("severityHigh",h);
+    set("severitySuspicious",s);
+    set("severityNormal",n);
+
+    const donut = $("#threatDonut");
+    if(donut && total > 0){
+      const C = c/total*360;
+      const H = h/total*360;
+      const S = s/total*360;
+
+      donut.style.background =
+        `conic-gradient(
+          #ff5578 0deg ${C}deg,
+          #ff9f43 ${C}deg ${C+H}deg,
+          #facc15 ${C+H}deg ${C+H+S}deg,
+          #263849 ${C+H+S}deg 360deg
+        )`;
+    }
+  }
+
+  /* ---------- LIVE EVENTS ---------- */
+  async function updateEvents(){
+    const d = await getJSON("/api/soc/alerts");
+    const body = $("#recentAlertsBody");
+    if(!body) return;
+
+    const alerts = Array.isArray(d?.alerts) ? d.alerts : [];
+
+    const count = $("#recentAlertCount");
+    if(count) count.textContent = `${alerts.length} EVENTS`;
+
+    if(!alerts.length){
+      body.innerHTML =
+        `<tr><td colspan="5" class="csx-empty">No active security events</td></tr>`;
+      return;
+    }
+
+    body.innerHTML = alerts.slice(0,8).map(a=>{
+      const sev = String(
+        a.severity || a.level || a.risk_level || "NORMAL"
+      ).toUpperCase();
+
+      const event = a.title || a.name || a.description ||
+                    a.message || "Security event";
+
+      const source = a.source_ip || a.src_ip ||
+                     a.source || a.src || "—";
+
+      const risk = a.risk_score ?? a.risk ?? a.score ?? "—";
+
+      const status = String(a.status || "OPEN").toUpperCase();
+
+      return `
+        <tr>
+          <td>
+            <span class="csx-event-severity ${esc(sev)}">${esc(sev)}</span>
+          </td>
+          <td>${esc(event)}</td>
+          <td>${esc(source)}</td>
+          <td><strong>${esc(risk)}</strong></td>
+          <td>${esc(status)}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  /* ---------- NETWORK ---------- */
+  async function updateNetwork(){
+    const d = await getJSON("/api/soc/network");
+    if(!d) return;
+
+    const set = (id,v) => {
+      const e = document.getElementById(id);
+      if(e) e.textContent = v;
+    };
+
+    const bytes = Number(d.total_bytes || 0);
+    const flows = Number(d.completed_flows || 0);
+    const packets = Number(d.total_packets || 0);
+
+    const fmt = x => {
+      if(x < 1024) return `${x} B`;
+      if(x < 1024*1024) return `${(x/1024).toFixed(1)} KB`;
+      return `${(x/1024/1024).toFixed(2)} MB`;
+    };
+
+    set("networkInbound",fmt(bytes));
+    set("networkOutbound",`${flows} flows`);
+    set("networkTotal",fmt(bytes));
+    set("networkConnections",flows);
+
+    const live = document.querySelector(".csx-net-status");
+    if(live) live.textContent = `● LIVE • ${packets} PACKETS`;
+  }
+
+  installMLPanel();
+
+  async function refresh(){
+    await Promise.all([
+      updateML(),
+      updateThreats(),
+      updateEvents(),
+      updateNetwork()
+    ]);
+  }
+
+  refresh();
+  setInterval(refresh,5000);
+
+})();
+</script>
+</html>
+
+
+
+</body>
+
+<style id="csx-final-events-risk-health">
+/* FINAL EVENTS / RISK / HEALTH POLISH */
+.csx-alert-panel,
+.csx-risk-source-panel,
+.csx-health-panel{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(53,216,255,.13)!important;
+  background:
+    radial-gradient(circle at 90% 0%,rgba(53,216,255,.055),transparent 30%),
+    linear-gradient(145deg,rgba(7,22,35,.96),rgba(2,9,16,.98))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),
+             0 10px 30px rgba(0,0,0,.18);
+}
+
+.csx-alert-panel::before,
+.csx-risk-source-panel::before,
+.csx-health-panel::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,#35d8ff,transparent);
+  opacity:.55;
+  animation:csxPanelScan 4s linear infinite;
+  pointer-events:none;
+}
+
+.csx-table tbody tr{
+  transition:background .2s ease,transform .2s ease;
+}
+
+.csx-table tbody tr:hover{
+  background:rgba(53,216,255,.035)!important;
+  transform:translateX(2px);
+}
+
+.csx-event-severity{
+  padding:3px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.035);
+  border:1px solid currentColor;
+}
+
+.csx-risk-source-panel .csx-source-row{
+  transition:background .2s ease,transform .2s ease;
+}
+
+.csx-risk-source-panel .csx-source-row:hover{
+  background:rgba(53,216,255,.035);
+  transform:translateX(3px);
+}
+
+.csx-source-risk{
+  font-weight:900!important;
+  text-shadow:0 0 10px currentColor;
+}
+
+.csx-health-ok{
+  color:#63e8bd!important;
+  border:1px solid rgba(99,232,189,.22);
+  background:rgba(99,232,189,.055);
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:7px;
+  letter-spacing:.12em;
+  box-shadow:0 0 14px rgba(99,232,189,.08);
+}
+
+.csx-health-grid > div{
+  position:relative;
+  padding:9px 8px!important;
+  border:1px solid rgba(53,216,255,.055);
+  border-radius:7px;
+  background:rgba(255,255,255,.012);
+  transition:all .2s ease;
+}
+
+.csx-health-grid > div:hover{
+  background:rgba(53,216,255,.035);
+  border-color:rgba(53,216,255,.13);
+  transform:translateY(-1px);
+}
+
+.csx-health-grid > div span{
+  color:#63e8bd!important;
+  text-shadow:0 0 8px rgba(99,232,189,.7);
+  animation:csxHealthPulse 1.8s ease-in-out infinite;
+}
+
+.csx-health-grid strong{
+  color:#8debd1!important;
+  text-shadow:0 0 8px rgba(99,232,189,.16);
+}
+
+@keyframes csxPanelScan{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+
+@keyframes csxHealthPulse{
+  0%,100%{opacity:.65}
+  50%{opacity:1}
+}
+</style>
