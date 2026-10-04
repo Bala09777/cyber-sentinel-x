@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 
 from backend.api.incident_api import incident_api
 from backend.api.auth_api import auth_api
+from backend.api.rule_api import rule_api
+from backend.api.rule_api import rule_api
 
 # ============================================================
 # CORE
@@ -358,6 +360,9 @@ def create_app():
     )
 
     app.register_blueprint(
+        rule_api
+    )
+    app.register_blueprint(
         auth_api
     )
 
@@ -379,7 +384,16 @@ def create_app():
 
     # --------------------------------------------------------
 
+    @app.route("/rules")
+    @auth_service.login_required
+    def rules_page():
+        """Detection Rule Manager workspace."""
+        return render_template("rules.html")
+
+    # --------------------------------------------------------
+
     @app.route("/investigation")
+    @auth_service.login_required
     def investigation():
         """
         Incident investigation workspace.
@@ -490,6 +504,7 @@ def create_app():
     # ========================================================
 
     @app.route("/api/soc/summary")
+    @auth_service.login_required
     def soc_summary():
         """
         Real-time SOC overview.
@@ -706,6 +721,7 @@ def create_app():
     # ========================================================
 
     @app.route("/api/soc/events")
+    @auth_service.login_required
     def recent_events():
         """
         Return latest security events.
@@ -766,6 +782,7 @@ def create_app():
     # ========================================================
 
     @app.route("/api/soc/alerts")
+    @auth_service.login_required
     def security_alerts():
         """
         Return recent security alerts.
@@ -815,6 +832,7 @@ def create_app():
     # ========================================================
 
     @app.route("/api/soc/assets/discover", methods=["POST"])
+    @auth_service.login_required
     def discover_assets():
         """
         Discover active hosts on an authorized local IPv4 network
@@ -855,6 +873,7 @@ def create_app():
 
 
     @app.route("/api/soc/assets")
+    @auth_service.login_required
     def soc_assets():
         """
         Return monitored assets.
@@ -904,6 +923,7 @@ def create_app():
     # ========================================================
 
     @app.route("/api/soc/risk")
+    @auth_service.login_required
     def environment_risk():
         """
         Calculate current environment risk.
@@ -993,6 +1013,7 @@ def create_app():
     # ========================================================
 
     @app.route("/api/system")
+    @auth_service.login_required
     def system_info():
         """
         Cyber Sentinel X platform capabilities.
@@ -1130,6 +1151,7 @@ app = create_app()
 # ============================================================
 
 @app.route("/api/soc/network")
+@auth_service.login_required
 def soc_network():
     """
     Return latest shared network metrics.

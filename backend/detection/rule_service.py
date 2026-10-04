@@ -124,6 +124,67 @@ class RuleService:
             """
         )
 
+    def update_rule(
+        self,
+        rule_id,
+        name=None,
+        description=None,
+        category=None,
+        threshold=None,
+        severity=None,
+        enabled=None
+    ):
+        rule = self.get_rule(rule_id)
+
+        if not rule:
+            return None
+
+        data = {}
+
+        if name is not None:
+            name = str(name).strip()
+            if not name:
+                raise ValueError("Rule name is required")
+            data["name"] = name
+
+        if description is not None:
+            data["description"] = description
+
+        if category is not None:
+            data["category"] = str(category).strip()
+
+        if threshold is not None:
+            data["threshold"] = int(threshold)
+
+        if severity is not None:
+            severity = str(severity).upper()
+            if severity not in self.VALID_SEVERITIES:
+                raise ValueError(
+                    f"Invalid severity: {severity}"
+                )
+            data["severity"] = severity
+
+        if enabled is not None:
+            data["enabled"] = 1 if enabled else 0
+
+        if not data:
+            return rule
+
+        data["updated_at"] = self._now()
+
+        db.update(
+            "detection_rules",
+            data,
+            "rule_id = ?",
+            (rule_id,)
+        )
+
+        logger.info(
+            f"RULE_UPDATED | id={rule_id}"
+        )
+
+        return self.get_rule(rule_id)
+
     def enable_rule(self, rule_id):
         rule = self.get_rule(rule_id)
 

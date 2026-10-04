@@ -1,11 +1,13 @@
 from flask import Blueprint, jsonify, request
 
 from backend.incidents.incident_service import incident_service
+from backend.security.auth_service import auth_service
 
 incident_api = Blueprint("incident_api", __name__, url_prefix="/api/incidents")
 
 
 @incident_api.get("")
+@auth_service.login_required
 def list_incidents():
     return jsonify([
         dict(row)
@@ -14,6 +16,7 @@ def list_incidents():
 
 
 @incident_api.get("/open")
+@auth_service.login_required
 def open_incidents():
     return jsonify([
         dict(row)
@@ -22,6 +25,7 @@ def open_incidents():
 
 
 @incident_api.get("/<incident_id>")
+@auth_service.login_required
 def get_incident(incident_id):
     incident = incident_service.get_incident(incident_id)
 
@@ -32,6 +36,7 @@ def get_incident(incident_id):
 
 
 @incident_api.get("/<incident_id>/timeline")
+@auth_service.login_required
 def timeline(incident_id):
     return jsonify([
         dict(row)
@@ -40,6 +45,7 @@ def timeline(incident_id):
 
 
 @incident_api.get("/<incident_id>/analysis")
+@auth_service.login_required
 def analysis(incident_id):
     result = incident_service.get_analysis(incident_id)
 
@@ -50,6 +56,7 @@ def analysis(incident_id):
 
 
 @incident_api.patch("/<incident_id>/status")
+@auth_service.login_required
 def update_status(incident_id):
     data = request.get_json(silent=True) or {}
 
@@ -79,6 +86,7 @@ def update_status(incident_id):
 
 
 @incident_api.patch("/<incident_id>/assign")
+@auth_service.login_required
 def assign_incident(incident_id):
     data = request.get_json(silent=True) or {}
 
@@ -103,6 +111,7 @@ def assign_incident(incident_id):
 
 
 @incident_api.get("/stats/summary")
+@auth_service.login_required
 def incident_stats():
     return jsonify(
         incident_service.get_statistics()
