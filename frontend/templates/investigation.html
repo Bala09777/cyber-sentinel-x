@@ -735,53 +735,53 @@ async function loadTimeline(){
 
     }).join("");
 
-    updateDerivedAnalysis(events);
+    await loadAnalysis();
 }
 
-function updateDerivedAnalysis(events){
+async function loadAnalysis(){
 
-    if(!events.length) return;
-
-    const risks = events.map(
-        e => Number(e.risk_score || 0)
+    const response = await fetch(
+        `/api/incidents/${encodeURIComponent(INCIDENT_ID)}/analysis`
     );
 
-    const maxRisk = Math.max(...risks);
+    if(!response.ok){
+        throw new Error("Analysis API failed");
+    }
 
-    const avgRisk =
-        risks.reduce((a,b) => a+b, 0) / risks.length;
+    const analysis = await response.json();
 
-    const criticalCount =
-        events.filter(
-            e => String(e.severity).toUpperCase() === "CRITICAL"
-        ).length;
+    const behaviour = analysis.behaviour || {};
+    const ml = analysis.ml || {};
+    const ti = analysis.threat_intelligence || {};
 
-    const uniqueSources =
-        new Set(events.map(e => e.source_ip)).size;
+    const behaviourScore =
+        Number(behaviour.behaviour_score || 0);
+
+    const mlScore =
+        Number(ml.anomaly_score || 0);
+
+    const tiScore =
+        Number(ti.score || 0);
 
     document.getElementById("behaviourScore").textContent =
-        Math.round(Math.min(
-            100,
-            avgRisk + (events.length >= 3 ? 20 : 0)
-        ));
+        behaviourScore;
 
     document.getElementById("behaviourStatus").textContent =
-        `CORRELATED EVENTS: ${events.length} | SOURCES: ${uniqueSources}`;
+        `${behaviour.classification || "UNKNOWN"} | EVENTS: ${behaviour.event_count || 0}`;
 
     document.getElementById("mlScore").textContent =
-        maxRisk >= 80 ? "1.00" :
-        maxRisk >= 60 ? "0.70" :
-        maxRisk >= 40 ? "0.40" : "0.10";
+        mlScore.toFixed(2);
 
     document.getElementById("mlStatus").textContent =
-        criticalCount > 0
-        ? `ANOMALOUS PATTERN | CRITICAL EVENTS: ${criticalCount}`
-        : "NO CRITICAL ANOMALY INDICATOR";
+        ml.is_anomaly
+        ? `ANOMALY DETECTED | EVENTS: ${ml.anomalous_events || 0} | ${ml.method || "UNKNOWN"}`
+        : `NO ANOMALY | EVENTS: ${ml.event_count || 0} | ${ml.method || "UNKNOWN"}`;
 
-    document.getElementById("tiScore").textContent = "0";
+    document.getElementById("tiScore").textContent =
+        tiScore;
 
     document.getElementById("tiStatus").textContent =
-        "LOCAL TI | NO MALICIOUS MATCH IN INCIDENT EVENTS";
+        `${ti.classification || "UNKNOWN"} | ${ti.provider || "LOCAL INTELLIGENCE"}`;
 }
 
 async function setStatus(newStatus){

@@ -160,6 +160,111 @@ class BehaviourEngine:
             "total_packets": total_packets
         }
 
+    def analyze_events(self, events, source_ip=None):
+        """Analyze a provided event set, used for incident investigation."""
+        events = [dict(event) for event in (events or [])]
+
+        if not events:
+            return {
+                "source_ip": source_ip,
+                "behaviour_score": 0,
+                "classification": "NORMAL",
+                "reasons": [],
+                "metrics": {
+                    "source_ip": source_ip,
+                    "event_count": 0,
+                    "unique_destinations": 0,
+                    "unique_ports": 0,
+                    "average_risk": 0,
+                    "maximum_risk": 0,
+                    "total_packets": 0
+                }
+            }
+
+        destinations = {
+            event.get("destination_ip")
+            for event in events
+            if event.get("destination_ip")
+        }
+
+        ports = {
+            str(event.get("destination_port"))
+            for event in events
+            if event.get("destination_port")
+        }
+
+        risks = []
+        total_packets = 0
+
+        for event in events:
+            try:
+                risks.append(int(event.get("risk_score", 0)))
+            except (TypeError, ValueError):
+                pass
+
+            try:
+                total_packets += int(event.get("packet_count", 0))
+            except (TypeError, ValueError):
+                pass
+
+        average_risk = (
+            sum(risks) / len(risks)
+            if risks else 0
+        )
+
+        maximum_risk = (
+            max(risks)
+            if risks else 0
+        )
+
+        metrics = {
+            "source_ip": source_ip,
+            "event_count": len(events),
+            "unique_destinations": len(destinations),
+            "unique_ports": len(ports),
+            "average_risk": round(average_risk, 2),
+            "maximum_risk": maximum_risk,
+            "total_packets": total_packets
+        }
+
+        score = 0
+        reasons = []
+
+        if metrics["unique_ports"] >= settings.PORT_SCAN_THRESHOLD:
+            score += 40
+            reasons.append("Multiple unique destination ports")
+
+        if metrics["event_count"] >= settings.RAPID_PACKET_THRESHOLD:
+            score += 20
+            reasons.append("Rapid event activity")
+
+        if metrics["event_count"] >= settings.HIGH_PACKET_THRESHOLD:
+            score += 20
+            reasons.append("High event volume")
+
+        if metrics["maximum_risk"] >= settings.RISK_HIGH:
+            score += 20
+            reasons.append("High-risk event observed")
+
+        score = min(100, score)
+
+        if score >= settings.RISK_CRITICAL:
+            classification = "CRITICAL"
+        elif score >= settings.RISK_HIGH:
+            classification = "HIGH"
+        elif score >= settings.RISK_SUSPICIOUS:
+            classification = "SUSPICIOUS"
+        else:
+            classification = "NORMAL"
+
+        return {
+            "source_ip": source_ip,
+            "behaviour_score": score,
+            "classification": classification,
+            "reasons": reasons,
+            "metrics": metrics
+        }
+
     def detect_port_scan(
         self,
         source_ip,

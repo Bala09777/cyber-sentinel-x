@@ -1,4 +1,5 @@
 from backend.core.logger import logger
+from backend.database.manager import db
 from backend.core.risk_engine import risk_engine
 from backend.detection.event_service import event_service
 from backend.detection.rule_engine import rule_engine
@@ -46,6 +47,14 @@ class DetectionPipeline:
 
         ml_score = ml_result.get(
             "anomaly_score", 0
+        )
+
+        # Persist ML anomaly score to the event record
+        db.update(
+            "events",
+            {"anomaly_score": float(ml_score)},
+            "event_id = ?",
+            (event_id,)
         )
 
         # 5. Threat Intelligence

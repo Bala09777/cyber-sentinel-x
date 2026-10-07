@@ -157,7 +157,7 @@ class IncidentService:
         events = [dict(row) for row in self.get_timeline(incident_id)]
         source_ip = incident["source_ip"]
 
-        behaviour = behaviour_engine.analyze_source(source_ip)
+        behaviour = behaviour_engine.analyze_events(events, source_ip)
 
         ml_results = [
             anomaly_detector.predict(event)
