@@ -1410,7 +1410,7 @@ body::after {
 
                         <div class="csx-ml-card">
                             <div class="csx-ml-label">ANOMALIES</div>
-                            <div class="csx-ml-value">7</div>
+                            <div class="csx-ml-value">0</div>
                         </div>
 
                         <div class="csx-ml-card">
@@ -1877,6 +1877,15 @@ async function updateLiveSOC() {
 
         if (mlCards.length >= 4) {
 
+            const anomalyValue =
+                mlCards[2].querySelector(".csx-ml-value");
+
+            if (anomalyValue) {
+                anomalyValue.textContent =
+                    data.anomaly_count ?? 0;
+            }
+
+
             const engineValue =
                 mlCards[0].querySelector(
                     ".csx-ml-value"
@@ -1895,10 +1904,20 @@ async function updateLiveSOC() {
 
             if (engineValue) {
 
-                engineValue.textContent =
-                    data.platform?.ml_enabled
-                        ? "● ONLINE"
-                        : "● OFFLINE";
+                try {
+                    const health = await csxFetchJSON("/api/health");
+
+                    engineValue.textContent =
+                        health.ml_model_available
+                            ? "● MODEL ONLINE"
+                            : health.ml_enabled
+                                ? "● BASELINE ACTIVE"
+                                : "● OFFLINE";
+
+                } catch (error) {
+                    engineValue.textContent = "● UNKNOWN";
+                    console.warn("ML health unavailable:", error);
+                }
             }
 
 
@@ -2182,6 +2201,16 @@ async function updateLiveAssets() {
                 ".csx-asset"
             );
 
+
+        containers.forEach((container) => {
+            const ip = container.querySelector(".csx-asset-ip");
+            const risk = container.querySelector(".csx-asset-risk");
+            const progress = container.querySelector(".csx-progress span");
+
+            if (ip) ip.textContent = "No asset data";
+            if (risk) risk.textContent = "0";
+            if (progress) progress.style.width = "0%";
+        });
 
         assets
             .slice(0, containers.length)

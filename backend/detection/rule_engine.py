@@ -68,19 +68,6 @@ class RuleEngine:
                     f"risk={risk_score}"
                 )
 
-                event_id = event.get("event_id")
-
-                if event_id:
-                    try:
-                        alert_service.create_from_event_id(
-                            event_id
-                        )
-                    except Exception as exc:
-                        logger.error(
-                            f"RULE_ALERT_ERROR | "
-                            f"event={event_id} | "
-                            f"error={exc}"
-                        )
 
         return matched_rules
 

@@ -1,0 +1,6 @@
+{% extends 'soc_shell.html' %}{% block content %}
+<div class="metricstrip"><div class="metric"><span>EMAIL CHANNEL</span><strong id="notifyEmail">CHECKING</strong></div><div class="metric"><span>VOICE CHANNEL</span><strong id="notifyVoice">CHECKING</strong></div><div class="metric"><span>OFFLINE VOICE</span><strong id="notifyLocalVoice">CHECKING</strong></div><div class="metric"><span>DELIVERY SERVICE</span><strong>OUTBOX</strong></div></div>
+<section class="panel"><div class="panelhead"><div><small>NOTIFICATION AUDIT</small><h2>Admin Alert Deliveries</h2></div><button class="button" id="reload">↻ Refresh</button></div>
+<p class="hint">High and Critical alerts queue email when enabled; Critical alerts also queue phone calls if configured. HIGH and CRITICAL alerts can trigger offline spoken threat details. A separate notifications worker sends them. Provider acceptance does not guarantee an answered call or inbox delivery. Secrets are never displayed here.</p>
+<div class="tablewrap"><table><thead><tr><th>TIME</th><th>ALERT</th><th>CHANNEL</th><th>DELIVERY STATE</th><th>ATTEMPTS</th></tr></thead><tbody id="notifyRows"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></section>
+{% endblock %}

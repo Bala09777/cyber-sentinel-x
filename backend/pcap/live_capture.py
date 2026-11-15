@@ -1,4 +1,5 @@
 import os
+import threading
 from collections import Counter
 from datetime import datetime
 
@@ -28,6 +29,8 @@ class LiveCaptureService:
         self.port_counts = Counter()
 
         self.started_at = None
+        self._telemetry_stop = threading.Event()
+        self._telemetry_thread = None
 
         # Flow-based monitoring
         self.flow_aggregator = flow_aggregator
@@ -62,6 +65,13 @@ class LiveCaptureService:
             logger.exception(
                 f"NETWORK_METRICS_SAVE_ERROR | {exc}"
             )
+
+    def _telemetry_heartbeat(self):
+        # Capture may be alive even if no flows have completed recently.
+        # Persist a heartbeat so the browser never confuses idle capture with STOPPED.
+        while not self._telemetry_stop.wait(5):
+            if self.running:
+                self.save_network_metrics()
 
     def reset(self):
         self.packet_count = 0
@@ -167,7 +177,53 @@ class LiveCaptureService:
                 "activity": "NETWORK_FLOW",
             }
 
+            shadow_result = {"method": "NOT_AVAILABLE"}
+            # Experimental UNSW-NB15 ML shadow mode.
+            # Predictions are observational only.
+            # They do not affect risk, alerts, incidents or database.
+            try:
+                from backend.ml.unsw_inference import unsw_inference
+
+                if unsw_inference.model is None:
+                    unsw_inference.load()
+
+                shadow_result = unsw_inference.predict({
+                    "packet_count": packet_count,
+                    "bytes": flow.get("bytes"),
+                    "duration_seconds": flow.get("duration_seconds"),
+                    "protocol": flow.get("protocol"),
+                })
+
+                print(
+                    f"[ML SHADOW] "
+                    f"flow={flow.get('flow_id', 'UNKNOWN')} | "
+                    f"score={shadow_result.get('anomaly_score', 'N/A')} | "
+                    f"anomaly={shadow_result.get('is_anomaly', False)} | "
+                    f"method={shadow_result.get('method')}"
+                )
+
+            except Exception as shadow_exc:
+                logger.warning(
+                    f"ML_SHADOW_ERROR | {shadow_exc}"
+                )
+
             result = pipeline.process_event(event)
+
+            # Keep experimental shadow scores auditable without affecting alerts,
+            # incidents or the production ML baseline.
+            if shadow_result.get("method") in ("UNSW_EXPERIMENTAL", "UNSW_V34_SHADOW"):
+                try:
+                    from datetime import timezone
+                    db.insert("shadow_ml_predictions", {
+                        "event_id": result["event"]["event_id"],
+                        "flow_id": str(flow.get("flow_id", "")),
+                        "anomaly_score": float(shadow_result["anomaly_score"]),
+                        "method": shadow_result["method"],
+                        "is_anomaly": 1 if shadow_result["is_anomaly"] else 0,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    })
+                except Exception as exc:
+                    logger.warning(f"SHADOW_AUDIT_ERROR | {type(exc).__name__}")
 
             self.save_network_metrics()
 
@@ -237,6 +293,12 @@ class LiveCaptureService:
 
         try:
             self.flow_aggregator.start()
+            self._telemetry_stop.clear()
+            self.save_network_metrics()
+            self._telemetry_thread = threading.Thread(
+                target=self._telemetry_heartbeat, daemon=True,
+                name="csx-network-telemetry")
+            self._telemetry_thread.start()
 
             sniff(
                 iface=self.interface,
@@ -255,6 +317,9 @@ class LiveCaptureService:
 
         finally:
             self.running = False
+            self._telemetry_stop.set()
+            if self._telemetry_thread is not None:
+                self._telemetry_thread.join(timeout=6)
 
             try:
                 self.flow_aggregator.stop()
@@ -263,6 +328,7 @@ class LiveCaptureService:
                     f"FLOW_ENGINE_STOP_ERROR | {exc}"
                 )
 
+            self.save_network_metrics()
             logger.info(
                 f"LIVE_CAPTURE_STOPPED | "
                 f"packets={self.packet_count}"
@@ -276,4 +342,6 @@ live_capture = LiveCaptureService()
 
 
 if __name__ == "__main__":
+    from backend.database.schema import initialize_database
+    initialize_database()
     live_capture.start()

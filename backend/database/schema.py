@@ -212,6 +212,59 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 );
 
 
+CREATE TABLE IF NOT EXISTS network_metrics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL,
+    status TEXT DEFAULT 'STOPPED',
+    active_flows INTEGER DEFAULT 0,
+    completed_flows INTEGER DEFAULT 0,
+    total_flows_created INTEGER DEFAULT 0,
+    total_packets INTEGER DEFAULT 0,
+    total_bytes INTEGER DEFAULT 0,
+    expired_flows INTEGER DEFAULT 0,
+    tcp_flows INTEGER DEFAULT 0,
+    udp_flows INTEGER DEFAULT 0,
+    icmp_flows INTEGER DEFAULT 0,
+    other_flows INTEGER DEFAULT 0
+);
+
+
+CREATE TABLE IF NOT EXISTS notification_outbox (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    alert_id TEXT NOT NULL, channel TEXT NOT NULL,
+    dedupe_key TEXT NOT NULL, payload_json TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PENDING', attempts INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL, updated_at TEXT NOT NULL, last_error TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_notification_dedupe ON notification_outbox(dedupe_key, created_at);
+CREATE TABLE IF NOT EXISTS auth_detection_cooldowns (
+    ip_address TEXT PRIMARY KEY, last_alert_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS shadow_ml_predictions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT NOT NULL, flow_id TEXT,
+    anomaly_score REAL, method TEXT NOT NULL,
+    is_anomaly INTEGER NOT NULL DEFAULT 0,
+    timestamp TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_shadow_event ON shadow_ml_predictions(event_id);
+
+CREATE TABLE IF NOT EXISTS rbac_detection_cooldowns (
+    source_ip TEXT NOT NULL,
+    username TEXT NOT NULL,
+    last_alert_at TEXT NOT NULL,
+    PRIMARY KEY (source_ip, username)
+);
+
+
+CREATE TABLE IF NOT EXISTS firewall_actions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL, username TEXT NOT NULL,
+    ip_address TEXT NOT NULL, action TEXT NOT NULL,
+    status TEXT NOT NULL, details TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_firewall_actions_time ON firewall_actions(timestamp);
+
 CREATE TABLE IF NOT EXISTS system_metrics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 

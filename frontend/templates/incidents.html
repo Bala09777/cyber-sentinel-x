@@ -1,0 +1,6 @@
+{% extends 'soc_shell.html' %}{% block content %}
+<div class="metricstrip"><div class="metric"><span>OPEN / INVESTIGATING</span><strong id="incidentOpen">—</strong></div><div class="metric"><span>TOTAL INCIDENTS</span><strong id="incidentTotal">—</strong></div><div class="metric"><span>CRITICAL</span><strong id="incidentCritical">—</strong></div></div>
+<section class="panel"><div class="panelhead"><div><small>INCIDENT RESPONSE</small><h2>Incident Queue</h2></div><button type="button" class="button" id="reload">↻ Refresh</button></div>
+<p class="hint">Open an incident for its timeline and analysis; status changes are written to your local database.</p>
+<div class="tablewrap"><table><thead><tr><th>INCIDENT</th><th>SEVERITY</th><th>RISK</th><th>SOURCE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody id="incidentRows"><tr><td colspan="6">Loading...</td></tr></tbody></table></div></section>
+{% endblock %}

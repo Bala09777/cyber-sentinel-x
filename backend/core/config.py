@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import secrets
 
 
 class Settings:
@@ -141,10 +142,9 @@ class Settings:
     # SECURITY
     # --------------------------------------------------
 
-    SECRET_KEY = os.getenv(
-        "CYBER_SENTINEL_SECRET",
-        "change-this-secret-in-production"
-    )
+    SECRET_KEY = os.getenv("CYBER_SENTINEL_SECRET") or secrets.token_hex(32)
+    if ENVIRONMENT.lower() in ("production", "prod") and not os.getenv("CYBER_SENTINEL_SECRET"):
+        raise RuntimeError("Set CYBER_SENTINEL_SECRET before starting in production")
 
     SESSION_TIMEOUT_MINUTES = 30
 

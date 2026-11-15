@@ -1,0 +1,12 @@
+{% extends 'soc_shell.html' %}{% block content %}
+<div class="metricstrip">
+ <div class="metric"><span>EXECUTION POLICY</span><strong id="fwMode">CHECKING</strong></div>
+ <div class="metric"><span>NFTABLES</span><strong id="fwNft">CHECKING</strong></div>
+ <div class="metric"><span>SCOPE</span><strong>KALI HOST</strong></div>
+</div>
+<section class="panel"><div class="panelhead"><div><small>DEFENSIVE RESPONSE • DEFAULT DRY-RUN</small><h2>Firewall Control</h2></div><button id="reload" class="button">↻ Refresh</button></div>
+<p class="hint">Firewall is disabled by default. It can affect only the Kali VM's incoming traffic, not every device on the LAN. Public IPv4 addresses only unless explicitly opted into private lab addresses. Always keep your own management IP allowlisted.</p>
+<form id="fwForm" class="csx-ops-form"><label for="fwIP">Source IPv4 to inspect</label><input id="fwIP" placeholder="e.g. 8.8.8.8" autocomplete="off" required><label for="fwAction">Defensive action</label><select id="fwAction"><option value="block">Block inbound source</option><option value="unblock">Remove block</option></select><button type="submit" class="button">Preview / Apply</button></form>
+<p id="fwResult" class="hint" aria-live="polite">No action requested.</p></section>
+<section class="panel"><div class="panelhead"><div><small>AUDIT</small><h2>Recent Firewall Actions</h2></div></div><div class="tablewrap"><table><thead><tr><th>TIME</th><th>USER</th><th>ACTION</th><th>SOURCE IP</th><th>RESULT</th></tr></thead><tbody id="fwRows"><tr><td colspan="5">Loading...</td></tr></tbody></table></div></section>
+{% endblock %}

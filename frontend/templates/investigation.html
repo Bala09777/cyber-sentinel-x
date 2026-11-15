@@ -379,6 +379,12 @@ button:hover{
     }
 }
 </style>
+<style id="csx-investigation-nav-polish">
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.csx-back-link{display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(54,217,250,.23);background:rgba(54,217,250,.055);border-radius:9px;padding:9px 14px;color:#9edaf0;text-decoration:none;font-size:11px;font-weight:750;transition:.2s}
+.csx-back-link:hover{background:rgba(54,217,250,.13);color:#d8f8ff}
+.toolbar{flex-wrap:wrap}
+</style>
 </head>
 
 <body>
@@ -397,10 +403,12 @@ button:hover{
     </div>
 
     <div class="toolbar">
+        <a href="/" class="csx-back-link">◈ Dashboard</a>
+        <a href="/incidents" class="csx-back-link">← Incident Queue</a>
         <button onclick="loadInvestigation()">↻ REFRESH</button>
-        <button onclick="setStatus('INVESTIGATING')">INVESTIGATING</button>
-        <button class="action-safe" onclick="setStatus('RESOLVED')">RESOLVE</button>
-        <button class="action-danger" onclick="setStatus('CLOSED')">CLOSE</button>
+        <button data-csx-incident-action onclick="setStatus('INVESTIGATING')">INVESTIGATING</button>
+        <button class="action-safe" data-csx-incident-action onclick="setStatus('RESOLVED')">RESOLVE</button>
+        <button class="action-danger" data-csx-incident-action onclick="setStatus('CLOSED')">CLOSE</button>
     </div>
 
     <div class="grid">
@@ -540,7 +548,7 @@ button:hover{
         </section>
 
         <section class="card timeline">
-            <h3>EVENT TIMELINE</h3>
+            <h3>EVENT TIMELINE <span id="linkedEventCount"></span></h3>
             <div id="timeline">
                 Loading event timeline...
             </div>
@@ -550,15 +558,15 @@ button:hover{
             <h3>ANALYST ACTIONS</h3>
 
             <div class="actions">
-                <button onclick="setStatus('INVESTIGATING')">
+                <button data-csx-incident-action onclick="setStatus('INVESTIGATING')">
                     MARK INVESTIGATING
                 </button>
 
-                <button class="action-safe" onclick="setStatus('RESOLVED')">
+                <button class="action-safe" data-csx-incident-action onclick="setStatus('RESOLVED')">
                     MARK RESOLVED
                 </button>
 
-                <button class="action-danger" onclick="setStatus('CLOSED')">
+                <button class="action-danger" data-csx-incident-action onclick="setStatus('CLOSED')">
                     CLOSE INCIDENT
                 </button>
             </div>
@@ -574,7 +582,23 @@ button:hover{
 
 <script>
 
-const INCIDENT_ID = "INC-20260904192625-B2FDCBC2";
+const INCIDENT_ID = new URLSearchParams(window.location.search).get("id") || "";
+
+// CLOSED incidents are read-only in both the header and analyst action area.
+let currentIncidentStatus = "";
+let incidentStatusSaving = false;
+function syncIncidentActionButtons(status){
+    currentIncidentStatus = String(status || "").toUpperCase();
+    const editable = ["OPEN", "INVESTIGATING", "RESOLVED"].includes(currentIncidentStatus)
+        && !incidentStatusSaving;
+    document.querySelectorAll("[data-csx-incident-action]").forEach(button => {
+        button.disabled = !editable;
+        button.setAttribute("aria-disabled", String(!editable));
+        button.title = currentIncidentStatus === "CLOSED"
+            ? "Closed incidents are read-only"
+            : (editable ? "" : "Incident status unavailable or update in progress");
+    });
+}
 
 function severityClass(value){
     const s = String(value || "").toUpperCase();
@@ -625,6 +649,8 @@ async function loadInvestigation(){
 
         document.getElementById("incidentStatus").textContent =
             `STATUS: ${incident.status || "UNKNOWN"}`;
+
+        syncIncidentActionButtons(incident.status);
 
         document.getElementById("incidentType").textContent =
             `TYPE: ${incident.attack_type || "UNKNOWN"}`;
@@ -687,6 +713,9 @@ async function loadTimeline(){
     const events = await response.json();
 
     const timeline = document.getElementById("timeline");
+    document.getElementById("linkedEventCount").textContent = Array.isArray(events)
+        ? `(${events.length} linked events)`
+        : "(unavailable)";
 
     if(!Array.isArray(events) || events.length === 0){
         timeline.innerHTML =
@@ -785,7 +814,13 @@ async function loadAnalysis(){
 }
 
 async function setStatus(newStatus){
-
+    if (incidentStatusSaving) return;
+    if (!["OPEN", "INVESTIGATING", "RESOLVED"].includes(currentIncidentStatus)){
+        alert("Closed or unavailable incidents are read-only.");
+        return;
+    }
+    incidentStatusSaving = true;
+    syncIncidentActionButtons(currentIncidentStatus);
     try{
 
         const response = await fetch(
@@ -815,9 +850,13 @@ async function setStatus(newStatus){
         console.error("STATUS_UPDATE_ERROR", error);
 
         alert("Unable to update incident status.");
+    }finally{
+        incidentStatusSaving = false;
+        syncIncidentActionButtons(currentIncidentStatus);
     }
 }
 
+syncIncidentActionButtons("");
 loadInvestigation();
 
 setInterval(loadInvestigation, 10000);

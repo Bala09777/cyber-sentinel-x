@@ -1,0 +1,8 @@
+{% extends 'soc_shell.html' %}{% block content %}
+<section class="panel"><div class="panelhead"><div><small>CASEWORK / EXPORTS</small><h2>Download SOC Records</h2></div></div>
+<p class="hint">Authenticated read-only CSV exports. Each export includes up to the latest 1,000 database records; files are generated from current local data, not demo values.</p>
+<div class="reportgrid"><a href="/api/soc/reports/alerts.csv" class="reportcard"><span>⚠</span><strong>Security Alerts</strong><small>Severity, event, risk and triage status</small><em>Download CSV ↓</em></a>
+<a href="/api/soc/reports/events.csv" class="reportcard"><span>⌁</span><strong>Detection Events</strong><small>Network flows, anomaly and risk evidence</small><em>Download CSV ↓</em></a>
+<a href="/api/soc/reports/incidents.csv" class="reportcard"><span>◉</span><strong>Investigations</strong><small>Case details, status and assignments</small><em>Download CSV ↓</em></a>
+<a href="/api/soc/reports/assets.csv" class="reportcard"><span>▦</span><strong>Asset Inventory</strong><small>Monitored host records and risk</small><em>Download CSV ↓</em></a></div>
+</section>{% endblock %}

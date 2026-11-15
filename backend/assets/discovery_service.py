@@ -27,6 +27,15 @@ class AssetDiscoveryService:
         if parsed.version != 4:
             raise ValueError("Only IPv4 networks are supported")
 
+        # Only scan explicitly authorized private IPv4 networks.
+        private_blocks = (
+            ipaddress.ip_network("10.0.0.0/8"),
+            ipaddress.ip_network("172.16.0.0/12"),
+            ipaddress.ip_network("192.168.0.0/16"),
+        )
+        if not any(parsed.subnet_of(block) for block in private_blocks):
+            raise ValueError("Only private RFC1918 IPv4 networks are allowed")
+
         if parsed.prefixlen < 24:
             raise ValueError(
                 "Discovery is limited to /24 or smaller networks"

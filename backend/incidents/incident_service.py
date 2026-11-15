@@ -60,6 +60,12 @@ class IncidentService:
         if not incident:
             return False
 
+        # A closed case is immutable. Preserve historical SOC evidence.
+        if str(incident["status"]).upper() == "CLOSED":
+            if status == "CLOSED":
+                return True  # idempotent; no redundant audit entry
+            raise ValueError("Closed incidents are read-only")
+
         now = self._now()
 
         db.update(
@@ -87,7 +93,7 @@ class IncidentService:
 
         return True
 
-    def assign(self, incident_id, analyst):
+    def assign(self, incident_id, analyst, actor="SYSTEM"):
         incident = self.get_incident(incident_id)
 
         if not incident:
@@ -96,18 +102,18 @@ class IncidentService:
         now = self._now()
 
         db.update(
-            """
-            UPDATE incidents
-            SET assigned_to = ?,
-                updated_at = ?
-            WHERE incident_id = ?
-            """,
-            (analyst, now, incident_id)
+            "incidents",
+            {
+                "assigned_to": analyst,
+                "updated_at": now
+            },
+            "incident_id = ?",
+            (incident_id,)
         )
 
         audit.record(
             action="INCIDENT_ASSIGNED",
-            user=analyst,
+            username=actor,
             resource="incident",
             resource_id=incident_id,
             details=f"assigned_to={analyst}"

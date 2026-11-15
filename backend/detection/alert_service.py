@@ -30,6 +30,18 @@ class AlertService:
         if severity not in self.ALERT_SEVERITIES:
             return None
 
+        event_id = event.get("event_id")
+        if event_id:
+            existing = db.fetch_one(
+                "SELECT * FROM alerts WHERE event_id = ? LIMIT 1",
+                (event_id,)
+            )
+            if existing:
+                logger.info(
+                    f"ALERT_DUPLICATE_SKIPPED | event_id={event_id}"
+                )
+                return existing
+
         alert_id = self.generate_alert_id()
 
         timestamp = datetime.utcnow().strftime(
@@ -82,6 +94,14 @@ class AlertService:
             f"risk={risk_score} | "
             f"src={source_ip}"
         )
+
+        # Queue external notifications only after the alert was persisted.
+        # SMTP/voice delivery happens in a separate opt-in worker.
+        try:
+            from backend.response.notifications import enqueue_alert
+            enqueue_alert(alert)
+        except Exception as exc:
+            logger.error(f"NOTIFICATION_QUEUE_ERROR | {type(exc).__name__}: {exc}")
 
         return alert
 

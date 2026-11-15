@@ -1,0 +1,7 @@
+{% extends 'soc_shell.html' %}{% block content %}
+<div class="metricstrip"><div class="metric"><span>CAPTURE STATE</span><strong id="captureStatus">CHECKING</strong></div><div class="metric"><span>PACKETS</span><strong id="totalPackets">—</strong></div><div class="metric"><span>ACTIVE FLOWS</span><strong id="activeFlows">—</strong></div><div class="metric"><span>CAPTURED BYTES</span><strong id="totalBytes">—</strong></div></div>
+<section class="panel"><div class="panelhead"><div><small>NETWORK TELEMETRY</small><h2>Live Flow Activity</h2></div><span class="pill" id="capturePill">CHECKING</span></div>
+<canvas id="trafficGraph" class="graph" height="240" aria-label="Captured packet count over the latest refreshes"></canvas>
+<p class="hint">The graph shows packet-count readings from the separate passive-capture process; a STOPPED state means no fresh metrics were received.</p></section>
+<section class="panel"><div class="panelhead"><div><small>TRAFFIC COMPOSITION</small><h2>Protocol Distribution</h2></div></div><div class="protocolgrid" id="protocols">Waiting for backend data...</div></section>
+{% endblock %}

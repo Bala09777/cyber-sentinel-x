@@ -3,7 +3,7 @@ from functools import wraps
 import secrets
 import threading
 
-from flask import jsonify, session, request
+from flask import jsonify, session, request, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from backend.database.manager import db
@@ -339,6 +339,8 @@ class AuthenticationService:
                     "reason": "USER_NOT_FOUND"
                 }
             )
+            from backend.security.auth_monitor import detect_failed_logins
+            detect_failed_logins(request.remote_addr)
 
             return {
                 "success": False,
@@ -383,6 +385,8 @@ class AuthenticationService:
                     "attempts": attempts
                 }
             )
+            from backend.security.auth_monitor import detect_failed_logins
+            detect_failed_logins(request.remote_addr)
 
             return {
                 "success": False,
@@ -581,6 +585,11 @@ class AuthenticationService:
 
             if not user:
 
+                # Browser page navigations should open the login form;
+                # JSON API callers still receive an explicit HTTP 401.
+                if request.method == "GET" and not request.path.startswith("/api/"):
+                    return redirect("/login")
+
                 return jsonify({
                     "error":
                         "Authentication required"
@@ -636,6 +645,9 @@ class AuthenticationService:
                                 request.path,
                         }
                     )
+
+                    from backend.security.auth_monitor import detect_rbac_denials
+                    detect_rbac_denials(request.remote_addr, user["username"])
 
                     return jsonify({
                         "error":

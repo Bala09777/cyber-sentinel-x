@@ -56,12 +56,12 @@ def analysis(incident_id):
 
 
 @incident_api.patch("/<incident_id>/status")
-@auth_service.login_required
+@auth_service.role_required("ADMIN", "SOC_ANALYST", "INVESTIGATOR")
 def update_status(incident_id):
     data = request.get_json(silent=True) or {}
 
     status = data.get("status")
-    user = data.get("user", "SOC_ANALYST")
+    user = auth_service.current_user()["username"]
 
     if not status:
         return jsonify({"error": "status is required"}), 400
@@ -86,7 +86,7 @@ def update_status(incident_id):
 
 
 @incident_api.patch("/<incident_id>/assign")
-@auth_service.login_required
+@auth_service.role_required("ADMIN", "SOC_ANALYST")
 def assign_incident(incident_id):
     data = request.get_json(silent=True) or {}
 
@@ -97,7 +97,8 @@ def assign_incident(incident_id):
 
     updated = incident_service.assign(
         incident_id,
-        analyst
+        analyst,
+        actor=auth_service.current_user()["username"]
     )
 
     if not updated:

@@ -1,0 +1,5 @@
+{% extends 'soc_shell.html' %}{% block content %}
+<div class="metricstrip"><div class="metric"><span>REGISTERED ASSETS</span><strong id="assetCount">—</strong></div><div class="metric"><span>ACTIVE ASSETS</span><strong id="assetActive">—</strong></div></div>
+<section class="panel"><div class="panelhead"><div><small>ASSET INTELLIGENCE</small><h2>Monitored Hosts</h2></div><button class="button" id="discover">⌁ Discover Private Network</button></div>
+<p class="hint">Only scan private networks you own or have permission to assess (one /24 or smaller subnet).</p>
+<div class="tablewrap"><table><thead><tr><th>IP ADDRESS</th><th>HOSTNAME</th><th>TYPE</th><th>RISK</th><th>STATUS</th></tr></thead><tbody id="assetRows"><tr><td colspan="5">Loading...</td></tr></tbody></table></div><p class="hint">ACTIVE means the asset is registered in inventory; it does not prove the host is currently reachable. Device identity fields are shown only when observed.</p></section>{% endblock %}

@@ -57,6 +57,36 @@ class BehaviourEngine:
             )
         )
 
+    @staticmethod
+    def _scan_target_metrics(events):
+        """Distinct TCP/UDP destination ports grouped by one destination host.
+
+        Aggregate ports across unrelated destinations are NOT a port scan.
+        This is suspicious-pattern evidence, not proof of an intrusion.
+        """
+        # CSX_V33_TARGET_SCOPED_PORT_SCAN
+        by_host = {}
+        for event in events:
+            target = event.get("destination_ip")
+            proto = str(event.get("protocol") or "").upper()
+            raw_port = event.get("destination_port")
+            if not target or proto not in ("TCP", "UDP"):
+                continue
+            try:
+                port = int(raw_port)
+            except (ValueError, TypeError):
+                continue
+            if not 1 <= port <= 65535:
+                continue
+            by_host.setdefault(str(target), set()).add(port)
+        if not by_host:
+            return {"max_ports_per_destination": 0, "port_scan_target": None}
+        target = max(sorted(by_host), key=lambda host: len(by_host[host]))
+        return {
+            "max_ports_per_destination": len(by_host[target]),
+            "port_scan_target": target,
+        }
+
     def calculate_metrics(
         self,
         source_ip,
@@ -75,7 +105,9 @@ class BehaviourEngine:
                 "unique_ports": 0,
                 "average_risk": 0,
                 "maximum_risk": 0,
-                "total_packets": 0
+                "total_packets": 0,
+                "max_ports_per_destination": 0,
+                "port_scan_target": None
             }
 
         destinations = set()
@@ -144,6 +176,7 @@ class BehaviourEngine:
         )
 
         return {
+            **self._scan_target_metrics(events),
             "source_ip": source_ip,
             "event_count": len(events),
             "unique_destinations": len(
@@ -177,7 +210,9 @@ class BehaviourEngine:
                     "unique_ports": 0,
                     "average_risk": 0,
                     "maximum_risk": 0,
-                    "total_packets": 0
+                    "total_packets": 0,
+                    "max_ports_per_destination": 0,
+                    "port_scan_target": None
                 }
             }
 
@@ -227,10 +262,12 @@ class BehaviourEngine:
             "total_packets": total_packets
         }
 
+        metrics.update(self._scan_target_metrics(events))
+
         score = 0
         reasons = []
 
-        if metrics["unique_ports"] >= settings.PORT_SCAN_THRESHOLD:
+        if metrics["max_ports_per_destination"] >= settings.PORT_SCAN_THRESHOLD:
             score += 40
             reasons.append("Multiple unique destination ports")
 
@@ -280,7 +317,7 @@ class BehaviourEngine:
         )
 
         detected = (
-            metrics["unique_ports"]
+            metrics["max_ports_per_destination"]
             >= threshold
         )
 
@@ -291,7 +328,9 @@ class BehaviourEngine:
             "unique_ports": metrics[
                 "unique_ports"
             ],
-            "threshold": threshold
+            "threshold": threshold,
+            "target_ip": metrics["port_scan_target"],
+            "target_ports": metrics["max_ports_per_destination"]
         }
 
     def detect_high_packet_activity(
@@ -366,12 +405,12 @@ class BehaviourEngine:
         reasons = []
 
         if (
-            metrics["unique_ports"]
+            metrics["max_ports_per_destination"]
             >= settings.PORT_SCAN_THRESHOLD
         ):
             score += 40
             reasons.append(
-                "Multiple unique destination ports"
+                "Multiple unique ports on one destination host"
             )
 
         if (
